@@ -15,6 +15,7 @@ import {
 } from 'components';
 import { createMemo, Show } from 'solid-js';
 import { twc } from 'styles/helpers';
+import { testGCodeDownloadedEvent, track } from './lib/analytics';
 
 const ButtonWrapper = twc(
   'div',
@@ -78,6 +79,8 @@ export function TestingSection() {
     link.download = fileName;
     link.click();
     URL.revokeObjectURL(url);
+
+    track(testGCodeDownloadedEvent());
   };
 
   return (

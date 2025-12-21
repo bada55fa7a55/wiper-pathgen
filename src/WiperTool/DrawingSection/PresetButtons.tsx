@@ -1,3 +1,4 @@
+import { drawingPresetAppliedEvent, track } from 'WiperTool/lib/analytics';
 import { isCalibrated, isSettingsComplete, pad, setPoints } from 'WiperTool/store';
 import { Button } from 'components';
 import { createMemo } from 'solid-js';
@@ -23,6 +24,7 @@ export function PresetButtons() {
 
   const handlePresetClick = (type: PresetType) => {
     setPoints(generatePresetPoints(type, pad()));
+    track(drawingPresetAppliedEvent(type));
   };
 
   return (

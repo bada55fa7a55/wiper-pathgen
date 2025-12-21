@@ -1,4 +1,5 @@
 import { wiperArmv2Link } from 'WiperTool/configuration';
+import { analyticsWarningPrintablesWA2 } from 'WiperTool/lib/analytics';
 import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
 import { isCalibrated, isSettingsComplete, printer } from 'WiperTool/store';
 import { ErrorMessage, Link, Section, SectionIntro, SectionTitle, WarningMessage } from 'components';
@@ -117,8 +118,13 @@ export function DrawingSection() {
               stay within the reachable area of the pad.
               <br />
               If your current nozzle wiping arm places the silicone pad partly outside the nozzle's reach, check out{' '}
-              <Link href={wiperArmv2Link.href}>{wiperArmv2Link.label}</Link> for a solution that places the silicone pad
-              fully within reach.
+              <Link
+                href={wiperArmv2Link.href}
+                {...analyticsWarningPrintablesWA2()}
+              >
+                {wiperArmv2Link.label}
+              </Link>{' '}
+              for a solution that places the silicone pad fully within reach.
             </>
           }
         />

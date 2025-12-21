@@ -1,3 +1,4 @@
+import { calibrationValueChangedEvent, track } from 'WiperTool/lib/analytics';
 import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
 import {
   FormInput,
@@ -56,6 +57,11 @@ export function ClaibrationSection() {
     y: formatMicronsToMmString(calibration.y),
     z: formatMicronsToMmString(calibration.z),
   });
+  const [lastTrackedValues, setLastTrackedValues] = createStore({
+    x: formatMicronsToMmString(calibration.x),
+    y: formatMicronsToMmString(calibration.y),
+    z: formatMicronsToMmString(calibration.z),
+  });
 
   type FormValueKey = keyof typeof formValues;
 
@@ -81,6 +87,17 @@ export function ClaibrationSection() {
       const micronValue = parsedValue === undefined ? undefined : mmToUm(parsedValue);
       setCalibration(formValueKey, micronValue);
       setErrors(formValueKey, errorMessage);
+    };
+
+  const handleCalibrationBlur =
+    (formValueKey: FormValueKey) => (event: FocusEvent & { currentTarget: HTMLInputElement; target: Element }) => {
+      const rawValue = event.currentTarget.value.trim();
+      const previousValue = lastTrackedValues[formValueKey];
+
+      if (rawValue !== previousValue) {
+        track(calibrationValueChangedEvent(formValueKey));
+        setLastTrackedValues(formValueKey, rawValue);
+      }
     };
 
   return (
@@ -129,18 +146,21 @@ export function ClaibrationSection() {
                   value={formValues.x}
                   error={errors.x ? { type: 'error', message: errors.x } : undefined}
                   onInput={handleCalibrationInput('x')}
+                  onBlur={handleCalibrationBlur('x')}
                 />
                 <FormInput
                   label="Nozzle position Y (mm)"
                   value={formValues.y}
                   error={errors.y ? { type: 'error', message: errors.y } : undefined}
                   onInput={handleCalibrationInput('y')}
+                  onBlur={handleCalibrationBlur('y')}
                 />
                 <FormInput
                   label="Nozzle position Z (mm)"
                   value={formValues.z}
                   error={errors.z ? { type: 'error', message: errors.z } : undefined}
                   onInput={handleCalibrationInput('z')}
+                  onBlur={handleCalibrationBlur('z')}
                 />
               </FormRow>
             </StepBody>
