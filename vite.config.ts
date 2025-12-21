@@ -1,10 +1,11 @@
+import { execSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath, URL } from 'node:url';
 import tailwindcss from '@tailwindcss/vite';
-import { defineConfig } from 'vite';
+import type { HtmlTagDescriptor, Plugin } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import solid from 'vite-plugin-solid';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import { execSync } from 'node:child_process';
 
 const projectRoot = fileURLToPath(new URL('.', import.meta.url));
 const buildTimestamp = new Date().toISOString();
@@ -16,20 +17,67 @@ const gitHash = (() => {
   }
 })();
 
-export default defineConfig({
-  define: {
-    __BUILD_DATE__: JSON.stringify(buildTimestamp),
-    __GIT_HASH__: JSON.stringify(gitHash),
+const simpleAnalyticsPlugin = (enabled: boolean, hostname?: string): Plugin => ({
+  name: 'simple-analytics-inline-events',
+  transformIndexHtml(html: string) {
+    if (!enabled) {
+      return html;
+    }
+
+    const hostnameAttr: HtmlTagDescriptor['attrs'] = hostname ? { 'data-hostname': hostname } : {};
+
+    const tags: HtmlTagDescriptor[] = [
+      {
+        tag: 'script',
+        injectTo: 'body',
+        attrs: {
+          async: true,
+          defer: true,
+          src: 'https://scripts.simpleanalyticscdn.com/latest.js',
+          'data-simple-analytics': 'true',
+          ...hostnameAttr,
+        },
+      },
+      {
+        tag: 'script',
+        injectTo: 'body',
+        attrs: {
+          async: true,
+          src: 'https://scripts.simpleanalyticscdn.com/inline-events.js',
+          ...hostnameAttr,
+        },
+      },
+    ];
+
+    return { html, tags };
   },
-  plugins: [tailwindcss(), solid(), tsconfigPaths()],
-  resolve: {
-    //dedupe: ['solid-js', 'solid-js/web', 'solid-js/store'],
-    alias: {
-      'solid-js': path.resolve(projectRoot, 'node_modules/solid-js'),
-      src: fileURLToPath(new URL('./src', import.meta.url)),
+});
+
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, projectRoot, '');
+  const simpleAnalyticsEnabled = env.VITE_SA_ENABLED === 'true';
+  const simpleAnalyticsHostname = env.VITE_SA_HOSTNAME || undefined;
+
+  return {
+    define: {
+      __BUILD_DATE__: JSON.stringify(buildTimestamp),
+      __GIT_HASH__: JSON.stringify(gitHash),
     },
-  },
-  optimizeDeps: {
-    // include: ['solid-js', 'solid-js/web', 'solid-js/store'],
-  },
+    plugins: [
+      tailwindcss(),
+      solid(),
+      tsconfigPaths(),
+      simpleAnalyticsPlugin(simpleAnalyticsEnabled, simpleAnalyticsHostname),
+    ],
+    resolve: {
+      //dedupe: ['solid-js', 'solid-js/web', 'solid-js/store'],
+      alias: {
+        'solid-js': path.resolve(projectRoot, 'node_modules/solid-js'),
+        src: fileURLToPath(new URL('./src', import.meta.url)),
+      },
+    },
+    optimizeDeps: {
+      // include: ['solid-js', 'solid-js/web', 'solid-js/store'],
+    },
+  };
 });

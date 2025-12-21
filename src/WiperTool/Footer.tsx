@@ -3,6 +3,7 @@ import x6d6178Icon from 'icons/6d6178.svg?raw';
 import githubIcon from 'icons/github.svg?raw';
 import printablesIcon from 'icons/printables.svg?raw';
 import { twc } from 'styles/helpers';
+import { analyticsFooterGitHub, analyticsFooterHome, analyticsFooterPrintablesProfile } from './lib/analytics';
 import { formatDateISO } from './lib/formatting';
 
 const Container = twc(
@@ -75,21 +76,30 @@ export function Footer() {
           Build: <Hash>{__GIT_HASH__}</Hash> / {formatDateISO(new Date(__BUILD_DATE__))}
         </div>
         <LinkList>
-          <IconLink href="https://github.com/bada55fa7a55/wiper-pathgen">
+          <IconLink
+            href="https://github.com/bada55fa7a55/wiper-pathgen"
+            {...analyticsFooterGitHub()}
+          >
             <Icon
               size={24}
               content={githubIcon}
             />
             GitHub
           </IconLink>
-          <IconLink href="https://www.printables.com/@6d6178/models">
+          <IconLink
+            href="https://www.printables.com/@6d6178/models"
+            {...analyticsFooterPrintablesProfile()}
+          >
             <Icon
               size={24}
               content={printablesIcon}
             />
             Printables
           </IconLink>
-          <IconLink href="https://6d6178.com/">
+          <IconLink
+            href="https://6d6178.com/"
+            {...analyticsFooterHome()}
+          >
             <Icon
               size={24}
               content={x6d6178Icon}

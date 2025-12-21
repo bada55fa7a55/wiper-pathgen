@@ -89,6 +89,7 @@ type Props = {
   error?: ErrorMessage;
   isDisabled?: boolean;
   onInput: JSX.InputEventHandlerUnion<HTMLInputElement, InputEvent>;
+  onBlur?: JSX.EventHandlerUnion<HTMLInputElement, FocusEvent>;
 };
 
 export function FormInput(props: Props) {
@@ -102,6 +103,7 @@ export function FormInput(props: Props) {
         invalid={props.error?.type}
         disabled={props.isDisabled}
         onInput={props.onInput}
+        onBlur={props.onBlur}
       />
       <Show
         when={props.error}

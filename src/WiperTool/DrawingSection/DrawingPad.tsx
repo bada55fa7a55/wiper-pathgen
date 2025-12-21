@@ -1,4 +1,5 @@
 import { gridStep } from 'WiperTool/configuration';
+import { drawingPointAddedEvent, simulationStartedEvent, simulationStoppedEvent, track } from 'WiperTool/lib/analytics';
 import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
 import type { Point } from 'WiperTool/store';
 import { pad, padTopRight, points, printer, setPoints, settings } from 'WiperTool/store';
@@ -99,6 +100,9 @@ const Legend = twc(
 export function DrawingPad() {
   const [cursorMicrons, setCursorMicrons] = createSignal<Point | null>(null);
 
+  const toAbsolute = (relPoint: Point) => relToAbs(relPoint, padTopRight());
+  const toRelative = (absPoint: Point) => absToRel(absPoint, padTopRight());
+
   const isSimulationDisabled = createMemo(() => points().length < 2 || (settings.feedRate ?? 0) <= 0);
   const lastPoint = createMemo(() => {
     const currentPoints = points();
@@ -109,9 +113,22 @@ export function DrawingPad() {
   const handleSimulateClick = () => {
     if (simulation.isSimulating()) {
       simulation.stopSimulation();
+      track(simulationStoppedEvent());
       return;
     }
     simulation.startSimulation();
+    track(simulationStartedEvent());
+  };
+
+  const handleAddPoint = (absPoint: Point) => {
+    setPoints((p) => [...p, toRelative(absPoint)]);
+    track(drawingPointAddedEvent());
+  };
+
+  const handleCursorChange = (absPoint: Point | null) => {
+    if (absPoint !== null) {
+      setCursorMicrons(absPoint ? toRelative(absPoint) : null);
+    }
   };
 
   const getFormattedCoords = (coords: Point) => {
@@ -125,9 +142,6 @@ export function DrawingPad() {
     x: printer().maxX / 2,
     y: printer().maxY / 2,
   }));
-
-  const toAbsolute = (relPoint: Point) => relToAbs(relPoint, padTopRight());
-  const toRelative = (absPoint: Point) => absToRel(absPoint, padTopRight());
   const absolutePoints = createMemo(() => points().map(toAbsolute));
 
   const simulation = createNozzleSimulation({
@@ -168,8 +182,8 @@ export function DrawingPad() {
             parkingCoords={printer().parkingCoords}
             printerCenter={printerCenter()}
             points={absolutePoints()}
-            onAddPoint={(absPoint) => setPoints((p) => [...p, toRelative(absPoint)])}
-            onCursorChange={(absPoint) => setCursorMicrons(absPoint ? toRelative(absPoint) : null)}
+            onAddPoint={handleAddPoint}
+            onCursorChange={handleCursorChange}
           />
           <SimulationCanvas
             nozzlePos={simulation.simulationPoint()}

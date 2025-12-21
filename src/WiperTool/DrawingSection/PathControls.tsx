@@ -1,3 +1,4 @@
+import { drawingPathClearedEvent, drawingPathUndoEvent, track } from 'WiperTool/lib/analytics';
 import { isCalibrated, isSettingsComplete, points, setPoints } from 'WiperTool/store';
 import { Button } from 'components';
 import { createMemo } from 'solid-js';
@@ -18,10 +19,12 @@ export function PathControls() {
 
   const handleClearClick = () => {
     setPoints([]);
+    track(drawingPathClearedEvent());
   };
 
   const handleUndoClick = () => {
     setPoints((previousPoints) => previousPoints.slice(0, -1));
+    track(drawingPathUndoEvent());
   };
 
   return (

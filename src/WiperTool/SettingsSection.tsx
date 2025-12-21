@@ -1,3 +1,4 @@
+import { settingsValueChangedEvent, track } from 'WiperTool/lib/analytics';
 import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
 import {
   ErrorMessage,
@@ -39,6 +40,10 @@ export function SettingsSection() {
     feedRate: settings.feedRate?.toString() ?? '',
     padType: settings.padType?.toString() ?? '',
     printer: settings.printer?.toString() ?? '',
+  });
+  const [lastTrackedValues, setLastTrackedValues] = createStore({
+    plungeDepth: formatMicronsToMmString(settings.plungeDepth),
+    feedRate: settings.feedRate?.toString() ?? '',
   });
 
   type FormValueKey = keyof typeof formValues;
@@ -86,6 +91,22 @@ export function SettingsSection() {
     setSettings(formValueKey, rawValue);
   };
 
+  const handleSettingBlur =
+    (formValueKey: 'plungeDepth' | 'feedRate') => (event: FocusEvent & { currentTarget: HTMLInputElement }) => {
+      const rawValue = event.currentTarget.value.trim();
+      const previousValue = lastTrackedValues[formValueKey];
+
+      if (rawValue !== previousValue) {
+        track(settingsValueChangedEvent(formValueKey));
+        setLastTrackedValues(formValueKey, rawValue);
+      }
+    };
+
+  const handleSettingSelect = (formValueKey: 'printer' | 'padType') => (event: FormEvent) => {
+    handleSettingInput(formValueKey)(event);
+    track(settingsValueChangedEvent(formValueKey));
+  };
+
   return (
     <Section id="settings">
       <SectionTitle>Settings</SectionTitle>
@@ -128,7 +149,7 @@ export function SettingsSection() {
                   }))}
                   error={errors.printer ? { type: 'error', message: errors.printer } : undefined}
                   isDisabled={isDisabled()}
-                  onChange={handleSettingInput('printer')}
+                  onChange={handleSettingSelect('printer')}
                 />
                 <FormSelect
                   label="Silicone pad type"
@@ -139,7 +160,7 @@ export function SettingsSection() {
                   }))}
                   error={errors.padType ? { type: 'error', message: errors.padType } : undefined}
                   isDisabled={isDisabled()}
-                  onChange={handleSettingInput('padType')}
+                  onChange={handleSettingSelect('padType')}
                 />
               </FormRow>
             </StepBody>
@@ -154,6 +175,7 @@ export function SettingsSection() {
                 error={errors.plungeDepth ? { type: 'error', message: errors.plungeDepth } : undefined}
                 isDisabled={isDisabled()}
                 onInput={handleSettingInput('plungeDepth')}
+                onBlur={handleSettingBlur('plungeDepth')}
               />
             </StepBody>
           </Step>
@@ -167,6 +189,7 @@ export function SettingsSection() {
                 error={errors.feedRate ? { type: 'error', message: errors.feedRate } : undefined}
                 isDisabled={isDisabled()}
                 onInput={handleSettingInput('feedRate')}
+                onBlur={handleSettingBlur('feedRate')}
               />
             </StepBody>
           </Step>

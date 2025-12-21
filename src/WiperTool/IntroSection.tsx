@@ -1,5 +1,6 @@
 import { Link, Section, SectionColumn, SectionColumns, SectionTitle } from 'components';
 import { wiperArmV1Link, wiperArmv2Link } from './configuration';
+import { analyticsIntroPrintablesWA1, analyticsIntroPrintablesWA2 } from './lib/analytics';
 
 export function IntroSection() {
   return (
@@ -12,10 +13,21 @@ export function IntroSection() {
             Lab A1 silicone pads and pad mounting arms that place the pad at the front of the printer.
           </p>
           <p>
-            The recommended option is the <Link href={wiperArmv2Link.href}>{wiperArmv2Link.label}</Link> wiping arm
-            because it places the silicone pad fully within reach of the nozzle. Other arms, including{' '}
-            <Link href={wiperArmV1Link.href}>version 1</Link>, may work but can leave part of the pad outside the
-            nozzle's reach.
+            The recommended option is the{' '}
+            <Link
+              href={wiperArmv2Link.href}
+              {...analyticsIntroPrintablesWA2()}
+            >
+              {wiperArmv2Link.label}
+            </Link>{' '}
+            wiping arm because it places the silicone pad fully within reach of the nozzle. Other arms, including{' '}
+            <Link
+              href={wiperArmV1Link.href}
+              {...analyticsIntroPrintablesWA1()}
+            >
+              version 1
+            </Link>
+            , may work but can leave part of the pad outside the nozzle's reach.
           </p>
           <p>The sections below walk you step by step through creating your nozzle wiping sequence.</p>
         </SectionColumn>

@@ -1,4 +1,5 @@
 import { wiperArmv2Link } from 'WiperTool/configuration';
+import { analyticsHeaderPrintablesWA2 } from 'WiperTool/lib/analytics';
 import { Link } from 'components';
 import { styled } from 'solid-styled-components';
 import { twc } from 'styles/helpers';
@@ -87,8 +88,14 @@ export function Header() {
           pads.
         </TagLine>
         <TagLine>
-          Companion tool for the <Link href={wiperArmv2Link.href}>{wiperArmv2Link.label}</Link> and similar nozzle
-          wipers.
+          Companion tool for the{' '}
+          <Link
+            href={wiperArmv2Link.href}
+            {...analyticsHeaderPrintablesWA2()}
+          >
+            {wiperArmv2Link.label}
+          </Link>{' '}
+          and similar nozzle wipers.
         </TagLine>
       </TagLines>
       <Disclaimers>
