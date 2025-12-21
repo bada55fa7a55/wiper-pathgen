@@ -11,7 +11,7 @@ type Settings = {
 };
 
 export const [settings, setSettings] = createLocalStorageStore<Settings>(`app-settings-${SETTINGS_VERSION}`, {
-  plungeDepth: 1000,
+  plungeDepth: 500,
   feedRate: 10000,
   printer: 'prusa-core-one',
   padType: 'bbl-a1',
