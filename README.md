@@ -1,12 +1,14 @@
-# Core One Wiper Path
+# Core One Wiper Path Generator
 
-Browser-based tool for generating a nozzle wiping path for the Prusa Core One that uses a Bambu Lab A1 (or equal) silicone wiper pad. The app guides you through calibrating the pad position, configuring plunge depth/feed rates, sketching the wiping path on an overlay of the pad, and exporting ready-to-run G-code.
+For use with [Core One Nozzle Wiper V2 with Purge Bin](https://www.printables.com/model/1499858) and similar front-mounted nozzle wiper arms.
+
+A browser-based tool for generating a nozzle wiping path for the Prusa Core One that uses a Bambu Lab A1 (or equal) silicone wiper pad. The app guides you through calibrating the pad position, configuring plunge depth/feed rates, sketching the wiping path on an overlay of the pad, and exporting ready-to-run G-code.
 
 https://wiper-pathgen.6d6178.com/
 
-Built with SolidJS, Vite, and Tailwind CSS.
-
 > This is an unofficial, community project. Always verify G-code before running it on your printer.
+
+Built with SolidJS, Vite, and Tailwind CSS.
 
 ## Prerequisites
 - Node.js 20+ and npm
