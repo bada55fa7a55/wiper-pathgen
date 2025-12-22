@@ -4,6 +4,7 @@ import {
   ErrorMessage,
   FormInput,
   FormSelect,
+  InlineCode,
   Link,
   Section,
   SectionColumn,
@@ -38,12 +39,14 @@ export function SettingsSection() {
   const [formValues, setFormValues] = createStore({
     plungeDepth: formatMicronsToMmString(settings.plungeDepth),
     feedRate: settings.feedRate?.toString() ?? '',
+    zLift: formatMicronsToMmString(settings.zLift),
     padType: settings.padType?.toString() ?? '',
     printer: settings.printer?.toString() ?? '',
   });
   const [lastTrackedValues, setLastTrackedValues] = createStore({
     plungeDepth: formatMicronsToMmString(settings.plungeDepth),
     feedRate: settings.feedRate?.toString() ?? '',
+    zLift: formatMicronsToMmString(settings.zLift),
   });
 
   type FormValueKey = keyof typeof formValues;
@@ -51,6 +54,7 @@ export function SettingsSection() {
   const [errors, setErrors] = createStore({
     plungeDepth: '',
     feedRate: '',
+    zLift: '',
     padType: '',
     printer: '',
   });
@@ -60,6 +64,7 @@ export function SettingsSection() {
 
   const validators: Record<FormValueKey, ValidatorFn | null> = {
     plungeDepth: validatePositiveDecimal,
+    zLift: validatePositiveDecimal,
     feedRate: validatePositiveInteger,
     padType: null,
     printer: null,
@@ -81,6 +86,11 @@ export function SettingsSection() {
           setSettings(formValueKey, micronValue);
           break;
         }
+        case 'zLift': {
+          const micronValue = parsedValue === undefined ? undefined : mmToUm(parsedValue);
+          setSettings(formValueKey, micronValue);
+          break;
+        }
         default:
           setSettings(formValueKey, parsedValue);
       }
@@ -92,7 +102,8 @@ export function SettingsSection() {
   };
 
   const handleSettingBlur =
-    (formValueKey: 'plungeDepth' | 'feedRate') => (event: FocusEvent & { currentTarget: HTMLInputElement }) => {
+    (formValueKey: 'plungeDepth' | 'feedRate' | 'zLift') =>
+    (event: FocusEvent & { currentTarget: HTMLInputElement }) => {
       const rawValue = event.currentTarget.value.trim();
       const previousValue = lastTrackedValues[formValueKey];
 
@@ -190,6 +201,22 @@ export function SettingsSection() {
                 isDisabled={isDisabled()}
                 onInput={handleSettingInput('feedRate')}
                 onBlur={handleSettingBlur('feedRate')}
+              />
+            </StepBody>
+          </Step>
+          <Step>
+            <StepTitle>Z-Lift</StepTitle>
+            <StepBody>
+              <p>
+                Lift the Z-axis after wiping before leaving the pad area. Enter <InlineCode>0</InlineCode> to disable.
+              </p>
+              <FormInput
+                label="Z-lift (mm)"
+                value={formValues.zLift}
+                error={errors.zLift ? { type: 'error', message: errors.zLift } : undefined}
+                isDisabled={isDisabled()}
+                onInput={handleSettingInput('zLift')}
+                onBlur={handleSettingBlur('zLift')}
               />
             </StepBody>
           </Step>

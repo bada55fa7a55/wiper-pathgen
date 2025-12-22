@@ -78,7 +78,8 @@ export function GCode() {
       calibration.y === undefined ||
       calibration.z === undefined ||
       settings.feedRate === undefined ||
-      settings.plungeDepth === undefined
+      settings.plungeDepth === undefined ||
+      settings.zLift === undefined
     ) {
       return null;
     }
@@ -95,6 +96,7 @@ export function GCode() {
         padTopRight: { ...padTopRight(), z: calibration.z },
         feedRate: settings.feedRate,
         plungeDepth: settings.plungeDepth,
+        zLift: settings.zLift,
       })?.join('\n') || ''
     );
   });

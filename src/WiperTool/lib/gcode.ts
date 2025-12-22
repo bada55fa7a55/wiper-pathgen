@@ -30,6 +30,7 @@ type GenerateWipingSequenceGCodeOptions = {
   padTopRight: Point3D;
   feedRate: number;
   plungeDepth: number;
+  zLift: number;
 };
 
 type GenerateHeaderGCodeOptions = {
@@ -60,6 +61,7 @@ function generateWipingSequenceGCodeCommands({
   padTopRight,
   feedRate,
   plungeDepth,
+  zLift,
 }: GenerateWipingSequenceGCodeOptions) {
   if (points.length < 2) {
     return [];
@@ -72,6 +74,11 @@ function generateWipingSequenceGCodeCommands({
     const coords = micronsToPrinter(pt, padTopRight);
     gCode.push(`G1 X${formatAxisXY(coords.x)} Y${formatAxisXY(coords.y)} Z${formatAxisZ(zHeight)} F${feedRate}`);
   });
+  
+  const zLiftHeight = umToMm(padTopRight.z - plungeDepth + zLift);
+  if (zLiftHeight !== zHeight) {
+    gCode.push(`G0 Z${formatAxisZ(zLiftHeight)} F${feedRate}`);
+  }
 
   return gCode;
 }
@@ -84,6 +91,7 @@ export function generateGCodeCommands({
   padTopRight,
   feedRate,
   plungeDepth,
+  zLift,
 }: GenerateHeaderGCodeOptions & GenerateWipingSequenceGCodeOptions) {
   if (points.length < 2) {
     return null;
@@ -100,6 +108,7 @@ export function generateGCodeCommands({
       padTopRight,
       feedRate,
       plungeDepth,
+      zLift,
     }),
     ...generateFooterGCodeCommands(),
   ];
@@ -122,6 +131,7 @@ export function generateTestGCodeCommands({
   padTopRight,
   feedRate,
   plungeDepth,
+  zLift,
 }: GenerateHeaderGCodeOptions & GenerateWipingSequenceGCodeOptions & GenerateTestGCodeOptions) {
   if (points.length < 2) {
     return null;
@@ -154,6 +164,7 @@ export function generateTestGCodeCommands({
       padTopRight,
       feedRate,
       plungeDepth,
+      zLift,
     }),
     ...generateFooterGCodeCommands(),
     ...[

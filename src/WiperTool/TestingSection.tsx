@@ -32,7 +32,8 @@ export function TestingSection() {
       calibration.y === undefined ||
       calibration.z === undefined ||
       settings.feedRate === undefined ||
-      settings.plungeDepth === undefined
+      settings.plungeDepth === undefined ||
+      settings.zLift === undefined
     ) {
       return null;
     }
@@ -59,6 +60,7 @@ export function TestingSection() {
         padTopRight: { ...padTopRight(), z: calibration.z },
         feedRate: settings.feedRate * 0.05,
         plungeDepth: settings.plungeDepth,
+        zLift: settings.zLift,
       })?.join('\n') || ''
     );
   });
