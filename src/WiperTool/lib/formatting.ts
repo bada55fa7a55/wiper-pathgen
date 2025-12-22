@@ -14,3 +14,11 @@ export function formatDateISO(date: Date) {
   const seconds = pad(date.getUTCSeconds());
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds} UTC`;
 }
+
+export function formatPercent(percentage: number) {
+  return 100 * percentage;
+}
+
+export function formatPercentString(percentage: number) {
+  return `${formatPercent(percentage)}%`;
+}

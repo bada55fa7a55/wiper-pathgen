@@ -74,7 +74,7 @@ function generateWipingSequenceGCodeCommands({
     const coords = micronsToPrinter(pt, padTopRight);
     gCode.push(`G1 X${formatAxisXY(coords.x)} Y${formatAxisXY(coords.y)} Z${formatAxisZ(zHeight)} F${feedRate}`);
   });
-  
+
   const zLiftHeight = umToMm(padTopRight.z - plungeDepth + zLift);
   if (zLiftHeight !== zHeight) {
     gCode.push(`G0 Z${formatAxisZ(zLiftHeight)} F${feedRate}`);

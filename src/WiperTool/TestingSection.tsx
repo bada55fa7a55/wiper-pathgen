@@ -3,6 +3,7 @@ import { calibration, isCalibrated, isSettingsComplete, padTopRight, points, pri
 import {
   Button,
   ErrorMessage,
+  FormSelect,
   Link,
   Section,
   SectionColumn,
@@ -13,9 +14,10 @@ import {
   StepBody,
   StepTitle,
 } from 'components';
-import { createMemo, Show } from 'solid-js';
+import { createMemo, createSignal, Show } from 'solid-js';
 import { twc } from 'styles/helpers';
 import { testGCodeDownloadedEvent, track } from './lib/analytics';
+import { formatPercent, formatPercentString } from './lib/formatting';
 
 const ButtonWrapper = twc(
   'div',
@@ -24,7 +26,20 @@ const ButtonWrapper = twc(
   `,
 );
 
+const FormRow = twc(
+  'div',
+  `
+  grid
+  grid-rows-1
+  md:grid-cols-3
+  gap-4
+  `,
+);
+
 export function TestingSection() {
+  const [feedRateMultiplier, setFeedRateMultiplier] = createSignal<string>('0.05');
+  const feedRateMultiplierValue = createMemo(() => Number(feedRateMultiplier()));
+
   const testGCode = createMemo(() => {
     if (
       points().length < 2 ||
@@ -58,7 +73,7 @@ export function TestingSection() {
         },
         points: points(),
         padTopRight: { ...padTopRight(), z: calibration.z },
-        feedRate: settings.feedRate * 0.05,
+        feedRate: settings.feedRate * feedRateMultiplierValue(),
         plungeDepth: settings.plungeDepth,
         zLift: settings.zLift,
       })?.join('\n') || ''
@@ -68,7 +83,7 @@ export function TestingSection() {
   const isReadyToPrint = () => isCalibrated() && isSettingsComplete() && points().length >= 2;
   const isDisabled = () => !isReadyToPrint() || !testGCode();
 
-  const fileName = 'wiper-path-test.gcode';
+  const fileName = createMemo(() => `wiper-path-test-${formatPercent(feedRateMultiplierValue())}p.gcode`);
 
   const handleDownloadGCodeClick = () => {
     const content = testGCode();
@@ -78,7 +93,7 @@ export function TestingSection() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = fileName;
+    link.download = fileName();
     link.click();
     URL.revokeObjectURL(url);
 
@@ -126,6 +141,24 @@ export function TestingSection() {
       <SectionColumns>
         <SectionColumn>
           <Step>
+            <StepTitle>Testing Speed</StepTitle>
+            <StepBody>
+              <p>Speed at which to test the wiping G-code at (based on feed rate from settings).</p>
+              <FormRow>
+                <FormSelect
+                  label="Speed"
+                  value={feedRateMultiplier()}
+                  options={[0.05, 0.1, 0.25, 0.5, 0.75, 1].map((feedRate) => ({
+                    key: String(feedRate),
+                    label: formatPercentString(feedRate),
+                  }))}
+                  isDisabled={isDisabled()}
+                  onChange={(event) => setFeedRateMultiplier(event.currentTarget.value)}
+                />
+              </FormRow>
+            </StepBody>
+          </Step>
+          <Step>
             <StepTitle>Download Test File</StepTitle>
             <StepBody>
               <p>
@@ -134,9 +167,9 @@ export function TestingSection() {
                 That sequence matches how your printer will enter and exit wiping during a real print.
               </p>
               <p>
-                The test file runs at 5% of your configured feed rate ({0.05 * (settings?.feedRate ?? 0)} mm/min). The
-                slower speed gives you time to press Reset on the LCD if you need to stop it and reduces the chance of
-                damage if something collides.
+                The test file runs at {formatPercentString(feedRateMultiplierValue())} of your configured feed rate (
+                {feedRateMultiplierValue() * (settings?.feedRate ?? 0)} mm/min). The slower speed gives you time to
+                press Reset on the LCD if you need to stop it and reduces the chance of damage if something collides.
                 <br />
                 It does not heat up the nozzle, so make sure there aren't any dangling filament bits stuck to the nozzle
                 before running the test file.
@@ -157,7 +190,7 @@ export function TestingSection() {
                   disabled={isDisabled()}
                   onClick={handleDownloadGCodeClick}
                 >
-                  Download {fileName}
+                  Download {fileName()}
                 </Button>
               </ButtonWrapper>
             </StepBody>
