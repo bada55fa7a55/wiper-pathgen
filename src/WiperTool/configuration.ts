@@ -50,6 +50,20 @@ export const printerProperties: Record<string, PrinterProperties> = {
       y: -9000,
     },
   },
+  'prusa-core-one-l': {
+    name: 'Prusa Core One L',
+    printerId: 'COREONEL',
+    minX: -2000,
+    maxX: 302000,
+    minY: -8000,
+    maxY: 300000,
+    originalCleaningGCode: 'G29 P9 X208 Y-2.5 W32 H4',
+    parkingZHeight: 20000,
+    parkingCoords: {
+      x: 292000,
+      y: -5000,
+    },
+  },
 };
 
 export const gridStep = 5000;
