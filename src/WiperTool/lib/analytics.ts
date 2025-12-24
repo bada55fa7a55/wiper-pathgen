@@ -1,7 +1,7 @@
 function createEventAttributes({ event, trigger }: { event: string; trigger: string }) {
   return {
     'data-simple-event': event,
-    'data-simple-event-tigger': trigger,
+    'data-simple-event-trigger': trigger,
   };
 }
 
