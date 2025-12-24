@@ -1,11 +1,11 @@
 import { drawingPresetAppliedEvent, track } from 'WiperTool/lib/analytics';
-import { isCalibrated, isSettingsComplete, pad, setPoints } from 'WiperTool/store';
+import { isCalibrated, isSettingsComplete, pad, setWipingSequence } from 'WiperTool/store';
 import { Button } from 'components';
 import { createMemo } from 'solid-js';
 import { twc } from 'styles/helpers';
 import { isPadCutOff } from './helpers';
 import type { PresetType } from './presets';
-import { generatePresetPoints, presetDefinitions } from './presets';
+import { generatePresetSequence, presetDefinitions } from './presets';
 
 const Container = twc(
   'div',
@@ -23,7 +23,7 @@ export function PresetButtons() {
   const isDisabled = createMemo(() => !isCalibrated() || !isSettingsComplete() || isPadCutOff());
 
   const handlePresetClick = (type: PresetType) => {
-    setPoints(generatePresetPoints(type, pad()));
+    setWipingSequence(generatePresetSequence(type, pad()));
     track(drawingPresetAppliedEvent(type));
   };
 

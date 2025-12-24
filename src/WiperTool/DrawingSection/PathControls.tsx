@@ -1,5 +1,5 @@
 import { drawingPathClearedEvent, drawingPathUndoEvent, track } from 'WiperTool/lib/analytics';
-import { isCalibrated, isSettingsComplete, points, setPoints } from 'WiperTool/store';
+import { isCalibrated, isSettingsComplete, setWipingSequence, wipingSequence } from 'WiperTool/store';
 import { Button } from 'components';
 import { createMemo } from 'solid-js';
 import { twc } from 'styles/helpers';
@@ -15,15 +15,15 @@ const Container = twc(
 );
 
 export function PathControls() {
-  const isDisabled = createMemo(() => !isCalibrated() || !isSettingsComplete() || points().length === 0);
+  const isDisabled = createMemo(() => !isCalibrated() || !isSettingsComplete() || wipingSequence().length === 0);
 
   const handleClearClick = () => {
-    setPoints([]);
+    setWipingSequence([]);
     track(drawingPathClearedEvent());
   };
 
   const handleUndoClick = () => {
-    setPoints((previousPoints) => previousPoints.slice(0, -1));
+    setWipingSequence((previousSequence) => previousSequence.slice(0, -1));
     track(drawingPathUndoEvent());
   };
 

@@ -4,11 +4,14 @@ export {
   setCalibration,
 } from './calibration';
 export { pad, padTopRight } from './pad';
-export type { Point } from './points';
+export type { Point, WipingStep, WipingStepPoint, WipingStepSpeedChange } from './wipingSequence';
 export {
-  points,
-  setPoints,
-} from './points';
+  getWipingStepPoints,
+  isWipingStepPoint,
+  makeWipingStepPoint,
+  setWipingSequence,
+  wipingSequence,
+} from './wipingSequence';
 export { printer } from './printer';
 export {
   isSettingsComplete,

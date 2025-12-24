@@ -1,4 +1,4 @@
-import type { Point } from 'WiperTool/store';
+import type { Point, WipingStep } from 'WiperTool/store';
 import { umToMm } from './conversion';
 import { formatDateISO, formatMicronsToMmString } from './formatting';
 
@@ -26,7 +26,7 @@ function formatAxisZ(value: number) {
 }
 
 type GenerateWipingSequenceGCodeOptions = {
-  points: Point[];
+  wipingSequence: WipingStep[];
   padTopRight: Point3D;
   feedRate: number;
   plungeDepth: number;
@@ -56,13 +56,17 @@ function generateFooterGCodeCommands() {
   return ['; End nozzle wiping sequence'];
 }
 
+const getPointsFromSequence = (sequence: WipingStep[]): Point[] =>
+  sequence.flatMap((item) => (item.type === 'point' ? [{ x: item.x, y: item.y }] : []));
+
 function generateWipingSequenceGCodeCommands({
-  points,
+  wipingSequence,
   padTopRight,
   feedRate,
   plungeDepth,
   zLift,
 }: GenerateWipingSequenceGCodeOptions) {
+  const points = getPointsFromSequence(wipingSequence);
   if (points.length < 2) {
     return [];
   }
@@ -87,13 +91,13 @@ export function generateGCodeCommands({
   printerName,
   printerOriginalCleaningGcode,
   padRef,
-  points,
+  wipingSequence,
   padTopRight,
   feedRate,
   plungeDepth,
   zLift,
 }: GenerateHeaderGCodeOptions & GenerateWipingSequenceGCodeOptions) {
-  if (points.length < 2) {
+  if (getPointsFromSequence(wipingSequence).length < 2) {
     return null;
   }
 
@@ -104,7 +108,7 @@ export function generateGCodeCommands({
       padRef,
     }),
     ...generateWipingSequenceGCodeCommands({
-      points,
+      wipingSequence,
       padTopRight,
       feedRate,
       plungeDepth,
@@ -127,13 +131,13 @@ export function generateTestGCodeCommands({
   printerParkingCoords,
   printerMaxCoords,
   padRef,
-  points,
+  wipingSequence,
   padTopRight,
   feedRate,
   plungeDepth,
   zLift,
 }: GenerateHeaderGCodeOptions & GenerateWipingSequenceGCodeOptions & GenerateTestGCodeOptions) {
-  if (points.length < 2) {
+  if (getPointsFromSequence(wipingSequence).length < 2) {
     return null;
   }
 
@@ -160,7 +164,7 @@ export function generateTestGCodeCommands({
       padRef,
     }),
     ...generateWipingSequenceGCodeCommands({
-      points,
+      wipingSequence,
       padTopRight,
       feedRate,
       plungeDepth,

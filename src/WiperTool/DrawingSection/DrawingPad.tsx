@@ -2,7 +2,16 @@ import { gridStep } from 'WiperTool/configuration';
 import { drawingPointAddedEvent, simulationStartedEvent, simulationStoppedEvent, track } from 'WiperTool/lib/analytics';
 import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
 import type { Point } from 'WiperTool/store';
-import { pad, padTopRight, points, printer, setPoints, settings } from 'WiperTool/store';
+import {
+  getWipingStepPoints,
+  makeWipingStepPoint,
+  pad,
+  padTopRight,
+  printer,
+  setWipingSequence,
+  settings,
+  wipingSequence,
+} from 'WiperTool/store';
 import { paddings } from 'WiperTool/store/paddings';
 import { Button } from 'components';
 import { createMemo, createSignal, Show } from 'solid-js';
@@ -103,9 +112,10 @@ export function DrawingPad() {
   const toAbsolute = (relPoint: Point) => relToAbs(relPoint, padTopRight());
   const toRelative = (absPoint: Point) => absToRel(absPoint, padTopRight());
 
-  const isSimulationDisabled = createMemo(() => points().length < 2 || (settings.feedRate ?? 0) <= 0);
+  const sequencePoints = createMemo(() => getWipingStepPoints(wipingSequence()));
+  const isSimulationDisabled = createMemo(() => sequencePoints().length < 2 || (settings.feedRate ?? 0) <= 0);
   const lastPoint = createMemo(() => {
-    const currentPoints = points();
+    const currentPoints = sequencePoints();
     if (currentPoints.length === 0) return null;
     return currentPoints[currentPoints.length - 1];
   });
@@ -121,7 +131,8 @@ export function DrawingPad() {
   };
 
   const handleAddPoint = (absPoint: Point) => {
-    setPoints((p) => [...p, toRelative(absPoint)]);
+    const relPoint = toRelative(absPoint);
+    setWipingSequence((sequence) => [...sequence, makeWipingStepPoint(relPoint)]);
     track(drawingPointAddedEvent());
   };
 
@@ -142,7 +153,7 @@ export function DrawingPad() {
     x: printer().maxX / 2,
     y: printer().maxY / 2,
   }));
-  const absolutePoints = createMemo(() => points().map(toAbsolute));
+  const absolutePoints = createMemo(() => sequencePoints().map(toAbsolute));
 
   const simulation = createNozzleSimulation({
     getPoints: absolutePoints,
