@@ -2,6 +2,7 @@ import { gridStep } from 'WiperTool/configuration';
 import type { Point } from 'WiperTool/store';
 import { calibration } from 'WiperTool/store';
 import { createEffect, createSignal } from 'solid-js';
+import { isServer } from 'lib/runtime';
 import { twc } from 'styles/helpers';
 import { relToAbs } from './helpers';
 
@@ -38,6 +39,8 @@ export function Canvas(props: CanvasProps) {
   const [padImage, setPadImage] = createSignal<HTMLImageElement | null>(null);
 
   createEffect(() => {
+    if (isServer) return;
+
     const src = props.padImageSrc;
     if (!src) {
       setPadImage(null);

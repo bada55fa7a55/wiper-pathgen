@@ -65,7 +65,7 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       tailwindcss(),
-      solid(),
+      solid({ ssr: true }),
       tsconfigPaths(),
       simpleAnalyticsPlugin(simpleAnalyticsEnabled, simpleAnalyticsHostname),
     ],

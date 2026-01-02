@@ -1,6 +1,7 @@
 import { createEffect, onCleanup } from 'solid-js';
 import type { SetStoreFunction, Store } from 'solid-js/store';
 import { createStore, reconcile } from 'solid-js/store';
+import { isClient } from 'lib/runtime';
 
 /**
  * Create store that syncs with localStorage
@@ -8,8 +9,11 @@ import { createStore, reconcile } from 'solid-js/store';
  * @param init - The initial state object
  */
 export function createLocalStorageStore<T extends object>(name: string, init: T): [Store<T>, SetStoreFunction<T>] {
-  const localState = localStorage.getItem(name);
+  if (!isClient) {
+    return createStore<T>(init);
+  }
 
+  const localState = localStorage.getItem(name);
   const [state, setState] = createStore<T>(localState ? JSON.parse(localState) : init);
 
   createEffect(() => {
