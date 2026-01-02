@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && npm run build:client && npm run build:ssr && npm run prerender",
+    "build:client": "vite build",
+    "build:ssr": "vite build --ssr src/entry-server.tsx --outDir dist/server --ssrManifest",
+    "prerender": "node ./prerender.mjs",
     "preview": "vite preview",
     "lint": "biome lint src",
     "format": "biome format --write src"
