@@ -6,6 +6,7 @@ import type { HtmlTagDescriptor, Plugin } from 'vite';
 import { defineConfig, loadEnv } from 'vite';
 import solid from 'vite-plugin-solid';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import { siteDescription, siteHtmlTitle, siteTitle } from './siteMeta';
 
 const projectRoot = fileURLToPath(new URL('.', import.meta.url));
 const buildTimestamp = new Date().toISOString();
@@ -53,6 +54,16 @@ const simpleAnalyticsPlugin = (enabled: boolean, hostname?: string): Plugin => (
   },
 });
 
+const siteMetaPlugin: Plugin = {
+  name: 'site-meta-inject',
+  transformIndexHtml(html) {
+    return html
+      .replaceAll('%APP_TITLE%', siteTitle)
+      .replaceAll('%APP_DESCRIPTION%', siteDescription)
+      .replaceAll('%APP_HTML_TITLE%', siteHtmlTitle);
+  },
+};
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, projectRoot, '');
   const simpleAnalyticsEnabled = env.VITE_SA_ENABLED === 'true';
@@ -68,6 +79,7 @@ export default defineConfig(({ mode }) => {
       solid({ ssr: true }),
       tsconfigPaths(),
       simpleAnalyticsPlugin(simpleAnalyticsEnabled, simpleAnalyticsHostname),
+      siteMetaPlugin,
     ],
     resolve: {
       //dedupe: ['solid-js', 'solid-js/web', 'solid-js/store'],
