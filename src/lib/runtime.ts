@@ -1,2 +1,2 @@
-export const isServer = import.meta.env.SSR;
-export const isClient = !isServer;
+export const isServerRuntime = import.meta.env.SSR;
+export const isClientRuntime = !isServerRuntime;

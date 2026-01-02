@@ -1,7 +1,7 @@
 /* @refresh reload */
 import { WiperTool } from 'WiperTool';
+import { isClientRuntime } from 'lib/runtime';
 import { hydrate } from 'solid-js/web';
-import { isClient } from 'lib/runtime';
 import './index.css';
 
 declare global {
@@ -15,7 +15,7 @@ declare global {
   }
 }
 
-if (isClient) {
+if (isClientRuntime) {
   // biome-ignore lint/suspicious/noAssignInExpressions: Assign to both window and hydrationState
   const hydrationState = (window._$HY ||= {});
   hydrationState.completed ||= new WeakSet();
