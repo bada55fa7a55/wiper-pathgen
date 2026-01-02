@@ -50,6 +50,23 @@ export const printerProperties: Record<string, PrinterProperties> = {
       y: -9000,
     },
   },
+  'prusa-xl': {
+    name: 'Prusa XL',
+    printerId: 'XL',
+    minX: -8000,
+    maxX: 361000,
+    minY: -9000,
+    maxY: 461000,
+    originalCleaningGCode: 'G29 P9 X{((((first_layer_print_min[0] + first_layer_print_max[0]) / 2) < ((print_bed_min[0] + print_bed_max[0]) / 2)) ? (((first_layer_print_min[1] - 7) < -2) ? 70 : (min(print_bed_max[0], first_layer_print_min[0] + 32) - 32)) : (((first_layer_print_min[1] - 7) < -2) ? 260 : (min(print_bed_max[0], first_layer_print_min[0] + 32) - 32)))} Y{(first_layer_print_min[1] - 7)} W{32} H{7}',
+    parkingZHeight: 5000,
+    // Note: This is not correct. The nozzle parks within one of the heated bed elements
+    // depending on the coordinate sandsimensions of the printed part.
+    // G1 X{(min(((((first_layer_print_min[0] + first_layer_print_max[0]) / 2) < ((print_bed_min[0] + print_bed_max[0]) / 2)) ? (((first_layer_print_min[1] - 7) < -2) ? 70 : (min(print_bed_max[0], first_layer_print_min[0] + 32) - 32)) : (((first_layer_print_min[1] - 7) < -2) ? 260 : (min(print_bed_max[0], first_layer_print_min[0] + 32) - 32))), first_layer_print_min[0])) + 32} Y{(min((first_layer_print_min[1] - 7), first_layer_print_min[1]))} Z{5} F{(travel_speed * 60)}
+    parkingCoords: {
+      x: 352000,
+      y: -9000,
+    },
+  },
 };
 
 export const gridStep = 5000;
