@@ -12,7 +12,7 @@ const projectRoot = fileURLToPath(new URL('.', import.meta.url));
 const buildTimestamp = new Date().toISOString();
 const gitHash = (() => {
   try {
-    return execSync('git rev-parse --short HEAD', { cwd: projectRoot, stdio: 'pipe' }).toString().trim();
+    return execSync('git rev-parse HEAD', { cwd: projectRoot, stdio: 'pipe' }).toString().trim();
   } catch {
     return 'unknown';
   }
