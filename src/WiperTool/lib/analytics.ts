@@ -33,6 +33,34 @@ export function analyticsFooterGitHub() {
   });
 }
 
+export function analyticsFooterGitHubIssues() {
+  return createEventAttributes({
+    event: 'link_github_issues',
+    trigger: 'footer',
+  });
+}
+
+export function analyticsFooterGitHubPullRequests() {
+  return createEventAttributes({
+    event: 'link_github_pull_requests',
+    trigger: 'footer',
+  });
+}
+
+export function analyticsFooterGitHash() {
+  return createEventAttributes({
+    event: 'link_git_hash',
+    trigger: 'footer',
+  });
+}
+
+export function analyticsFooterAgpl() {
+  return createEventAttributes({
+    event: 'link_agpl',
+    trigger: 'footer',
+  });
+}
+
 export function analyticsFooterHome() {
   return createEventAttributes({
     event: 'link_home',
