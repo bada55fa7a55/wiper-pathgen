@@ -1,7 +1,7 @@
-import { Show } from 'solid-js';
 import type { JSX } from 'solid-js';
-import { For } from 'solid-js';
+import { For, Show } from 'solid-js';
 import { twc } from 'styles/helpers';
+import { MaterialSymbol } from './MaterialSymbol';
 
 const FormField = twc(
   'div',
@@ -100,7 +100,6 @@ const Arrow = twc(
   flex
   items-center
   text-zinc-500
-  text-sm
   `,
 );
 
@@ -136,7 +135,12 @@ export function FormSelect(props: Props) {
         >
           <For each={props.options}>{(option) => <option value={option.key}>{option.label}</option>}</For>
         </Select>
-        <Arrow aria-hidden="true">▼</Arrow>
+        <Arrow aria-hidden="true">
+          <MaterialSymbol
+            size={24}
+            symbol="arrow_drop_down"
+          />
+        </Arrow>
       </SelectWrapper>
       <Show
         when={props.error}
