@@ -1,10 +1,18 @@
+import {
+  analyticsFooterAgpl,
+  analyticsFooterGitHash,
+  analyticsFooterGitHub,
+  analyticsFooterGitHubIssues,
+  analyticsFooterGitHubPullRequests,
+  analyticsFooterHome,
+  analyticsFooterPrintablesProfile,
+} from 'WiperTool/lib/analytics';
+import { formatDateISO } from 'WiperTool/lib/formatting';
 import { Icon, Link } from 'components';
 import x6d6178Icon from 'icons/6d6178.svg?raw';
 import githubIcon from 'icons/github.svg?raw';
 import printablesIcon from 'icons/printables.svg?raw';
 import { twc } from 'styles/helpers';
-import { analyticsFooterGitHub, analyticsFooterHome, analyticsFooterPrintablesProfile } from './lib/analytics';
-import { formatDateISO } from './lib/formatting';
 
 const Container = twc(
   'footer',
@@ -14,7 +22,7 @@ const Container = twc(
   flex-col
   justify-center
   items-center
-  gap-6
+  gap-2
   py-10
   bg-neutral-900
   `,
@@ -33,8 +41,22 @@ const Content = twc(
   justify-between
   gap-3
   text-sm
-  text-shark-100
+  text-shark-300
   leading-[24px]
+  `,
+);
+
+const Notice = twc(
+  'div',
+  `
+  `,
+);
+
+const FooterLink = twc(
+  Link,
+  `
+  text-shark-200
+  hover:text-shark-100
   `,
 );
 
@@ -50,13 +72,11 @@ const LinkList = twc(
 );
 
 const IconLink = twc(
-  Link,
+  FooterLink,
   `
   inline-flex
   items-center
   gap-2
-  text-shark-200
-  hover:text-shark-100
   `,
 );
 
@@ -73,7 +93,15 @@ export function Footer() {
     <Container>
       <Content>
         <div>
-          Build: <Hash>{__GIT_HASH__}</Hash> / {formatDateISO(new Date(__BUILD_DATE__))}
+          Build:{' '}
+          <Link
+            layout="lowkey"
+            href={`https://github.com/bada55fa7a55/wiper-pathgen/tree/${__GIT_HASH__}`}
+            {...analyticsFooterGitHash()}
+          >
+            <Hash>{__GIT_HASH__.slice(0, 7)}</Hash>
+          </Link>{' '}
+          / {formatDateISO(new Date(__BUILD_DATE__))}
         </div>
         <LinkList>
           <IconLink
@@ -107,6 +135,36 @@ export function Footer() {
             6d6178.com
           </IconLink>
         </LinkList>
+      </Content>
+      <Content>
+        <Notice>
+          This project is fully open-source under the{' '}
+          <Link
+            layout="lowkey"
+            href="https://www.gnu.org/licenses/agpl-3.0.en.html"
+            {...analyticsFooterAgpl()}
+          >
+            AGPL v3.0
+          </Link>
+          , built for the community. You are welcome to contribute and make things happen by reporting or contributing
+          to{' '}
+          <Link
+            layout="lowkey"
+            href="https://github.com/bada55fa7a55/wiper-pathgen/issues"
+            {...analyticsFooterGitHubIssues()}
+          >
+            issues
+          </Link>
+          , or by testing{' '}
+          <Link
+            layout="lowkey"
+            href="https://github.com/bada55fa7a55/wiper-pathgen/pulls"
+            {...analyticsFooterGitHubPullRequests()}
+          >
+            new features
+          </Link>{' '}
+          or implementing your own.
+        </Notice>
       </Content>
     </Container>
   );

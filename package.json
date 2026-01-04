@@ -5,12 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && npm run build:client && npm run build:ssr && npm run prerender",
+    "build:client": "vite build",
+    "build:ssr": "vite build --ssr src/entry-server.tsx --outDir dist/server --ssrManifest",
+    "prerender": "node ./prerender.mjs",
     "preview": "vite preview",
     "lint": "biome lint src",
     "format": "biome format --write src"
   },
   "dependencies": {
+    "@fontsource-variable/material-symbols-rounded": "^5.2.30",
     "@tailwindcss/vite": "^4.1.17",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

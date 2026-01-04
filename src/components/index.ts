@@ -5,6 +5,7 @@ export { FormSelect } from './FormSelect';
 export { Icon } from './Icon';
 export { InlineCode } from './InlineCode';
 export { Link } from './Link';
+export { MaterialSymbol } from './MaterialSymbol';
 export { MenuBreadcrumb } from './MenuBreadcrumb';
 export { Section } from './Section';
 export { SectionColumn, SectionColumns } from './SectionColumns';

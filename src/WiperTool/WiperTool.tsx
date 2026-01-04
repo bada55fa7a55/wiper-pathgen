@@ -2,6 +2,7 @@ import { twc } from 'styles/helpers';
 import { ClaibrationSection } from './CalibrationSection';
 import { DrawingSection } from './DrawingSection';
 import { Footer } from './Footer';
+import { HardwareSetupSection } from './HardwareSetupSection';
 import { Header } from './Header';
 import { InstallationSection } from './InstallationSection';
 import { IntroSection } from './IntroSection';
@@ -36,6 +37,7 @@ export function WiperTool() {
       <Header />
       <Main>
         <IntroSection />
+        <HardwareSetupSection />
         <ClaibrationSection />
         <SettingsSection />
         <DrawingSection />
