@@ -3,7 +3,6 @@ import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
 import {
   ErrorMessage,
   FormInput,
-  FormSelect,
   InlineCode,
   Link,
   Section,
@@ -17,21 +16,9 @@ import {
 } from 'components';
 import { createMemo, Show } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { twc } from 'styles/helpers';
-import { padProperties, printerProperties } from './configuration';
 import { mmToUm } from './lib/conversion';
 import { validatePositiveDecimal, validatePositiveInteger } from './lib/validation';
 import { isCalibrated, setSettings, settings } from './store';
-
-const FormRow = twc(
-  'div',
-  `
-  grid
-  grid-rows-1
-  md:grid-cols-3
-  gap-4
-  `,
-);
 
 export function SettingsSection() {
   const isDisabled = createMemo(() => !isCalibrated());
@@ -112,11 +99,6 @@ export function SettingsSection() {
         setLastTrackedValues(formValueKey, rawValue);
       }
     };
-
-  const handleSettingSelect = (formValueKey: 'printer' | 'padType') => (event: FormEvent) => {
-    handleSettingInput(formValueKey)(event);
-    track(settingsValueChangedEvent(formValueKey, 'settings'));
-  };
 
   return (
     <Section id="settings">
