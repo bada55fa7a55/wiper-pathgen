@@ -1,5 +1,8 @@
 import { settingsValueChangedEvent, track } from 'WiperTool/lib/analytics';
+import { mmToUm } from 'WiperTool/lib/conversion';
 import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
+import { validatePositiveDecimal, validatePositiveInteger } from 'WiperTool/lib/validation';
+import { isCalibrated, setSettings, settings } from 'WiperTool/store';
 import {
   ErrorMessage,
   FormInput,
@@ -16,9 +19,6 @@ import {
 } from 'components';
 import { createMemo, Show } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { mmToUm } from './lib/conversion';
-import { validatePositiveDecimal, validatePositiveInteger } from './lib/validation';
-import { isCalibrated, setSettings, settings } from './store';
 
 export function SettingsSection() {
   const isDisabled = createMemo(() => !isCalibrated());

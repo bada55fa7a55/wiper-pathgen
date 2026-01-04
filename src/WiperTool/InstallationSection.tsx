@@ -1,3 +1,4 @@
+import { printer } from 'WiperTool/store';
 import {
   InlineCode,
   Link,
@@ -11,7 +12,6 @@ import {
   StepBody,
   StepTitle,
 } from 'components';
-import { printer } from './store';
 
 export function InstallationSection() {
   return (
