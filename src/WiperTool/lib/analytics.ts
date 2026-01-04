@@ -19,6 +19,20 @@ export function analyticsWarningPrintablesWA2() {
   });
 }
 
+export function analyticsHwSetupGitHubIssues() {
+  return createEventAttributes({
+    event: 'link_github_issues',
+    trigger: 'hw_setup',
+  });
+}
+
+export function analyticsHwSetupGitHubPullRequests() {
+  return createEventAttributes({
+    event: 'link_github_pull_requests',
+    trigger: 'hw_setup',
+  });
+}
+
 export function analyticsFooterPrintablesProfile() {
   return createEventAttributes({
     event: 'link_printables_profile',
@@ -29,6 +43,34 @@ export function analyticsFooterPrintablesProfile() {
 export function analyticsFooterGitHub() {
   return createEventAttributes({
     event: 'link_github',
+    trigger: 'footer',
+  });
+}
+
+export function analyticsFooterGitHubIssues() {
+  return createEventAttributes({
+    event: 'link_github_issues',
+    trigger: 'footer',
+  });
+}
+
+export function analyticsFooterGitHubPullRequests() {
+  return createEventAttributes({
+    event: 'link_github_pull_requests',
+    trigger: 'footer',
+  });
+}
+
+export function analyticsFooterGitHash() {
+  return createEventAttributes({
+    event: 'link_git_hash',
+    trigger: 'footer',
+  });
+}
+
+export function analyticsFooterAgpl() {
+  return createEventAttributes({
+    event: 'link_agpl',
     trigger: 'footer',
   });
 }
@@ -145,10 +187,10 @@ export function calibrationValueChangedEvent(field: string): AnalyticsEvent {
   };
 }
 
-export function settingsValueChangedEvent(field: string): AnalyticsEvent {
+export function settingsValueChangedEvent(field: string, trigger: 'settings' | 'hwsetup'): AnalyticsEvent {
   return {
     event: 'action_settings_value_changed',
-    trigger: 'settings',
+    trigger,
     field,
   };
 }
