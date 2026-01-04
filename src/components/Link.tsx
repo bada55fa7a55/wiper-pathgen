@@ -10,6 +10,11 @@ export const Link = twc('a', '', {
       internal: `
           underline
         `,
+      lowkey: `
+          text-shark-200
+          hover:text-shark-100
+          hover:underline
+        `,
     },
   },
   defaultVariants: { layout: 'external' },

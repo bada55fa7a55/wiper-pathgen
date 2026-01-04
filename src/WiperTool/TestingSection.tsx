@@ -1,3 +1,5 @@
+import { testGCodeDownloadedEvent, track } from 'WiperTool/lib/analytics';
+import { formatPercent, formatPercentString } from 'WiperTool/lib/formatting';
 import { generateTestGCodeCommands } from 'WiperTool/lib/gcode';
 import {
   calibration,
@@ -25,8 +27,6 @@ import {
 } from 'components';
 import { createMemo, createSignal, Show } from 'solid-js';
 import { twc } from 'styles/helpers';
-import { testGCodeDownloadedEvent, track } from './lib/analytics';
-import { formatPercent, formatPercentString } from './lib/formatting';
 
 const ButtonWrapper = twc(
   'div',

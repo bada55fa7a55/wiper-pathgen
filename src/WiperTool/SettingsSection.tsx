@@ -1,9 +1,11 @@
 import { settingsValueChangedEvent, track } from 'WiperTool/lib/analytics';
+import { mmToUm } from 'WiperTool/lib/conversion';
 import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
+import { validatePositiveDecimal, validatePositiveInteger } from 'WiperTool/lib/validation';
+import { isCalibrated, setSettings, settings } from 'WiperTool/store';
 import {
   ErrorMessage,
   FormInput,
-  FormSelect,
   InlineCode,
   Link,
   Section,
@@ -17,21 +19,6 @@ import {
 } from 'components';
 import { createMemo, Show } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { twc } from 'styles/helpers';
-import { padProperties, printerProperties } from './configuration';
-import { mmToUm } from './lib/conversion';
-import { validatePositiveDecimal, validatePositiveInteger } from './lib/validation';
-import { isCalibrated, setSettings, settings } from './store';
-
-const FormRow = twc(
-  'div',
-  `
-  grid
-  grid-rows-1
-  md:grid-cols-3
-  gap-4
-  `,
-);
 
 export function SettingsSection() {
   const isDisabled = createMemo(() => !isCalibrated());
@@ -40,8 +27,8 @@ export function SettingsSection() {
     plungeDepth: formatMicronsToMmString(settings.plungeDepth),
     feedRate: settings.feedRate?.toString() ?? '',
     zLift: formatMicronsToMmString(settings.zLift),
-    padType: settings.padType?.toString() ?? '',
-    printer: settings.printer?.toString() ?? '',
+    padType: settings.padType,
+    printer: settings.printer,
   });
   const [lastTrackedValues, setLastTrackedValues] = createStore({
     plungeDepth: formatMicronsToMmString(settings.plungeDepth),
@@ -98,7 +85,17 @@ export function SettingsSection() {
       return;
     }
 
-    setSettings(formValueKey, rawValue);
+    if (formValueKey === 'padType') {
+      setSettings(formValueKey, rawValue as typeof settings.padType);
+      return;
+    }
+
+    if (formValueKey === 'printer') {
+      setSettings(formValueKey, rawValue as typeof settings.printer);
+      return;
+    }
+
+    return unreachable(formValueKey as never);
   };
 
   const handleSettingBlur =
@@ -108,15 +105,10 @@ export function SettingsSection() {
       const previousValue = lastTrackedValues[formValueKey];
 
       if (rawValue !== previousValue) {
-        track(settingsValueChangedEvent(formValueKey));
+        track(settingsValueChangedEvent(formValueKey, 'settings'));
         setLastTrackedValues(formValueKey, rawValue);
       }
     };
-
-  const handleSettingSelect = (formValueKey: 'printer' | 'padType') => (event: FormEvent) => {
-    handleSettingInput(formValueKey)(event);
-    track(settingsValueChangedEvent(formValueKey));
-  };
 
   return (
     <Section id="settings">
@@ -146,36 +138,6 @@ export function SettingsSection() {
               need to be changed.
             </p>
           </SectionIntro>
-          <Step>
-            <StepTitle>Hardware Setup</StepTitle>
-            <StepBody>
-              <p>Choose your printer and silicone pad to load the correct pad dimensions and printer motion limits.</p>
-              <FormRow>
-                <FormSelect
-                  label="3D printer"
-                  value={formValues.printer}
-                  options={Object.keys(printerProperties).map((padKey) => ({
-                    key: padKey,
-                    label: printerProperties[padKey].name,
-                  }))}
-                  error={errors.printer ? { type: 'error', message: errors.printer } : undefined}
-                  isDisabled={isDisabled()}
-                  onChange={handleSettingSelect('printer')}
-                />
-                <FormSelect
-                  label="Silicone pad type"
-                  value={formValues.padType}
-                  options={Object.keys(padProperties).map((padKey) => ({
-                    key: padKey,
-                    label: padProperties[padKey].name,
-                  }))}
-                  error={errors.padType ? { type: 'error', message: errors.padType } : undefined}
-                  isDisabled={isDisabled()}
-                  onChange={handleSettingSelect('padType')}
-                />
-              </FormRow>
-            </StepBody>
-          </Step>
           <Step>
             <StepTitle>Plunge Depth</StepTitle>
             <StepBody>

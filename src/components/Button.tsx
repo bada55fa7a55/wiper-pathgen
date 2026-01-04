@@ -13,6 +13,7 @@ export const Button = twc(
     whitespace-nowrap
     disabled:opacity-50
     disabled:cursor-default
+    disabled:pointer-events-none
   `,
   {
     variants: {

@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Material Symbols Rounded Variable";
+  font-style: normal;
+  font-weight: 100 700;
+  font-display: block;
+  src: url("@fontsource-variable/material-symbols-rounded/files/material-symbols-rounded-latin-wght-normal.woff2")
+    format("woff2-variations");
+}
+
 @theme {
   --color-porange-50: #fffaf2;
   --color-porange-100: #fff5e6;
@@ -40,4 +49,24 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.material-symbols-rounded {
+  /* biome-ignore lint/a11y/useGenericFontNames: icon font */
+  font-family: "Material Symbols Rounded Variable";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px; /* Preferred icon size */
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
 }
