@@ -19,6 +19,20 @@ export function analyticsWarningPrintablesWA2() {
   });
 }
 
+export function analyticsHwSetupGitHubIssues() {
+  return createEventAttributes({
+    event: 'link_github_issues',
+    trigger: 'hw_setup',
+  });
+}
+
+export function analyticsHwSetupGitHubPullRequests() {
+  return createEventAttributes({
+    event: 'link_github_pull_requests',
+    trigger: 'hw_setup',
+  });
+}
+
 export function analyticsFooterPrintablesProfile() {
   return createEventAttributes({
     event: 'link_printables_profile',
@@ -173,10 +187,10 @@ export function calibrationValueChangedEvent(field: string): AnalyticsEvent {
   };
 }
 
-export function settingsValueChangedEvent(field: string): AnalyticsEvent {
+export function settingsValueChangedEvent(field: string, trigger: 'settings' | 'hwsetup'): AnalyticsEvent {
   return {
     event: 'action_settings_value_changed',
-    trigger: 'settings',
+    trigger,
     field,
   };
 }

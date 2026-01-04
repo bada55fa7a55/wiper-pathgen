@@ -108,14 +108,14 @@ export function SettingsSection() {
       const previousValue = lastTrackedValues[formValueKey];
 
       if (rawValue !== previousValue) {
-        track(settingsValueChangedEvent(formValueKey));
+        track(settingsValueChangedEvent(formValueKey, 'settings'));
         setLastTrackedValues(formValueKey, rawValue);
       }
     };
 
   const handleSettingSelect = (formValueKey: 'printer' | 'padType') => (event: FormEvent) => {
     handleSettingInput(formValueKey)(event);
-    track(settingsValueChangedEvent(formValueKey));
+    track(settingsValueChangedEvent(formValueKey, 'settings'));
   };
 
   return (
@@ -146,36 +146,6 @@ export function SettingsSection() {
               need to be changed.
             </p>
           </SectionIntro>
-          <Step>
-            <StepTitle>Hardware Setup</StepTitle>
-            <StepBody>
-              <p>Choose your printer and silicone pad to load the correct pad dimensions and printer motion limits.</p>
-              <FormRow>
-                <FormSelect
-                  label="3D printer"
-                  value={formValues.printer}
-                  options={Object.keys(printerProperties).map((padKey) => ({
-                    key: padKey,
-                    label: printerProperties[padKey].name,
-                  }))}
-                  error={errors.printer ? { type: 'error', message: errors.printer } : undefined}
-                  isDisabled={isDisabled()}
-                  onChange={handleSettingSelect('printer')}
-                />
-                <FormSelect
-                  label="Silicone pad type"
-                  value={formValues.padType}
-                  options={Object.keys(padProperties).map((padKey) => ({
-                    key: padKey,
-                    label: padProperties[padKey].name,
-                  }))}
-                  error={errors.padType ? { type: 'error', message: errors.padType } : undefined}
-                  isDisabled={isDisabled()}
-                  onChange={handleSettingSelect('padType')}
-                />
-              </FormRow>
-            </StepBody>
-          </Step>
           <Step>
             <StepTitle>Plunge Depth</StepTitle>
             <StepBody>
