@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Material Symbols Rounded Variable";
+  font-style: normal;
+  font-weight: 100 700;
+  font-display: block;
+  src: url("@fontsource-variable/material-symbols-rounded/files/material-symbols-rounded-latin-wght-normal.woff2")
+    format("woff2-variations");
+}
+
 @theme {
   --color-porange-50: #fffaf2;
   --color-porange-100: #fff5e6;
