@@ -2,6 +2,7 @@
 import { WiperTool } from 'WiperTool';
 import { isClientRuntime } from 'lib/runtime';
 import { hydrate } from 'solid-js/web';
+import '@fontsource-variable/material-symbols-rounded';
 import './index.css';
 
 declare global {

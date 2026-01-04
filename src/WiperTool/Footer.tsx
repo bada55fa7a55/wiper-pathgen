@@ -1,8 +1,3 @@
-import { Icon, Link } from 'components';
-import x6d6178Icon from 'icons/6d6178.svg?raw';
-import githubIcon from 'icons/github.svg?raw';
-import printablesIcon from 'icons/printables.svg?raw';
-import { twc } from 'styles/helpers';
 import {
   analyticsFooterAgpl,
   analyticsFooterGitHash,
@@ -11,8 +6,13 @@ import {
   analyticsFooterGitHubPullRequests,
   analyticsFooterHome,
   analyticsFooterPrintablesProfile,
-} from './lib/analytics';
-import { formatDateISO } from './lib/formatting';
+} from 'WiperTool/lib/analytics';
+import { formatDateISO } from 'WiperTool/lib/formatting';
+import { Icon, Link } from 'components';
+import x6d6178Icon from 'icons/6d6178.svg?raw';
+import githubIcon from 'icons/github.svg?raw';
+import printablesIcon from 'icons/printables.svg?raw';
+import { twc } from 'styles/helpers';
 
 const Container = twc(
   'footer',
@@ -94,12 +94,13 @@ export function Footer() {
       <Content>
         <div>
           Build:{' '}
-          <FooterLink
+          <Link
+            layout="lowkey"
             href={`https://github.com/bada55fa7a55/wiper-pathgen/tree/${__GIT_HASH__}`}
             {...analyticsFooterGitHash()}
           >
             <Hash>{__GIT_HASH__.slice(0, 7)}</Hash>
-          </FooterLink>{' '}
+          </Link>{' '}
           / {formatDateISO(new Date(__BUILD_DATE__))}
         </div>
         <LinkList>
@@ -138,27 +139,30 @@ export function Footer() {
       <Content>
         <Notice>
           This project is fully open-source under the{' '}
-          <FooterLink
+          <Link
+            layout="lowkey"
             href="https://www.gnu.org/licenses/agpl-3.0.en.html"
             {...analyticsFooterAgpl()}
           >
             AGPL v3.0
-          </FooterLink>
+          </Link>
           , built for the community. You are welcome to contribute and make things happen by reporting or contributing
           to{' '}
-          <FooterLink
+          <Link
+            layout="lowkey"
             href="https://github.com/bada55fa7a55/wiper-pathgen/issues"
             {...analyticsFooterGitHubIssues()}
           >
             issues
-          </FooterLink>
+          </Link>
           , or by testing{' '}
-          <FooterLink
+          <Link
+            layout="lowkey"
             href="https://github.com/bada55fa7a55/wiper-pathgen/pulls"
             {...analyticsFooterGitHubPullRequests()}
           >
             new features
-          </FooterLink>{' '}
+          </Link>{' '}
           or implementing your own.
         </Notice>
       </Content>
