@@ -21,6 +21,20 @@
     <meta name="twitter:image" content="/twitter.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>%APP_HTML_TITLE%</title>
+    <script type="module">
+      import materialSymbolsWoff2 from '@fontsource-variable/material-symbols-rounded/files/material-symbols-rounded-latin-wght-normal.woff2';
+
+      if (!document.head.querySelector('link[data-preload-material-symbols]')) {
+        const preload = document.createElement('link');
+        preload.rel = 'preload';
+        preload.as = 'font';
+        preload.type = 'font/woff2';
+        preload.crossOrigin = 'anonymous';
+        preload.href = materialSymbolsWoff2;
+        preload.dataset.preloadMaterialSymbols = 'true';
+        document.head.append(preload);
+      }
+    </script>
   </head>
   <body>
     <div id="root"><!--app-html--></div>
