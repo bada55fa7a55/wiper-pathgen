@@ -123,7 +123,7 @@ export const printerProperties: Record<string, PrinterProperties> = {
 
 export const gridStep = 5000;
 
-export const defaultPrinterKey = 'prusa-core-one';
+export const defaultPrinterKey: PrinterKey = PrinterKey.PrusaCoreOne;
 
 export const wiperArmV1Link = {
   label: 'Core One Nozzle Wiper Remix V1 and Purge Bin',

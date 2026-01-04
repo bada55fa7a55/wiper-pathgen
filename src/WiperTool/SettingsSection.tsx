@@ -27,8 +27,8 @@ export function SettingsSection() {
     plungeDepth: formatMicronsToMmString(settings.plungeDepth),
     feedRate: settings.feedRate?.toString() ?? '',
     zLift: formatMicronsToMmString(settings.zLift),
-    padType: settings.padType?.toString() ?? '',
-    printer: settings.printer?.toString() ?? '',
+    padType: settings.padType,
+    printer: settings.printer,
   });
   const [lastTrackedValues, setLastTrackedValues] = createStore({
     plungeDepth: formatMicronsToMmString(settings.plungeDepth),
@@ -85,7 +85,17 @@ export function SettingsSection() {
       return;
     }
 
-    setSettings(formValueKey, rawValue);
+    if (formValueKey === 'padType') {
+      setSettings(formValueKey, rawValue as typeof settings.padType);
+      return;
+    }
+
+    if (formValueKey === 'printer') {
+      setSettings(formValueKey, rawValue as typeof settings.printer);
+      return;
+    }
+
+    return unreachable(formValueKey as never);
   };
 
   const handleSettingBlur =
