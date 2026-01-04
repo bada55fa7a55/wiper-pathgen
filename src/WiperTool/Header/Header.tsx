@@ -3,7 +3,7 @@ import { analyticsHeaderPrintablesWA2 } from 'WiperTool/lib/analytics';
 import { Link } from 'components';
 import { styled } from 'solid-styled-components';
 import { twc } from 'styles/helpers';
-import logo from './assets/logo.svg';
+import logo from './assets/logo.svg?url';
 
 const Container = twc(
   'header',
