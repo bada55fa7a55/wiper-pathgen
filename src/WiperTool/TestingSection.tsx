@@ -1,7 +1,16 @@
 import { testGCodeDownloadedEvent, track } from 'WiperTool/lib/analytics';
 import { formatPercent, formatPercentString } from 'WiperTool/lib/formatting';
 import { generateTestGCodeCommands } from 'WiperTool/lib/gcode';
-import { calibration, isCalibrated, isSettingsComplete, padTopRight, points, printer, settings } from 'WiperTool/store';
+import {
+  calibration,
+  getWipingStepPoints,
+  isCalibrated,
+  isSettingsComplete,
+  padTopRight,
+  printer,
+  settings,
+  wipingSequence,
+} from 'WiperTool/store';
 import {
   Button,
   ErrorMessage,
@@ -39,10 +48,11 @@ const FormRow = twc(
 export function TestingSection() {
   const [feedRateMultiplier, setFeedRateMultiplier] = createSignal<string>('0.05');
   const feedRateMultiplierValue = createMemo(() => Number(feedRateMultiplier()));
+  const sequencePoints = createMemo(() => getWipingStepPoints(wipingSequence()));
 
   const testGCode = createMemo(() => {
     if (
-      points().length < 2 ||
+      sequencePoints().length < 2 ||
       calibration.x === undefined ||
       calibration.y === undefined ||
       calibration.z === undefined ||
@@ -71,7 +81,7 @@ export function TestingSection() {
           y: calibration.y,
           z: calibration.z,
         },
-        points: points(),
+        wipingSequence: wipingSequence(),
         padTopRight: { ...padTopRight(), z: calibration.z },
         feedRate: settings.feedRate * feedRateMultiplierValue(),
         plungeDepth: settings.plungeDepth,
@@ -80,7 +90,7 @@ export function TestingSection() {
     );
   });
 
-  const isReadyToPrint = () => isCalibrated() && isSettingsComplete() && points().length >= 2;
+  const isReadyToPrint = () => isCalibrated() && isSettingsComplete() && sequencePoints().length >= 2;
   const isDisabled = () => !isReadyToPrint() || !testGCode();
 
   const fileName = createMemo(() => `wiper-path-test-${formatPercent(feedRateMultiplierValue())}p.gcode`);

@@ -1,6 +1,6 @@
 import { gCodeCopiedEvent, track } from 'WiperTool/lib/analytics';
 import { generateGCodeCommands } from 'WiperTool/lib/gcode';
-import { calibration, padTopRight, points, printer, settings } from 'WiperTool/store';
+import { calibration, getWipingStepPoints, padTopRight, printer, settings, wipingSequence } from 'WiperTool/store';
 import { Button } from 'components';
 import { createMemo, createSignal, onCleanup, Show } from 'solid-js';
 import { twc } from 'styles/helpers';
@@ -71,9 +71,10 @@ export function GCode() {
   const [copied, setCopied] = createSignal(false);
   let copyTimeout: number | undefined;
 
+  const sequencePoints = createMemo(() => getWipingStepPoints(wipingSequence()));
   const gcode = createMemo(() => {
     if (
-      points().length < 2 ||
+      sequencePoints().length < 2 ||
       calibration.x === undefined ||
       calibration.y === undefined ||
       calibration.z === undefined ||
@@ -92,7 +93,7 @@ export function GCode() {
           y: calibration.y,
           z: calibration.z,
         },
-        points: points(),
+        wipingSequence: wipingSequence(),
         padTopRight: { ...padTopRight(), z: calibration.z },
         feedRate: settings.feedRate,
         plungeDepth: settings.plungeDepth,
