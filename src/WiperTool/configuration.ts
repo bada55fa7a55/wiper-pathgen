@@ -87,22 +87,6 @@ export const printerProperties: Record<string, PrinterProperties> = {
     },
     status: 'in-progress',
   },
-  [PrinterKey.PrusaXl]: {
-    key: PrinterKey.PrusaXl,
-    name: 'Prusa XL',
-    printerId: 'COREONE',
-    minX: -2000,
-    maxX: 252000,
-    minY: -19000,
-    maxY: 221000,
-    originalCleaningGCode: 'G29 P9 X208 Y-2.5 W32 H4',
-    parkingZHeight: 40000,
-    parkingCoords: {
-      x: 242000,
-      y: -9000,
-    },
-    status: 'in-progress',
-  },
   [PrinterKey.PrusaMk4]: {
     key: PrinterKey.PrusaMk4,
     name: 'Prusa MK4 / MK4S',
@@ -119,7 +103,8 @@ export const printerProperties: Record<string, PrinterProperties> = {
     },
     status: 'planned',
   },
-  'prusa-xl': {
+  [PrinterKey.PrusaXl]: {
+    key: PrinterKey.PrusaXl,
     name: 'Prusa XL',
     printerId: 'XL',
     minX: -8000,
@@ -135,6 +120,7 @@ export const printerProperties: Record<string, PrinterProperties> = {
       x: 352000,
       y: -9000,
     },
+    status: 'supported',
   },
 };
 
