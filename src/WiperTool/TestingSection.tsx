@@ -120,7 +120,7 @@ export function TestingSection() {
       </SectionIntro>
       <Show when={!isReadyToPrint()}>
         <ErrorMessage
-          title="Error: Not ready to test."
+          title="Not ready to test."
           content={
             <>
               Fill out the{' '}

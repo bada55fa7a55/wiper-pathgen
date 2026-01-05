@@ -64,7 +64,7 @@ export function DrawingSection() {
       </SectionIntro>
       <Show when={!isReadyToDraw()}>
         <ErrorMessage
-          title="Error: Incomplete calibration or settings."
+          title="Not ready to draw wiping path."
           content={
             <>
               Complete the{' '}
@@ -81,7 +81,7 @@ export function DrawingSection() {
               >
                 settings section
               </Link>{' '}
-              forms before drawing the wiping path.
+              forms before drawing your wiping path.
             </>
           }
         />
