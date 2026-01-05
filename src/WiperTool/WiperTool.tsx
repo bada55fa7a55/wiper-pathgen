@@ -1,3 +1,4 @@
+import { Toaster } from 'solid-toast';
 import { twc } from 'styles/helpers';
 import { ClaibrationSection } from './CalibrationSection';
 import { DrawingSection } from './DrawingSection';
@@ -45,6 +46,7 @@ export function WiperTool() {
         <InstallationSection />
       </Main>
       <Footer />
+      <Toaster />
     </Shell>
   );
 }

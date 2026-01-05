@@ -12,10 +12,11 @@ const ssrEntryPath = path.resolve(distDir, 'server/entry-server.js');
 const template = await readFile(clientHtmlPath, 'utf-8');
 const { render } = await import(pathToFileURL(ssrEntryPath).href);
 
-const appHtml = await render();
-const html = template.replace('<!--app-html-->', appHtml);
+const { html: appHtml, styles } = await render();
+const htmlWithApp = template.replace('<!--app-html-->', appHtml);
+const html = styles ? htmlWithApp.replace('</head>', `${styles}</head>`) : htmlWithApp;
 
-if (html === template) {
+if (htmlWithApp === template) {
   throw new Error('Failed to inject prerendered HTML (placeholder not found)');
 }
 

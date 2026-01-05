@@ -1,13 +1,34 @@
 import type { PrinterProperties } from 'WiperTool/configuration';
-import { Button, MaterialSymbol } from 'components';
+import { MaterialSymbol } from 'components';
 import { twc } from 'styles';
 
 const StyledButton = twc(
-  Button,
+  'button',
   `
+  inline-flex
+  items-center
+  justify-center
+  gap-2
+  rounded
+  font-bold
+  transition-colors
+  cursor-pointer
+  whitespace-nowrap
+  disabled:opacity-50
+  disabled:cursor-default
+  disabled:pointer-events-none
   shrink-0
   relative
   disabled:opacity-100
+
+  bg-zinc-800
+  hover:bg-zinc-700
+  border
+  border-zinc-700
+  px-4
+
+  text-sm
+  py-2
   `,
   {
     variants: {
@@ -130,7 +151,6 @@ export function PrinterButton(props: Props) {
 
   return (
     <StyledButton
-      layout="secondary"
       isSelected={props.isSelected}
       disabled={isDisabled}
       onClick={props.onClick}

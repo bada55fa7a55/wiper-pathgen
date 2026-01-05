@@ -1,7 +1,17 @@
 import { testGCodeDownloadedEvent, track } from 'WiperTool/lib/analytics';
 import { formatPercent, formatPercentString } from 'WiperTool/lib/formatting';
 import { generateTestGCodeCommands } from 'WiperTool/lib/gcode';
-import { calibration, isCalibrated, isSettingsComplete, padTopRight, points, printer, settings } from 'WiperTool/store';
+import {
+  areStepsCompleteUpTo,
+  calibration,
+  getWipingStepPoints,
+  padTopRight,
+  printer,
+  StepKey,
+  settings,
+  steps,
+  wipingSequence,
+} from 'WiperTool/store';
 import {
   Button,
   ErrorMessage,
@@ -39,10 +49,11 @@ const FormRow = twc(
 export function TestingSection() {
   const [feedRateMultiplier, setFeedRateMultiplier] = createSignal<string>('0.05');
   const feedRateMultiplierValue = createMemo(() => Number(feedRateMultiplier()));
+  const sequencePoints = createMemo(() => getWipingStepPoints(wipingSequence()));
 
   const testGCode = createMemo(() => {
     if (
-      points().length < 2 ||
+      sequencePoints().length < 2 ||
       calibration.x === undefined ||
       calibration.y === undefined ||
       calibration.z === undefined ||
@@ -71,7 +82,7 @@ export function TestingSection() {
           y: calibration.y,
           z: calibration.z,
         },
-        points: points(),
+        wipingSequence: wipingSequence(),
         padTopRight: { ...padTopRight(), z: calibration.z },
         feedRate: settings.feedRate * feedRateMultiplierValue(),
         plungeDepth: settings.plungeDepth,
@@ -80,7 +91,7 @@ export function TestingSection() {
     );
   });
 
-  const isReadyToPrint = () => isCalibrated() && isSettingsComplete() && points().length >= 2;
+  const isReadyToPrint = () => areStepsCompleteUpTo(StepKey.Testing);
   const isDisabled = () => !isReadyToPrint() || !testGCode();
 
   const fileName = createMemo(() => `wiper-path-test-${formatPercent(feedRateMultiplierValue())}p.gcode`);
@@ -101,7 +112,7 @@ export function TestingSection() {
   };
 
   return (
-    <Section id="testing">
+    <Section id={steps()[StepKey.Testing].anchor}>
       <SectionTitle>Testing</SectionTitle>
       <SectionIntro>
         Download a test G-code file that mirrors the wiping portion of your Start G-code. It runs the sequence at a
@@ -109,27 +120,27 @@ export function TestingSection() {
       </SectionIntro>
       <Show when={!isReadyToPrint()}>
         <ErrorMessage
-          title="Error: Not ready to test."
+          title="Not ready to test."
           content={
             <>
               Fill out the{' '}
               <Link
                 layout="internal"
-                href="#calibration"
+                href={`#${steps()[StepKey.Calibration].anchor}`}
               >
                 calibration section
               </Link>{' '}
               and{' '}
               <Link
                 layout="internal"
-                href="#settings"
+                href={`#${steps()[StepKey.Settings].anchor}`}
               >
                 settings section
               </Link>
               , then draw a wiping path in the{' '}
               <Link
                 layout="internal"
-                href="#drawing"
+                href={`#${steps()[StepKey.Drawing].anchor}`}
               >
                 drawing section
               </Link>
@@ -178,7 +189,7 @@ export function TestingSection() {
                 Do not paste G-code from this test file into your Start G-code. Copy the G-code from the{' '}
                 <Link
                   layout="internal"
-                  href="#drawing"
+                  href={`#${steps()[StepKey.Drawing].anchor}`}
                 >
                   drawing section
                 </Link>{' '}
@@ -186,12 +197,12 @@ export function TestingSection() {
               </p>
               <ButtonWrapper>
                 <Button
+                  renderAs="button"
                   layout="primary"
-                  disabled={isDisabled()}
+                  label={<>Download {fileName()}</>}
+                  isDisabled={isDisabled()}
                   onClick={handleDownloadGCodeClick}
-                >
-                  Download {fileName()}
-                </Button>
+                />
               </ButtonWrapper>
             </StepBody>
           </Step>
