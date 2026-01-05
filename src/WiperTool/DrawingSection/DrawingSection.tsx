@@ -1,7 +1,7 @@
 import { wiperArmv2Link } from 'WiperTool/configuration';
 import { analyticsWarningPrintablesWA2 } from 'WiperTool/lib/analytics';
 import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
-import { isCalibrated, isSettingsComplete, printer } from 'WiperTool/store';
+import { areStepsCompleteUpTo, printer, StepKey, steps } from 'WiperTool/store';
 import { ErrorMessage, Link, Section, SectionIntro, SectionTitle, WarningMessage } from 'components';
 import { Show } from 'solid-js';
 import { twc } from 'styles/helpers';
@@ -46,17 +46,17 @@ const GCodeWrapper = twc(
 );
 
 export function DrawingSection() {
-  const isReadyToDraw = () => isCalibrated() && isSettingsComplete();
+  const isReadyToDraw = () => areStepsCompleteUpTo(StepKey.Drawing);
   const isDisabled = () => !isReadyToDraw();
 
   return (
-    <Section id="drawing">
+    <Section id={steps()[StepKey.Drawing].anchor}>
       <SectionTitle>Draw Wiping Path</SectionTitle>
       <SectionIntro>
         Draw a custom nozzle wiping path or choose a preset. After creating your path, use the{' '}
         <Link
           layout="internal"
-          href="#testing"
+          href={`#${steps()[StepKey.Testing].anchor}`}
         >
           Testing section
         </Link>{' '}
@@ -70,14 +70,14 @@ export function DrawingSection() {
               Complete the{' '}
               <Link
                 layout="internal"
-                href="#calibration"
+                href={`#${steps()[StepKey.Calibration].anchor}`}
               >
                 calibration section
               </Link>{' '}
               and{' '}
               <Link
                 layout="internal"
-                href="#settings"
+                href={`#${steps()[StepKey.Settings].anchor}`}
               >
                 settings section
               </Link>{' '}
@@ -95,7 +95,7 @@ export function DrawingSection() {
               nozzle's reach. If this seems incorrect, revisit the{' '}
               <Link
                 layout="internal"
-                href="#calibration"
+                href={`#${steps()[StepKey.Calibration].anchor}`}
               >
                 calibration section
               </Link>{' '}

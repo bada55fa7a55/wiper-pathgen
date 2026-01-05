@@ -2,7 +2,7 @@ import { settingsValueChangedEvent, track } from 'WiperTool/lib/analytics';
 import { mmToUm } from 'WiperTool/lib/conversion';
 import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
 import { validatePositiveDecimal, validatePositiveInteger } from 'WiperTool/lib/validation';
-import { isCalibrated, setSettings, settings } from 'WiperTool/store';
+import { areStepsCompleteUpTo, StepKey, setSettings, settings, steps } from 'WiperTool/store';
 import {
   ErrorMessage,
   FormInput,
@@ -21,7 +21,7 @@ import { createMemo, Show } from 'solid-js';
 import { createStore } from 'solid-js/store';
 
 export function SettingsSection() {
-  const isDisabled = createMemo(() => !isCalibrated());
+  const isDisabled = createMemo(() => areStepsCompleteUpTo(StepKey.Settings));
 
   const [formValues, setFormValues] = createStore({
     plungeDepth: formatMicronsToMmString(settings.plungeDepth),
@@ -111,7 +111,7 @@ export function SettingsSection() {
     };
 
   return (
-    <Section id="settings">
+    <Section id={steps()[StepKey.Settings].anchor}>
       <SectionTitle>Settings</SectionTitle>
       <SectionColumns>
         <SectionColumn>
@@ -123,7 +123,7 @@ export function SettingsSection() {
                   Fill out the{' '}
                   <Link
                     layout="internal"
-                    href="#calibration"
+                    href={`#${steps()[StepKey.Calibration].anchor}`}
                   >
                     calibration section
                   </Link>{' '}

@@ -1,11 +1,11 @@
 import { PrinterKey } from 'WiperTool/configuration';
-import { settings } from 'WiperTool/store';
+import { StepKey, settings, steps } from 'WiperTool/store';
 import { Section, SectionIntro, SectionTitle } from 'components';
 import { CoreOneInstructions } from './CoreOneInstructions';
 
 export function ClaibrationSection() {
   return (
-    <Section id="calibration">
+    <Section id={steps()[StepKey.Calibration].anchor}>
       <SectionTitle>Silicone Pad Position Calibration</SectionTitle>
       <SectionIntro>
         <p>

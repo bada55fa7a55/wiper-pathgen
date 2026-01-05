@@ -1,4 +1,6 @@
-import { getWipingStepPoints, isCalibrated, isSettingsComplete, settings, wipingSequence } from 'WiperTool/store';
+import { isCalibrated } from './calibration';
+import { isSettingsComplete, settings } from './settings';
+import { getWipingStepPoints, wipingSequence } from './wipingSequence';
 import { createMemo } from 'solid-js';
 
 export const StepKey = {
@@ -6,6 +8,7 @@ export const StepKey = {
   Calibration: 'calibration',
   Settings: 'settings',
   Drawing: 'drawing',
+  Testing: 'testing',
 } as const;
 
 export type StepKey = (typeof StepKey)[keyof typeof StepKey];
@@ -14,6 +17,14 @@ const isPrinterSelected = createMemo(() => settings.printer !== undefined);
 
 const sequencePoints = createMemo(() => getWipingStepPoints(wipingSequence()));
 const isDrawingComplete = () => sequencePoints().length >= 2;
+
+const stepOrder: StepKey[] = [
+  StepKey.SelectPrinter,
+  StepKey.Calibration,
+  StepKey.Settings,
+  StepKey.Drawing,
+  StepKey.Testing,
+];
 
 export const steps = createMemo(() => {
   return {
@@ -41,5 +52,25 @@ export const steps = createMemo(() => {
       anchor: 'drawing',
       isComplete: isDrawingComplete(),
     },
+    [StepKey.Testing]: {
+      key: StepKey.Drawing,
+      label: 'Testing',
+      anchor: 'testing',
+      isComplete: false,
+    },
   };
 });
+
+export const areStepsCompleteUpTo = (targetStep: StepKey) => {
+  const currentSteps = steps();
+  for (const stepKey of stepOrder) {
+    const step = currentSteps[stepKey];
+    if (!step.isComplete) {
+      return false;
+    }
+    if (step.key === targetStep) {
+      return true;
+    }
+  }
+  return false;
+};

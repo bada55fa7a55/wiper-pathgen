@@ -1,7 +1,7 @@
+import { steps } from 'WiperTool/store';
 import { Link, MaterialSymbol } from 'components';
 import { Show } from 'solid-js';
 import { twc } from 'styles';
-import { steps } from './steps';
 
 const Container = twc(
   'div',

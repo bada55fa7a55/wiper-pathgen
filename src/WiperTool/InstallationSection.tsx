@@ -1,4 +1,4 @@
-import { printer } from 'WiperTool/store';
+import { printer, StepKey, steps } from 'WiperTool/store';
 import {
   InlineCode,
   Link,
@@ -21,7 +21,7 @@ export function InstallationSection() {
         Add the wiping G-code from the{' '}
         <Link
           layout="internal"
-          href="#drawing"
+          href={`#${steps()[StepKey.Drawing].anchor}`}
         >
           Drawing section
         </Link>{' '}
@@ -36,7 +36,7 @@ export function InstallationSection() {
                 In the{' '}
                 <Link
                   layout="internal"
-                  href="#drawing"
+                  href={`#${steps()[StepKey.Drawing].anchor}`}
                 >
                   Drawing section
                 </Link>

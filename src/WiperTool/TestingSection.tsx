@@ -2,13 +2,14 @@ import { testGCodeDownloadedEvent, track } from 'WiperTool/lib/analytics';
 import { formatPercent, formatPercentString } from 'WiperTool/lib/formatting';
 import { generateTestGCodeCommands } from 'WiperTool/lib/gcode';
 import {
+  areStepsCompleteUpTo,
   calibration,
   getWipingStepPoints,
-  isCalibrated,
-  isSettingsComplete,
   padTopRight,
   printer,
+  StepKey,
   settings,
+  steps,
   wipingSequence,
 } from 'WiperTool/store';
 import {
@@ -90,7 +91,7 @@ export function TestingSection() {
     );
   });
 
-  const isReadyToPrint = () => isCalibrated() && isSettingsComplete() && sequencePoints().length >= 2;
+  const isReadyToPrint = () => areStepsCompleteUpTo(StepKey.Testing);
   const isDisabled = () => !isReadyToPrint() || !testGCode();
 
   const fileName = createMemo(() => `wiper-path-test-${formatPercent(feedRateMultiplierValue())}p.gcode`);
@@ -111,7 +112,7 @@ export function TestingSection() {
   };
 
   return (
-    <Section id="testing">
+    <Section id={steps()[StepKey.Testing].anchor}>
       <SectionTitle>Testing</SectionTitle>
       <SectionIntro>
         Download a test G-code file that mirrors the wiping portion of your Start G-code. It runs the sequence at a
@@ -125,21 +126,21 @@ export function TestingSection() {
               Fill out the{' '}
               <Link
                 layout="internal"
-                href="#calibration"
+                href={`#${steps()[StepKey.Calibration].anchor}`}
               >
                 calibration section
               </Link>{' '}
               and{' '}
               <Link
                 layout="internal"
-                href="#settings"
+                href={`#${steps()[StepKey.Settings].anchor}`}
               >
                 settings section
               </Link>
               , then draw a wiping path in the{' '}
               <Link
                 layout="internal"
-                href="#drawing"
+                href={`#${steps()[StepKey.Drawing].anchor}`}
               >
                 drawing section
               </Link>
@@ -188,7 +189,7 @@ export function TestingSection() {
                 Do not paste G-code from this test file into your Start G-code. Copy the G-code from the{' '}
                 <Link
                   layout="internal"
-                  href="#drawing"
+                  href={`#${steps()[StepKey.Drawing].anchor}`}
                 >
                   drawing section
                 </Link>{' '}

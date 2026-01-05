@@ -1,7 +1,7 @@
+import { steps } from 'WiperTool/store';
 import { Button, Dropdown } from 'components';
 import { createSignal } from 'solid-js';
 import { twc } from 'styles';
-import { steps } from './steps';
 
 const DropdownWrapper = twc(
   'div',
