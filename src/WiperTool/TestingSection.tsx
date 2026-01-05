@@ -196,12 +196,12 @@ export function TestingSection() {
               </p>
               <ButtonWrapper>
                 <Button
+                  renderAs="button"
                   layout="primary"
-                  disabled={isDisabled()}
+                  label={<>Download {fileName()}</>}
+                  isDisabled={isDisabled()}
                   onClick={handleDownloadGCodeClick}
-                >
-                  Download {fileName()}
-                </Button>
+                />
               </ButtonWrapper>
             </StepBody>
           </Step>

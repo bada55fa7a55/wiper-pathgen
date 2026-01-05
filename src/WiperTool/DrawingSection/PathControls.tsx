@@ -30,21 +30,21 @@ export function PathControls() {
   return (
     <Container>
       <Button
+        renderAs="button"
         layout="secondary"
         type="button"
-        disabled={isDisabled()}
+        label="Clear"
+        isDisabled={isDisabled()}
         onClick={handleClearClick}
-      >
-        Clear
-      </Button>
+      />
       <Button
+        renderAs="button"
         layout="secondary"
         type="button"
-        disabled={isDisabled()}
+        label="undo"
+        isDisabled={isDisabled()}
         onClick={handleUndoClick}
-      >
-        Undo
-      </Button>
+      />
     </Container>
   );
 }

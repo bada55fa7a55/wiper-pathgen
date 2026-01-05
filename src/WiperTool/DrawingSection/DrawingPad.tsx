@@ -8,8 +8,8 @@ import {
   pad,
   padTopRight,
   printer,
-  setWipingSequence,
   settings,
+  setWipingSequence,
   wipingSequence,
 } from 'WiperTool/store';
 import { paddings } from 'WiperTool/store/paddings';
@@ -167,13 +167,13 @@ export function DrawingPad() {
       <TitleRow>
         <PathControls />
         <Button
+          renderAs="button"
           type="button"
           layout="primary"
-          disabled={isSimulationDisabled()}
+          label={simulation.isSimulating() ? 'Stop simulation' : 'Simulate nozzle path'}
+          isDisabled={isSimulationDisabled()}
           onClick={handleSimulateClick}
-        >
-          {simulation.isSimulating() ? 'Stop simulation' : 'Simulate nozzle path'}
-        </Button>
+        />
       </TitleRow>
       <CanvasWrapper>
         <CanvasFrame

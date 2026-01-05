@@ -32,14 +32,14 @@ export function PresetButtons() {
       <div class={isDisabled() ? 'text-shark-300' : undefined}>Presets:</div>
       {presetDefinitions.map((preset) => (
         <Button
+          renderAs="button"
           layout="secondary"
           type="button"
-          disabled={isDisabled()}
           title={isPadCutOff() ? 'Only available when full pad is reachable by the nozzle' : undefined}
+          label={preset.label}
+          isDisabled={isDisabled()}
           onClick={() => handlePresetClick(preset.id)}
-        >
-          {preset.label}
-        </Button>
+        />
       ))}
     </Container>
   );

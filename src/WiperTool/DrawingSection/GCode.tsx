@@ -131,12 +131,12 @@ export function GCode() {
             <span class="text-emerald-300 text-sm">Copied!</span>
           </Show>
           <Button
+            renderAs="button"
             layout="primary"
-            disabled={!gcode()}
+            label="Copy G-code"
+            isDisabled={!gcode()}
             onClick={handleCopyGCodeClick}
-          >
-            Copy G-code
-          </Button>
+          />
         </CopyRow>
       </TitleRow>
       <CodeTextArea
