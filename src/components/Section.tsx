@@ -1,6 +1,7 @@
+import type { ParentProps } from 'solid-js';
 import { twc } from 'styles/helpers';
 
-export const Section = twc(
+const Container = twc(
   'div',
   `
   w-full
@@ -11,3 +12,23 @@ export const Section = twc(
   gap-4
   `,
 );
+
+const Anchor = twc(
+  'a',
+  `
+    -translate-[60px]
+  `,
+);
+
+type Props = ParentProps & {
+  id: string;
+};
+
+export function Section(props: Props) {
+  return (
+    <Container>
+      <Anchor name={props.id} />
+      {props.children}
+    </Container>
+  );
+}
