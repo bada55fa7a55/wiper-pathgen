@@ -131,7 +131,7 @@ export function simulationStartedEvent(): AnalyticsEvent {
 
 export function simulationStoppedEvent(): AnalyticsEvent {
   return {
-    event: 'action_simulation_started',
+    event: 'action_simulation_stopped',
     trigger: 'drawing',
   };
 }
