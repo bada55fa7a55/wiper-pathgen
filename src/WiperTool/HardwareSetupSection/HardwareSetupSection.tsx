@@ -1,4 +1,5 @@
 import { analyticsHwSetupGitHubIssues, analyticsHwSetupGitHubPullRequests } from 'WiperTool/lib/analytics';
+import { StepKey, steps } from 'WiperTool/store';
 import { Link, Section, SectionColumn, SectionColumns, SectionIntro, SectionTitle } from 'components';
 import { twc } from 'styles';
 import { PrinterPicker } from './PrinterPicker/PrinterPicker';
@@ -13,7 +14,7 @@ const Notice = twc(
 
 export function HardwareSetupSection() {
   return (
-    <Section id="hwsetup">
+    <Section id={steps()[StepKey.SelectPrinter].anchor}>
       <SectionTitle>Select Your Printer</SectionTitle>
       <SectionIntro>
         <p>
