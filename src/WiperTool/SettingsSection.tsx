@@ -21,7 +21,7 @@ import { createMemo, Show } from 'solid-js';
 import { createStore } from 'solid-js/store';
 
 export function SettingsSection() {
-  const isDisabled = createMemo(() => areStepsCompleteUpTo(StepKey.Settings));
+  const isDisabled = createMemo(() => !areStepsCompleteUpTo(StepKey.Settings));
 
   const [formValues, setFormValues] = createStore({
     plungeDepth: formatMicronsToMmString(settings.plungeDepth),
