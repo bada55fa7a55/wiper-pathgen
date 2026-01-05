@@ -1,7 +1,41 @@
-function createEventAttributes({ event, trigger }: { event: string; trigger: string }) {
+import { isDevRuntime } from 'lib/runtime';
+
+type AnalyticsTrigger =
+  | 'header'
+  | 'warning'
+  | 'hw_setup'
+  | 'footer'
+  | 'intro'
+  | 'drawing'
+  | 'gcode'
+  | 'testing'
+  | 'calibration'
+  | 'settings'
+  | 'hwsetup';
+
+type AnalyticsMetadata = Record<string, string | number | boolean | null | undefined>;
+
+type PrefixedMetadata<M extends Partial<AnalyticsMetadata>> = {
+  [K in keyof M as K extends string ? `data-simple-event-${K}` : never]: M[K];
+};
+
+function prefixMetadataAttributes<M extends Partial<AnalyticsMetadata>>(metadata: M): PrefixedMetadata<M> {
+  return Object.fromEntries(
+    Object.entries(metadata).map(([key, value]) => [`data-simple-event-${key}`, value]),
+  ) as PrefixedMetadata<M>;
+}
+
+function createEventAttributes<T extends AnalyticsTrigger, M extends Partial<AnalyticsMetadata>>({
+  event,
+  trigger,
+  ...metadata
+}: { event: string; trigger: T } & M) {
   return {
     'data-simple-event': event,
-    'data-simple-event-trigger': trigger,
+    ...prefixMetadataAttributes({
+      trigger,
+      ...metadata,
+    }),
   };
 }
 
@@ -98,14 +132,14 @@ export function analyticsIntroPrintablesWA2() {
 
 export type AnalyticsEvent = {
   event: string;
-  trigger: string;
-} & Record<string, string | number | boolean | null | undefined>;
+  trigger: AnalyticsTrigger;
+} & AnalyticsMetadata;
 
 export function track(event: AnalyticsEvent) {
   const { event: eventName, ...metadata } = event;
   const saEvent = (window as Window & { sa_event?: (name: string, meta?: Record<string, unknown>) => void }).sa_event;
 
-  if (import.meta.env.DEV) {
+  if (isDevRuntime) {
     console.group(`Analytics: ${eventName}`);
     if (Object.keys(metadata).length > 0) {
       console.table(metadata);
