@@ -1,7 +1,7 @@
+import { createMemo } from 'solid-js';
 import { isCalibrated } from './calibration';
 import { isSettingsComplete, settings } from './settings';
 import { getWipingStepPoints, wipingSequence } from './wipingSequence';
-import { createMemo } from 'solid-js';
 
 export const StepKey = {
   SelectPrinter: 'select-printer',
@@ -53,7 +53,7 @@ export const steps = createMemo(() => {
       isComplete: isDrawingComplete(),
     },
     [StepKey.Testing]: {
-      key: StepKey.Drawing,
+      key: StepKey.Testing,
       label: 'Testing',
       anchor: 'testing',
       isComplete: false,
@@ -64,12 +64,12 @@ export const steps = createMemo(() => {
 export const areStepsCompleteUpTo = (targetStep: StepKey) => {
   const currentSteps = steps();
   for (const stepKey of stepOrder) {
+    if (stepKey === targetStep) {
+      return true;
+    }
     const step = currentSteps[stepKey];
     if (!step.isComplete) {
       return false;
-    }
-    if (step.key === targetStep) {
-      return true;
     }
   }
   return false;
