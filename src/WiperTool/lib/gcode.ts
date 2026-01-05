@@ -159,7 +159,7 @@ function generateWipingSequenceGCodeCommands({
 
   points.forEach((pt) => {
     const coords = relativeToAbsolute(pt, padTopRight);
-    gCode.push(gCodeCommands.linearMove(coords, feedRate));
+    gCode.push(gCodeCommands.linearMove({ ...coords, z: zHeight }, feedRate));
   });
 
   const zLiftHeight = padTopRight.z - plungeDepth + zLift;
