@@ -1,3 +1,5 @@
+import { PadKey, PrinterKey } from 'WiperTool/configuration';
+
 const signedNumberPattern = /^[+-]?\d+(?:\.\d+)?$/;
 const positiveDecimalPattern = /^\+?\d+(?:\.\d+)?$/;
 const positiveIntegerPattern = /^\+?\d+$/;
@@ -67,4 +69,12 @@ export function validatePositiveInteger(rawValue: string): PositiveIntegerValida
   }
 
   return { parsedValue: undefined, errorMessage: positiveIntegerErrorMessage };
+}
+
+export function isPrinterKey(value: unknown): value is PrinterKey {
+  return Object.values(PrinterKey).includes(value as PrinterKey);
+}
+
+export function isPadKey(value: unknown): value is PadKey {
+  return Object.values(PadKey).includes(value as PadKey);
 }
