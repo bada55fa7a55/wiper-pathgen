@@ -51,6 +51,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+  overflow-y: scroll;
+}
+
 .material-symbols-rounded {
   /* biome-ignore lint/a11y/useGenericFontNames: icon font */
   font-family: "Material Symbols Rounded Variable";
