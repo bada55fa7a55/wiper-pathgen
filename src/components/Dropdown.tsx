@@ -1,8 +1,10 @@
 import type { MaybeElement, MaybeElementAccessor } from '@solidjs-use/shared';
 import type { ParentProps } from 'solid-js';
 import { createSignal } from 'solid-js';
-import { onClickOutside, onKeyStroke } from 'solidjs-use';
+import { onKeyStroke } from 'solidjs-use';
 import { twc } from 'styles';
+import { useSafeClickOutside } from './useSafeClickOutside';
+import { useScrollLock } from './useScrollLock';
 
 const Backdrop = twc(
   'div',
@@ -70,14 +72,16 @@ type Props = ParentProps & {
 export function Dropdown(props: Props) {
   const [target, setTarget] = createSignal<MaybeElement>(null);
 
-  onClickOutside(
+  useScrollLock(() => true);
+
+  useSafeClickOutside(
     target,
     () => {
       if (props.onClose) {
         props.onClose();
       }
     },
-    props.ignore ? { ignore: props.ignore } : undefined,
+    props.ignore ? { ignore: props.ignore, enabled: () => Boolean(target()) } : { enabled: () => Boolean(target()) },
   );
 
   onKeyStroke('Escape', () => {
