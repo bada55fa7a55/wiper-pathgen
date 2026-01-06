@@ -2,12 +2,12 @@ import type { JSX, ParentProps } from 'solid-js';
 import { createSignal, Show } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import type { MaybeElement } from 'solidjs-use';
-import { onClickOutside, onKeyStroke } from 'solidjs-use';
+import { onKeyStroke } from 'solidjs-use';
 import { twc } from 'styles';
 import { Button } from './Button';
 import { useBackButtonClose } from './useBackButtonClose';
-import { useScrollLock } from './useScrollLock';
 import { useSafeClickOutside } from './useSafeClickOutside';
+import { useScrollLock } from './useScrollLock';
 
 const Backdrop = twc(
   'div',
