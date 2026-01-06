@@ -32,6 +32,10 @@ const containerStylesVariants = {
         border-zinc-700
         text-shark-100
         `,
+      ghost: `
+        hover:bg-zinc-700
+        text-shark-200
+        `,
       danger: `
         bg-red-600
         text-white
@@ -76,7 +80,7 @@ export const ButtonContainer = twc('button', containerStyles, containerStylesVar
 export const LinkContainer = twc('a', containerStyles, containerStylesVariants);
 
 type CommonProps = {
-  layout: 'primary' | 'secondary' | 'danger' | 'list' | 'list-success';
+  layout: 'primary' | 'secondary' | 'ghost' | 'danger' | 'list' | 'list-success';
   size?: 'lg' | 'sm';
   msIcon?: string;
   title?: string;
