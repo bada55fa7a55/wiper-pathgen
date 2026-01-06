@@ -6,7 +6,7 @@ const containerStyles = `
   inline-flex
   items-center
   justify-center
-  gap-2
+  gap-1
   rounded
   font-bold
   transition-colors
@@ -23,21 +23,19 @@ const containerStylesVariants = {
       primary: `
         bg-orange-600
         hover:bg-orange-500
-        text-white
-        px-4
+        text-shark-100
         `,
       secondary: `
         bg-zinc-800
         hover:bg-zinc-700
         border
         border-zinc-700
-        px-4
+        text-shark-100
         `,
       danger: `
         bg-red-600
         text-white
         hover:bg-red-700
-        px-4
         `,
       list: `
         justify-start
@@ -57,11 +55,13 @@ const containerStylesVariants = {
     size: {
       sm: `
         text-xs
-        py-1
+        p-1
+        leading-6
         `,
       lg: `
-          text-sm
-          py-2
+        text-sm
+        leading-6
+        p-2
         `,
     },
   },
@@ -82,6 +82,7 @@ type CommonProps = {
   title?: string;
   label: JSX.Element;
   isDisabled?: boolean;
+  withHiddenLabel?: boolean;
 };
 
 type Props =
@@ -116,7 +117,7 @@ export function Button(props: Props) {
               symbol={props.msIcon}
             />
           )}
-          {props.label}
+          {!props.withHiddenLabel && props.label}
         </LinkContainer>
       );
     case 'button':
@@ -136,7 +137,7 @@ export function Button(props: Props) {
               symbol={props.msIcon}
             />
           )}
-          {props.label}
+          {!props.withHiddenLabel && props.label}
         </ButtonContainer>
       );
   }
