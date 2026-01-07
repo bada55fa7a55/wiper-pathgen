@@ -4,9 +4,9 @@ import { base64UrlDecode, base64UrlEncode } from './base64';
 import { isPadKey, isPrinterKey } from './validation';
 
 const SHARE_PARAM = 'share';
-const SHARE_VERSION = 2;
+const SHARE_VERSION = 1;
 const SHARE_FILE_PREFIX = 'wiping-sequence';
-const SHARE_FILE_EXTENSION = 'json';
+export const SHARE_FILE_EXTENSION = 'json';
 
 type EncodedWipingStepPoint = ['p', number, number];
 type EncodedWipingStepSpeedChange = ['s', number];
@@ -30,6 +30,12 @@ export type DecodedSharePayload = {
   padKey: PadKey;
   wipingSequence: WipingStep[];
 };
+
+function secondsOfTheDay() {
+  const now = new Date();
+  return now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+};
+
 
 function buildSharePayload({ printerKey, padKey, wipingSequence }: EncodeShareOptions): EncodedSharePayload {
   return {
@@ -134,8 +140,9 @@ export function decodeShareJson(json: string): DecodedSharePayload | null {
 }
 
 export function buildShareFileName(): string {
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-  return `${SHARE_FILE_PREFIX}-${timestamp}.${SHARE_FILE_EXTENSION}`;
+  const datestamp = new Date().toISOString().split('T')[0];
+  const timeComponent = secondsOfTheDay();
+  return `${SHARE_FILE_PREFIX}-${datestamp}-${timeComponent}.${SHARE_FILE_EXTENSION}`;
 }
 
 export function createShareFile(encodeShareOptions: EncodeShareOptions): { fileName: string; blob: Blob } {
