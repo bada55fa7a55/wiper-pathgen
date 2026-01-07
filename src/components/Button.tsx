@@ -6,7 +6,7 @@ const containerStyles = `
   inline-flex
   items-center
   justify-center
-  gap-1
+  gap-2
   rounded
   font-bold
   transition-colors
@@ -75,9 +75,9 @@ const containerStylesVariants = {
   },
 } as const;
 
-export const ButtonContainer = twc('button', containerStyles, containerStylesVariants);
+const ButtonContainer = twc('button', containerStyles, containerStylesVariants);
 
-export const LinkContainer = twc('a', containerStyles, containerStylesVariants);
+const LinkContainer = twc('a', containerStyles, containerStylesVariants);
 
 type CommonProps = {
   layout: 'primary' | 'secondary' | 'ghost' | 'danger' | 'list' | 'list-success';
