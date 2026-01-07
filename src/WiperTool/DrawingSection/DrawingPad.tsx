@@ -8,8 +8,11 @@ import {
   pad,
   padTopRight,
   printer,
+  StepKey,
+  setIsShareModalOpen,
   settings,
   setWipingSequence,
+  steps,
   wipingSequence,
 } from 'WiperTool/store';
 import { paddings } from 'WiperTool/store/paddings';
@@ -50,6 +53,26 @@ const TitleRow = twc(
   items-start
   gap-3
   flex-wrap
+  `,
+);
+
+const LeftActions = twc(
+  'div',
+  `
+  flex
+  justify-start
+  items-center
+  grow
+  `,
+);
+
+const RightActions = twc(
+  'div',
+  `
+  flex
+  justify-end
+  items-center
+  gap-3
   `,
 );
 
@@ -130,6 +153,10 @@ export function DrawingPad() {
     track(simulationStartedEvent());
   };
 
+  const handleShareClick = () => {
+    setIsShareModalOpen(true);
+  };
+
   const handleAddPoint = (absPoint: Point) => {
     const relPoint = toRelative(absPoint);
     setWipingSequence((sequence) => [...sequence, makeWipingStepPoint(relPoint)]);
@@ -165,15 +192,30 @@ export function DrawingPad() {
   return (
     <Container>
       <TitleRow>
-        <PathControls />
-        <Button
-          renderAs="button"
-          type="button"
-          layout="primary"
-          label={simulation.isSimulating() ? 'Stop simulation' : 'Simulate nozzle path'}
-          isDisabled={isSimulationDisabled()}
-          onClick={handleSimulateClick}
-        />
+        <LeftActions>
+          <PathControls />
+        </LeftActions>
+        <RightActions>
+          <Button
+            renderAs="button"
+            type="button"
+            layout="secondary"
+            label="Share"
+            title="Save or share wiping sequence"
+            msIcon="share"
+            isDisabled={!steps()[StepKey.Drawing].isComplete}
+            withResponsiveLabel
+            onClick={handleShareClick}
+          />
+          <Button
+            renderAs="button"
+            type="button"
+            layout="primary"
+            label={simulation.isSimulating() ? 'Stop simulation' : 'Simulate nozzle path'}
+            isDisabled={isSimulationDisabled()}
+            onClick={handleSimulateClick}
+          />
+        </RightActions>
       </TitleRow>
       <CanvasWrapper>
         <CanvasFrame
