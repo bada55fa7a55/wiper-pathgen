@@ -1,5 +1,6 @@
 import { twc } from 'styles/helpers';
 import logo from './assets/logo-small.svg?url';
+import { DropdownMenuButton } from './DropdownMenuButton';
 import { StepOMeter } from './StepOMeter';
 import { StepOMeterDropdownButton } from './StepOMeterDropdownButton';
 
@@ -74,8 +75,7 @@ const RightSection = twc(
   flex
   justify-start
   items-center
-  gap-4
-  sm:gap-8
+  gap-3
   `,
 );
 
@@ -96,6 +96,7 @@ export function StickyHeader(props: Props) {
         </LeftSection>
         <RightSection>
           <StepOMeterDropdownButton />
+          <DropdownMenuButton />
         </RightSection>
       </StickyBar>
     </Container>
