@@ -28,7 +28,6 @@ import {
 } from 'components';
 import { createMemo, createSignal, Show } from 'solid-js';
 import { twc } from 'styles/helpers';
-import { ShareModal } from './sharing/ShareModal';
 
 const ButtonWrapper = twc(
   'div',
@@ -208,7 +207,6 @@ export function TestingSection() {
             </StepBody>
           </Step>
           {/* <pre>{testGCode()}</pre> */}
-          <ShareModal />
         </SectionColumn>
       </SectionColumns>
     </Section>

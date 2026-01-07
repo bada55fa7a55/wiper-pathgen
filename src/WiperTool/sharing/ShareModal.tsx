@@ -1,5 +1,5 @@
 import { createShareFile, SHARE_FILE_EXTENSION } from 'WiperTool/lib/sharing';
-import { isShareModalOpen, setIsShareModalOpen, settings, wipingSequence } from 'WiperTool/store';
+import { clearModals, isModalOpen, ModalKey, openSubModal, settings, wipingSequence } from 'WiperTool/store';
 import { Button, MaterialSymbol, Modal } from 'components';
 import { createSignal } from 'solid-js';
 import toast from 'solid-toast';
@@ -78,7 +78,11 @@ export function ShareModal() {
   const [isSaving, setIsSaving] = createSignal(false);
 
   const handleCloseModal = () => {
-    setIsShareModalOpen(false);
+    clearModals();
+  };
+
+  const handleGetLinkClick = () => {
+    openSubModal(ModalKey.ShareLink);
   };
 
   const handleExportFileClick = async () => {
@@ -112,7 +116,7 @@ export function ShareModal() {
     <Modal
       title="Sharing Is Caring"
       footerContent="Files and links are private and are not saved on a server."
-      isOpen={isShareModalOpen()}
+      isOpen={isModalOpen(ModalKey.Share)}
       onClose={handleCloseModal}
     >
       <ContentWrapper>
@@ -152,7 +156,7 @@ export function ShareModal() {
               layout="primary"
               label="Get link"
               isDisabled={isSaving()}
-              onClick={handleCloseModal}
+              onClick={handleGetLinkClick}
             />
           </ShareAction>
         </ShareOption>

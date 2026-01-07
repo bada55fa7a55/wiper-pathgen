@@ -5,7 +5,6 @@ import type { MaybeElement } from 'solidjs-use';
 import { onKeyStroke } from 'solidjs-use';
 import { twc } from 'styles';
 import { Button } from './Button';
-import { useBackButtonClose } from './useBackButtonClose';
 import { useSafeClickOutside } from './useSafeClickOutside';
 import { useScrollLock } from './useScrollLock';
 
@@ -193,18 +192,17 @@ type Props = ParentProps & {
 export function Modal(props: Props) {
   const [target, setTarget] = createSignal<MaybeElement>(null);
   useScrollLock(() => props.isOpen);
-  const { closeModal } = useBackButtonClose(() => props.isOpen, props.onClose);
 
   useSafeClickOutside(
     target,
     () => {
-      closeModal();
+      props.onClose();
     },
     { enabled: () => props.isOpen },
   );
 
   onKeyStroke('Escape', () => {
-    closeModal();
+    props.onClose();
   });
 
   return (
@@ -220,7 +218,7 @@ export function Modal(props: Props) {
                 label="Close"
                 msIcon="close"
                 withHiddenLabel
-                onClick={closeModal}
+                onClick={props.onClose}
               />
             </CloseButtonContaier>
             <Body>

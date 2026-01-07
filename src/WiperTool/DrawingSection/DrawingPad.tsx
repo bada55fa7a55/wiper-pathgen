@@ -4,12 +4,13 @@ import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
 import type { Point } from 'WiperTool/store';
 import {
   getWipingStepPoints,
+  ModalKey,
   makeWipingStepPoint,
+  openModal,
   pad,
   padTopRight,
   printer,
   StepKey,
-  setIsShareModalOpen,
   settings,
   setWipingSequence,
   steps,
@@ -154,7 +155,7 @@ export function DrawingPad() {
   };
 
   const handleShareClick = () => {
-    setIsShareModalOpen(true);
+    openModal(ModalKey.Share);
   };
 
   const handleAddPoint = (absPoint: Point) => {

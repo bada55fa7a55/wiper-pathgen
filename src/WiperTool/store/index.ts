@@ -11,7 +11,16 @@ export {
   settings,
 } from './settings';
 export { areStepsCompleteUpTo, StepKey, steps } from './steps';
-export { isShareModalOpen, setIsShareModalOpen } from './ui';
+export {
+  clearModals,
+  closeModal,
+  getActiveModal,
+  getModalStack,
+  isModalOpen,
+  ModalKey,
+  openModal,
+  openSubModal,
+} from './ui';
 export type { Point, WipingStep, WipingStepPoint, WipingStepSpeedChange } from './wipingSequence';
 export {
   getWipingStepPoints,

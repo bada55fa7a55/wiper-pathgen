@@ -1,4 +1,4 @@
-import { StepKey, setIsShareModalOpen, steps } from 'WiperTool/store';
+import { ModalKey, openModal, StepKey, steps } from 'WiperTool/store';
 import { Button, Dropdown } from 'components';
 import { createSignal } from 'solid-js';
 import { twc } from 'styles';
@@ -20,14 +20,18 @@ export function DropdownMenuButton() {
     setIsDropdownOpen(false);
   };
 
+  const createDeferredActionHandler = (action: () => void) => {
+    return () => {
+      handleCloseDropdown();
+      window.requestAnimationFrame(action);
+    };
+  };
+
   const handleToggleDropdown = () => {
     setIsDropdownOpen((previousValue) => !previousValue);
   };
 
-  const handleShareItemClick = () => {
-    setIsShareModalOpen(true);
-    handleCloseDropdown();
-  };
+  const handleShareItemClick = createDeferredActionHandler(() => openModal(ModalKey.Share));
 
   return (
     <DropdownWrapper>
