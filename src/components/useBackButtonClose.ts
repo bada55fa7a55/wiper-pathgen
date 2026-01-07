@@ -2,15 +2,47 @@ import type { Accessor } from 'solid-js';
 import { createEffect } from 'solid-js';
 
 export function useBackButtonClose(isOpen: Accessor<boolean>, onClose: () => void) {
-  createEffect(() => {
-    if (!isOpen() || typeof window === 'undefined' || !window.history?.pushState) return;
+  let hasConsumedHistory = false;
+  let handlePopState: (() => void) | null = null;
 
-    let hasConsumedHistory = false;
+  const consumeHistory = () => {
+    if (hasConsumedHistory || typeof window === 'undefined') {
+      return;
+    }
 
-    const handlePopState = () => {
-      if (hasConsumedHistory) return;
-      hasConsumedHistory = true;
+    hasConsumedHistory = true;
+
+    if (handlePopState) {
       window.removeEventListener('popstate', handlePopState);
+    }
+
+    if (window.history.state?.modal) {
+      const previousScrollRestoration = window.history.scrollRestoration;
+      window.history.scrollRestoration = 'manual';
+      window.history.back();
+      window.history.scrollRestoration = previousScrollRestoration;
+    }
+  };
+
+  const closeModal = () => {
+    consumeHistory();
+    onClose();
+  };
+
+  createEffect(() => {
+    if (!isOpen() || typeof window === 'undefined' || !window.history?.pushState) {
+      return;
+    }
+
+    hasConsumedHistory = false;
+
+    handlePopState = () => {
+      if (hasConsumedHistory) {
+        return;
+      }
+
+      hasConsumedHistory = true;
+      window.removeEventListener('popstate', handlePopState!);
       onClose();
     };
 
@@ -18,11 +50,9 @@ export function useBackButtonClose(isOpen: Accessor<boolean>, onClose: () => voi
     window.history.pushState({ modal: true }, '', window.location.href);
 
     return () => {
-      window.removeEventListener('popstate', handlePopState);
-      if (!hasConsumedHistory) {
-        hasConsumedHistory = true;
-        window.history.back();
-      }
+      consumeHistory();
     };
   });
+
+  return { closeModal };
 }

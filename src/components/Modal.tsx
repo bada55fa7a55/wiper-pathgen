@@ -193,22 +193,18 @@ type Props = ParentProps & {
 export function Modal(props: Props) {
   const [target, setTarget] = createSignal<MaybeElement>(null);
   useScrollLock(() => props.isOpen);
-  useBackButtonClose(() => props.isOpen, props.onClose);
+  const { closeModal } = useBackButtonClose(() => props.isOpen, props.onClose);
 
   useSafeClickOutside(
     target,
     () => {
-      if (props.onClose) {
-        props.onClose();
-      }
+      closeModal();
     },
     { enabled: () => props.isOpen },
   );
 
   onKeyStroke('Escape', () => {
-    if (props.onClose) {
-      props.onClose();
-    }
+    closeModal();
   });
 
   return (
@@ -224,7 +220,7 @@ export function Modal(props: Props) {
                 label="Close"
                 msIcon="close"
                 withHiddenLabel
-                onClick={props.onClose}
+                onClick={closeModal}
               />
             </CloseButtonContaier>
             <Body>
