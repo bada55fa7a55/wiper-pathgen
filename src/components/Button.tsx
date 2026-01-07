@@ -79,6 +79,18 @@ const ButtonContainer = twc('button', containerStyles, containerStylesVariants);
 
 const LinkContainer = twc('a', containerStyles, containerStylesVariants);
 
+const Label = twc('span', '', {
+  variants: {
+    isResponsive: {
+      false: null,
+      true: `
+      hidden
+      sm:inline
+      `,
+    },
+  },
+});
+
 type CommonProps = {
   layout: 'primary' | 'secondary' | 'ghost' | 'danger' | 'list' | 'list-success';
   size?: 'lg' | 'sm';
@@ -87,6 +99,7 @@ type CommonProps = {
   label: JSX.Element;
   isDisabled?: boolean;
   withHiddenLabel?: boolean;
+  withResponsiveLabel?: boolean;
 };
 
 type Props =
@@ -121,7 +134,7 @@ export function Button(props: Props) {
               symbol={props.msIcon}
             />
           )}
-          {!props.withHiddenLabel && props.label}
+          {!props.withHiddenLabel && <Label isResponsive={props.withResponsiveLabel}>{props.label}</Label>}
         </LinkContainer>
       );
     case 'button':
@@ -141,7 +154,7 @@ export function Button(props: Props) {
               symbol={props.msIcon}
             />
           )}
-          {!props.withHiddenLabel && props.label}
+          {!props.withHiddenLabel && <Label isResponsive={props.withResponsiveLabel}>{props.label}</Label>}
         </ButtonContainer>
       );
   }
