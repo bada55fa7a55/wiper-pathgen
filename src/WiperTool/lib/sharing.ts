@@ -34,8 +34,7 @@ export type DecodedSharePayload = {
 function secondsOfTheDay() {
   const now = new Date();
   return now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-};
-
+}
 
 function buildSharePayload({ printerKey, padKey, wipingSequence }: EncodeShareOptions): EncodedSharePayload {
   return {
