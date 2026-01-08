@@ -1,10 +1,12 @@
 import type { PadKey, PrinterKey } from 'WiperTool/configuration';
 import type { WipingSequence } from 'WiperTool/store';
-import { clearModals, setWipingSequence } from 'WiperTool/store';
-import { Button } from 'components';
+import { clearModals, StepKey, setWipingSequence, steps } from 'WiperTool/store';
+import { Button, WarningMessage } from 'components';
 import { createSignal } from 'solid-js';
 import { twc } from 'styles';
 import { PreviewWipingSequenceCanvas } from './PreviewWipingSequenceCanvas';
+import { scrollToStep } from './scrollToStep';
+import { clearShareTokenFromUrl } from './sharing';
 
 const Content = twc(
   'div',
@@ -13,7 +15,7 @@ const Content = twc(
   gap-4
   
   flex-col
-  items-start
+  items-stretch
   `,
 );
 
@@ -54,6 +56,7 @@ const Description = twc(
 );
 
 type Props = {
+  source: 'file' | 'token';
   printerKey: PrinterKey;
   padKey: PadKey;
   wipingSequence: WipingSequence;
@@ -64,6 +67,11 @@ type Props = {
 export function ImportConfirmationScene(props: Props) {
   let importTimeout: number | undefined;
   const [imported, setImported] = createSignal(false);
+
+  const scrollToNextStep = () => {
+    const targetStep = steps()[StepKey.Calibration].isComplete ? StepKey.Drawing : StepKey.Calibration;
+    scrollToStep(targetStep);
+  };
 
   const showImported = (callback: () => void) => {
     setImported(true);
@@ -77,10 +85,25 @@ export function ImportConfirmationScene(props: Props) {
   };
 
   const handleImport = () => {
+    if (props.source === 'token') {
+      clearShareTokenFromUrl();
+    }
     setWipingSequence(props.wipingSequence);
     showImported(() => {
       clearModals();
+      scrollToNextStep();
     });
+  };
+
+  const getImportButtonLabel = () => {
+    switch (props.source) {
+      case 'file':
+        return 'Import & close';
+      case 'token':
+        return 'Apply & close';
+      default:
+        return unreachable(props.source);
+    }
   };
 
   return (
@@ -94,6 +117,19 @@ export function ImportConfirmationScene(props: Props) {
         />
       </PreviewWrapper>
       <Description>Here's a preview of the wiping sequence that you are about to import.</Description>
+      {!steps()[StepKey.Calibration].isComplete && (
+        <WarningMessage
+          title="Note:"
+          content={
+            <>
+              Before you can view your imported wiping sequence and export G-code you must calibrate the position of
+              your silicone pad in the Calibration section.
+              <br />
+              Don't worry. The page will guide you step-by-step through the process.
+            </>
+          }
+        />
+      )}
       <Actions>
         <Button
           renderAs="button"
@@ -105,7 +141,7 @@ export function ImportConfirmationScene(props: Props) {
         <Button
           renderAs="button"
           layout="primary"
-          label="Import & close"
+          label={getImportButtonLabel()}
           msIcon="check"
           status={imported() ? 'success' : undefined}
           isDisabled={imported()}

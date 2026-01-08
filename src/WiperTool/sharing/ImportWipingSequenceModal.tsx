@@ -160,6 +160,7 @@ export function ImportWipingSequenceModal() {
         <Match when={importedState()}>
           {(currentState) => (
             <ImportConfirmationScene
+              source="file"
               printerKey={currentState().printerKey}
               padKey={currentState().padKey}
               wipingSequence={currentState().wipingSequence}
