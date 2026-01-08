@@ -52,13 +52,6 @@ const Description = twc(
   `,
 );
 
-const PreviewWrapper = twc(
-  'div',
-  `
-  w-1/2
-  `,
-);
-
 export function ShareLinkModal() {
   const [copied, setCopied] = createSignal(false);
   let copyTimeout: number | undefined;
