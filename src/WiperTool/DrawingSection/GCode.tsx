@@ -1,7 +1,7 @@
 import { gCodeCopiedEvent, track } from 'WiperTool/lib/analytics';
 import { generateGCodeCommands } from 'WiperTool/lib/gcode';
 import { calibration, getWipingStepPoints, padTopRight, printer, settings, wipingSequence } from 'WiperTool/store';
-import { Button } from 'components';
+import { Button, CodeTextArea } from 'components';
 import { createMemo, createSignal, onCleanup, Show } from 'solid-js';
 import { twc } from 'styles/helpers';
 
@@ -37,24 +37,6 @@ const Title = twc(
   text-lg
   font-semibold
   text-white
-  `,
-);
-
-const CodeTextArea = twc(
-  'textarea',
-  `
-  flex-1
-  w-full
-  bg-shark-700
-  font-mono
-  text-sm
-  text-emerald-400
-  p-4
-  rounded
-  resize-none
-  border
-  border-zinc-700
-  focus:outline-none
   `,
 );
 

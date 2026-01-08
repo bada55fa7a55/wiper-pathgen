@@ -1,4 +1,5 @@
 export { Button } from './Button';
+export { CodeTextArea } from './CodeTextArea';
 export { Dropdown } from './Dropdown';
 export { ErrorMessage } from './ErrorMessage';
 export { FormInput } from './FormInput';
