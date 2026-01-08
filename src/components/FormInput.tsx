@@ -1,5 +1,5 @@
-import { Show } from 'solid-js';
 import type { JSX } from 'solid-js';
+import { Show } from 'solid-js';
 import { twc } from 'styles/helpers';
 
 const FormField = twc(
@@ -84,23 +84,25 @@ type ErrorMessage = {
 };
 
 type Props = {
-  label: string;
+  label?: string;
   value: string;
   error?: ErrorMessage;
   isDisabled?: boolean;
-  onInput: JSX.InputEventHandlerUnion<HTMLInputElement, InputEvent>;
+  isReadOnly?: boolean;
+  onInput?: JSX.InputEventHandlerUnion<HTMLInputElement, InputEvent>;
   onBlur?: JSX.EventHandlerUnion<HTMLInputElement, FocusEvent>;
 };
 
 export function FormInput(props: Props) {
   return (
     <FormField>
-      <FormLabel>{props.label}</FormLabel>
+      {props.label && <FormLabel>{props.label}</FormLabel>}
       <Input
         type="text"
         inputMode="decimal"
         value={props.value}
         invalid={props.error?.type}
+        readOnly={props.isReadOnly}
         disabled={props.isDisabled}
         onInput={props.onInput}
         onBlur={props.onBlur}
