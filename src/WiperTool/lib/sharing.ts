@@ -1,5 +1,6 @@
 import type { PadKey, PrinterKey } from 'WiperTool/configuration';
-import type { WipingStep } from 'WiperTool/store';
+import type { WipingSequence, WipingStep } from 'WiperTool/store';
+import { createError } from 'lib/errors';
 import { base64UrlDecode, base64UrlEncode } from './base64';
 import { isPadKey, isPrinterKey } from './validation';
 
@@ -15,7 +16,7 @@ type EncodedWipingStep = EncodedWipingStepPoint | EncodedWipingStepSpeedChange;
 type EncodeShareOptions = {
   printerKey: PrinterKey;
   padKey: PadKey;
-  wipingSequence: WipingStep[];
+  wipingSequence: WipingSequence;
 };
 
 type EncodedSharePayload = {
@@ -27,8 +28,9 @@ type EncodedSharePayload = {
 
 export type DecodedSharePayload = {
   version: number;
+  printerKey: PrinterKey;
   padKey: PadKey;
-  wipingSequence: WipingStep[];
+  wipingSequence: WipingSequence;
 };
 
 function secondsOfTheDay() {
@@ -46,21 +48,47 @@ function buildSharePayload({ printerKey, padKey, wipingSequence }: EncodeShareOp
 }
 
 function encodeWipingStep(step: WipingStep): EncodedWipingStep {
-  if (step.type === 'point') {
-    return ['p', step.x, step.y];
+  switch (step.type) {
+    case 'point':
+      if (!Number.isFinite(step.x) || !Number.isFinite(step.y)) {
+        throw createError({
+          name: 'WipingSequenceEncodeError',
+          message: 'Invalid wiping step: point coordinates are not numbers',
+          component: 'WSExport',
+        });
+      }
+      return ['p', step.x, step.y];
+    case 'speedChange':
+      if (!Number.isFinite(step.percentage)) {
+        throw createError({
+          name: 'WipingSequenceEncodeError',
+          message: 'Invalid wiping step: speed percentage is not a number',
+          component: 'WSExport',
+        });
+      }
+      return ['s', step.percentage];
+    default:
+      return unreachable(step);
   }
-  return ['s', step.percentage];
 }
 
-function decodeWipingStep(step: unknown): WipingStep | null {
+function decodeWipingStep(step: unknown): WipingStep {
   if (!Array.isArray(step)) {
-    return null;
+    throw createError({
+      name: 'WipingSequenceDecodeError',
+      message: 'Invalid wiping step format: expected array',
+      component: 'WSImport',
+    });
   }
 
   if (step[0] === 'p' && step.length === 3) {
     const [, x, y] = step;
     if (!Number.isFinite(x) || !Number.isFinite(y)) {
-      return null;
+      throw createError({
+        name: 'WipingSequenceDecodeError',
+        message: 'Invalid wiping step format: point coordinates are not numbers',
+        component: 'WSImport',
+      });
     }
     return { type: 'point', x, y };
   }
@@ -68,20 +96,37 @@ function decodeWipingStep(step: unknown): WipingStep | null {
   if (step[0] === 's' && step.length === 2) {
     const [, percentage] = step;
     if (!Number.isFinite(percentage)) {
-      return null;
+      throw createError({
+        name: 'WipingSequenceDecodeError',
+        message: 'Invalid wiping step format: speed percentage is not a number',
+        component: 'WSImport',
+      });
     }
     return { type: 'speedChange', percentage };
   }
 
-  return null;
+  throw createError({
+    name: 'WipingSequenceDecodeError',
+    message: 'Invalid wiping step format: unrecognized step type',
+    component: 'WSImport',
+  });
 }
 
 export function encodeShareToken(encodeShareOptions: EncodeShareOptions): string {
-  const payload = buildSharePayload(encodeShareOptions);
-  return base64UrlEncode(JSON.stringify(payload));
+  try {
+    const payload = buildSharePayload(encodeShareOptions);
+    return base64UrlEncode(JSON.stringify(payload));
+  } catch (error) {
+    throw createError({
+      name: 'ShareEncodeError',
+      message: 'Failed to encode share token',
+      component: 'WSExport',
+      cause: error,
+    });
+  }
 }
 
-function decodeSharePayload(data: Partial<EncodedSharePayload>): DecodedSharePayload | null {
+function decodeSharePayload(data: Partial<EncodedSharePayload>): DecodedSharePayload {
   if (
     typeof data !== 'object' ||
     data === null ||
@@ -89,52 +134,78 @@ function decodeSharePayload(data: Partial<EncodedSharePayload>): DecodedSharePay
     typeof data.pad !== 'string' ||
     !Array.isArray(data.seq)
   ) {
-    return null;
+    throw createError({
+      name: 'ShareDecodeError',
+      message: 'Invalid share payload structure',
+      component: 'WSImport',
+    });
   }
 
   if (!isPrinterKey(data.prt)) {
-    return null;
+    throw createError({
+      name: 'ShareDecodeError',
+      message: 'Invalid printer key in share payload',
+      component: 'WSImport',
+    });
   }
 
   if (!isPadKey(data.pad)) {
-    return null;
+    throw createError({
+      name: 'ShareDecodeError',
+      message: 'Invalid pad key in share payload',
+      component: 'WSImport',
+    });
   }
 
-  const wipingSequence = data.seq.map((rawStep) => {
-    const step = decodeWipingStep(rawStep);
-    if (!step) {
-      throw new Error('Invalid wiping step');
-    }
-    return step;
-  });
+  const wipingSequence = data.seq.map((rawStep) => decodeWipingStep(rawStep));
 
   return {
     version: data.v,
+    printerKey: data.prt,
     padKey: data.pad,
     wipingSequence,
   };
 }
 
-export function decodeShareToken(token: string): DecodedSharePayload | null {
+export function decodeShareToken(token: string): DecodedSharePayload {
   try {
     const json = base64UrlDecode(token);
     const data = JSON.parse(json) as Partial<EncodedSharePayload>;
     return decodeSharePayload(data);
-  } catch (_error) {
-    return null;
+  } catch (error) {
+    throw createError({
+      name: 'ShareDecodeError',
+      message: 'Failed to decode share token',
+      component: 'WSImport',
+      cause: error,
+    });
   }
 }
 
 export function encodeShareJson(encodeShareOptions: EncodeShareOptions): string {
-  return JSON.stringify(buildSharePayload(encodeShareOptions), null, 2);
+  try {
+    return JSON.stringify(buildSharePayload(encodeShareOptions), null, 2);
+  } catch (error) {
+    throw createError({
+      name: 'ShareEncodeError',
+      message: 'Failed to encode share JSON',
+      component: 'WSExport',
+      cause: error,
+    });
+  }
 }
 
-export function decodeShareJson(json: string): DecodedSharePayload | null {
+export function decodeShareJson(json: string): DecodedSharePayload {
   try {
     const data = JSON.parse(json) as Partial<EncodedSharePayload>;
     return decodeSharePayload(data);
-  } catch (_error) {
-    return null;
+  } catch (error) {
+    throw createError({
+      name: 'ShareDecodeError',
+      message: 'Failed to decode share JSON',
+      component: 'WSImport',
+      cause: error,
+    });
   }
 }
 
@@ -152,12 +223,17 @@ export function createShareFile(encodeShareOptions: EncodeShareOptions): { fileN
   };
 }
 
-export async function decodeShareFile(file: File): Promise<DecodedSharePayload | null> {
+export async function decodeShareFile(file: File): Promise<DecodedSharePayload> {
   try {
     const text = await file.text();
     return decodeShareJson(text);
-  } catch (_error) {
-    return null;
+  } catch (error) {
+    throw createError({
+      name: 'ShareDecodeError',
+      message: 'Failed to decode share file',
+      component: 'WSImport',
+      cause: error,
+    });
   }
 }
 
