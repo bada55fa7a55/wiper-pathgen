@@ -155,6 +155,10 @@ export function DrawingPad() {
     track(simulationStartedEvent());
   };
 
+  const handleImportClick = () => {
+    openModal(ModalKey.ImportWipingSequence);
+  };
+
   const handleShareClick = () => {
     openModal(ModalKey.Share);
   };
@@ -198,6 +202,17 @@ export function DrawingPad() {
           <PathControls />
         </LeftActions>
         <RightActions>
+          <Button
+            renderAs="button"
+            type="button"
+            layout="secondary"
+            label="Import"
+            title="Import a previously exported wiping sequence"
+            msIcon="file_open"
+            isDisabled={!steps()[StepKey.Drawing].isComplete}
+            withResponsiveLabel
+            onClick={handleImportClick}
+          />
           <Button
             renderAs="button"
             type="button"

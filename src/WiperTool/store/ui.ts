@@ -3,6 +3,7 @@ import { createMemo, createSignal } from 'solid-js';
 export const ModalKey = {
   Share: 'share',
   ShareLink: 'share-link',
+  ImportWipingSequence: 'import-wiping-sequence',
 } as const;
 
 export type ModalKey = (typeof ModalKey)[keyof typeof ModalKey];

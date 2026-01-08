@@ -9,6 +9,7 @@ import { InstallationSection } from './InstallationSection';
 import { IntroSection } from './IntroSection';
 import { ModalContainer } from './ModalContainer/ModalContainer';
 import { SettingsSection } from './SettingsSection';
+import { ImportWipingSequenceModal } from './sharing/ImportWipingSequenceModal';
 import { ShareLinkModal } from './sharing/ShareLinkModal';
 import { ShareModal } from './sharing/ShareModal';
 import { TestingSection } from './TestingSection';
@@ -52,6 +53,7 @@ export function WiperTool() {
       <ModalContainer>
         <ShareModal />
         <ShareLinkModal />
+        <ImportWipingSequenceModal />
       </ModalContainer>
       <Toaster />
     </Shell>

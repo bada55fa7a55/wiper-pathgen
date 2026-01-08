@@ -31,6 +31,9 @@ export function DropdownMenuButton() {
     setIsDropdownOpen((previousValue) => !previousValue);
   };
 
+  const handleImportWipingSequenceItemClick = createDeferredActionHandler(() =>
+    openModal(ModalKey.ImportWipingSequence),
+  );
   const handleShareItemClick = createDeferredActionHandler(() => openModal(ModalKey.Share));
 
   return (
@@ -58,7 +61,7 @@ export function DropdownMenuButton() {
             layout="list"
             msIcon="file_open"
             label="Import wiping sequence"
-            onClick={handleCloseDropdown}
+            onClick={handleImportWipingSequenceItemClick}
           />
           <Button
             renderAs="button"
