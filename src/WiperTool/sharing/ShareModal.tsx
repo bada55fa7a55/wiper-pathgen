@@ -1,9 +1,9 @@
-import { createShareFile, SHARE_FILE_EXTENSION } from 'WiperTool/lib/sharing';
 import { clearModals, isModalOpen, ModalKey, openSubModal, settings, wipingSequence } from 'WiperTool/store';
 import { Button, MaterialSymbol, Modal } from 'components';
 import { createSignal } from 'solid-js';
 import toast from 'solid-toast';
 import { twc } from 'styles';
+import { createShareFile, SHARE_FILE_EXTENSION } from './sharing';
 import { useSaveFile } from './useSaveFile';
 
 const ContentWrapper = twc(

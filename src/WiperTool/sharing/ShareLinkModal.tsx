@@ -1,8 +1,8 @@
-import { buildShareUrl, encodeShareToken } from 'WiperTool/lib/sharing';
 import { clearModals, closeModal, isModalOpen, ModalKey, settings, wipingSequence } from 'WiperTool/store';
 import { Button, CodeTextArea, Modal } from 'components';
 import { createMemo, createSignal } from 'solid-js';
 import { twc } from 'styles';
+import { buildShareUrl, encodeShareToken } from './sharing';
 
 const Content = twc(
   'div',

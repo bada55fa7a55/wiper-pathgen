@@ -1,5 +1,4 @@
 import type { PadKey, PrinterKey } from 'WiperTool/configuration';
-import { decodeShareFile } from 'WiperTool/lib/sharing';
 import type { WipingSequence } from 'WiperTool/store';
 import { clearModals, isModalOpen, ModalKey } from 'WiperTool/store';
 import { Button, ErrorMessage, MaterialSymbol, Modal } from 'components';
@@ -7,6 +6,7 @@ import { createSignal, Match, Show, Switch } from 'solid-js';
 import { useDropZone, useFileDialog } from 'solidjs-use';
 import { twc } from 'styles';
 import { ImportConfirmationScene } from './ImportConfirmationScene';
+import { decodeShareFile } from './sharing';
 
 const FailureType = {
   Decode: 'decode',

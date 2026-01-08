@@ -1,8 +1,8 @@
 import type { PadKey, PrinterKey } from 'WiperTool/configuration';
 import type { WipingSequence, WipingStep } from 'WiperTool/store';
 import { createError } from 'lib/errors';
-import { base64UrlDecode, base64UrlEncode } from './base64';
-import { isPadKey, isPrinterKey } from './validation';
+import { base64UrlDecode, base64UrlEncode } from '../lib/base64';
+import { isPadKey, isPrinterKey } from '../lib/validation';
 
 const SHARE_PARAM = 'share';
 const SHARE_VERSION = 1;
