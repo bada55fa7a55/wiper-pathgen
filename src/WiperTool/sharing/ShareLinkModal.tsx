@@ -40,7 +40,22 @@ const Actions = twc(
 const Label = twc(
   'div',
   `
-    text-sm
+  text-sm
+  font-bold
+  `,
+);
+
+const Description = twc(
+  'p',
+  `
+  text-sm
+  `,
+);
+
+const PreviewWrapper = twc(
+  'div',
+  `
+  w-1/2
   `,
 );
 
@@ -94,6 +109,9 @@ export function ShareLinkModal() {
             value={buildShareUrl(encoded())}
           />
         </TextAreaWrapper>
+        <Description>
+          Copy the above link and share it via email, your favorite messenger app, or post it online.
+        </Description>
         <Actions>
           <Button
             renderAs="button"
