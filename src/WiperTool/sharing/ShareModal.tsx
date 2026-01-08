@@ -117,6 +117,7 @@ export function ShareModal() {
       title="Sharing Is Caring"
       footerContent="Files and links are private and are not saved on a server."
       isOpen={isModalOpen(ModalKey.Share)}
+      withCloseButton
       onClose={handleCloseModal}
     >
       <ContentWrapper>
