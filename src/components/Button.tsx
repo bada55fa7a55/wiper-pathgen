@@ -3,6 +3,7 @@ import { twc } from 'styles/helpers';
 import { MaterialSymbol } from './MaterialSymbol';
 
 const containerStyles = `
+  relative
   inline-flex
   items-center
   justify-center
@@ -79,6 +80,48 @@ const ButtonContainer = twc('button', containerStyles, containerStylesVariants);
 
 const LinkContainer = twc('a', containerStyles, containerStylesVariants);
 
+const Overlay = twc(
+  'div',
+  `
+  absolute
+  top-0
+  bottom-0
+  left-0
+  right-0
+
+  flex
+  justify-center
+  items-center
+
+  rounded
+  `,
+  {
+    variants: {
+      status: {
+        success: `
+        bg-emerald-300
+        text-emerald-800
+        `,
+        processing: `
+        bg-sky-600
+        text-shark-200
+        `,
+      },
+    },
+  },
+);
+
+const Spinner = twc(
+  'span',
+  `
+  inline-flex
+  items-center
+  justify-center
+  animate-spin
+  leading-none
+  `,
+);
+
 const Label = twc('span', '', {
   variants: {
     isResponsive: {
@@ -97,6 +140,7 @@ type CommonProps = {
   msIcon?: string;
   title?: string;
   label: JSX.Element;
+  status?: 'success' | 'processing' | undefined;
   isDisabled?: boolean;
   withHiddenLabel?: boolean;
   withResponsiveLabel?: boolean;
@@ -117,6 +161,33 @@ type Props =
     });
 
 export function Button(props: Props) {
+  const renderOverlay = () => {
+    switch (props.status) {
+      case 'success':
+        return (
+          <Overlay status="success">
+            <MaterialSymbol
+              size={24}
+              symbol="check"
+            />
+          </Overlay>
+        );
+      case 'processing':
+        return (
+          <Overlay status="processing">
+            <Spinner style={{ 'transform-origin': '50% 50%' }}>
+              <MaterialSymbol
+                size={24}
+                symbol="progress_activity"
+              />
+            </Spinner>
+          </Overlay>
+        );
+      default:
+        return null;
+    }
+  };
+
   switch (props.renderAs) {
     case 'link':
       return (
@@ -135,6 +206,7 @@ export function Button(props: Props) {
             />
           )}
           {!props.withHiddenLabel && <Label isResponsive={props.withResponsiveLabel}>{props.label}</Label>}
+          {renderOverlay()}
         </LinkContainer>
       );
     case 'button':
@@ -155,6 +227,7 @@ export function Button(props: Props) {
             />
           )}
           {!props.withHiddenLabel && <Label isResponsive={props.withResponsiveLabel}>{props.label}</Label>}
+          {renderOverlay()}
         </ButtonContainer>
       );
   }
