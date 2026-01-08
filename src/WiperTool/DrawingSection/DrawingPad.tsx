@@ -214,6 +214,7 @@ export function DrawingPad() {
             type="button"
             layout="primary"
             label={simulation.isSimulating() ? 'Stop simulation' : 'Simulate nozzle path'}
+            msIcon="wand_stars"
             isDisabled={isSimulationDisabled()}
             onClick={handleSimulateClick}
           />
