@@ -3,14 +3,6 @@ export {
   isCalibrated,
   setCalibration,
 } from './calibration';
-export { pad, padTopRight } from './pad';
-export { printer } from './printer';
-export {
-  isSettingsComplete,
-  setSettings,
-  settings,
-} from './settings';
-export { areStepsCompleteUpTo, StepKey, steps } from './steps';
 export {
   clearModals,
   closeModal,
@@ -20,7 +12,15 @@ export {
   ModalKey,
   openModal,
   openSubModal,
-} from './ui';
+} from './modals';
+export { pad, padTopRight } from './pad';
+export { printer } from './printer';
+export {
+  isSettingsComplete,
+  setSettings,
+  settings,
+} from './settings';
+export { areStepsCompleteUpTo, StepKey, steps } from './steps';
 export type { Point, WipingSequence, WipingStep, WipingStepPoint, WipingStepSpeedChange } from './wipingSequence';
 export {
   getWipingStepPoints,
