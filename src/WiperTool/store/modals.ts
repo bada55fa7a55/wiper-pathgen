@@ -4,6 +4,7 @@ export const ModalKey = {
   Share: 'share',
   ShareLink: 'share-link',
   ImportWipingSequence: 'import-wiping-sequence',
+  ImportSharedWipingSequence: 'import-shared-wiping-sequence',
 } as const;
 
 export type ModalKey = (typeof ModalKey)[keyof typeof ModalKey];

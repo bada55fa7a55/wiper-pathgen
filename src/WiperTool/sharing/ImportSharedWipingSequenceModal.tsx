@@ -1,0 +1,158 @@
+import type { PadKey, PrinterKey } from 'WiperTool/configuration';
+import type { WipingSequence } from 'WiperTool/store';
+import { clearModals, isModalOpen, ModalKey } from 'WiperTool/store';
+import { Button, ErrorMessage, Modal } from 'components';
+import { isAppError } from 'lib/errors';
+import { createSignal, Match, onCleanup, onMount, Switch } from 'solid-js';
+import { twc } from 'styles';
+import { ImportConfirmationScene } from './ImportConfirmationScene';
+import { clearShareTokenFromUrl, decodeShareToken, getShareTokenFromUrl } from './sharing';
+
+const FailureType = {
+  Decode: 'decode',
+  UnsupportedFileType: 'unsupported-file-type',
+} as const;
+
+type FailureType = (typeof FailureType)[keyof typeof FailureType];
+
+type ModalState =
+  | {
+      status: 'idle';
+    }
+  | {
+      status: 'imported';
+      wipingSequence: WipingSequence;
+      printerKey: PrinterKey;
+      padKey: PadKey;
+    }
+  | {
+      status: 'failure';
+      failure: FailureType;
+    };
+
+const Content = twc(
+  'div',
+  `
+  flex
+  gap-4
+  
+  flex-col
+  justify-center
+  items-stretch
+  `,
+);
+
+const Description = twc(
+  'p',
+  `
+  text-md
+  `,
+);
+
+export function ImportSharedWipingSequenceModal() {
+  const [state, setState] = createSignal<ModalState>({ status: 'idle' });
+
+  const importedState = () => {
+    const currentState = state();
+    return currentState.status === 'imported' ? currentState : null;
+  };
+
+  const failureState = () => {
+    const currentState = state();
+    return currentState.status === 'failure' ? currentState : null;
+  };
+
+  const handleShareHash = () => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const token = getShareTokenFromUrl();
+    if (!token) {
+      return;
+    }
+
+    try {
+      const { printerKey, padKey, wipingSequence } = decodeShareToken(token);
+      setState({ status: 'imported', printerKey, padKey, wipingSequence });
+    } catch (error) {
+      if (isAppError(error)) {
+        setState({ status: 'failure', failure: FailureType.Decode });
+        return;
+      }
+    }
+  };
+
+  onMount(() => {
+    handleShareHash();
+    window.addEventListener('hashchange', handleShareHash);
+  });
+
+  onCleanup(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    window.removeEventListener('hashchange', handleShareHash);
+  });
+
+  const handleCloseModal = () => {
+    clearShareTokenFromUrl();
+    clearModals();
+  };
+
+  return (
+    <Modal
+      title="Import Shared Wiping Sequence"
+      withFooterContentAboveActions
+      isOpen={isModalOpen(ModalKey.ImportSharedWipingSequence)}
+      withCloseButton
+      actions={
+        failureState() ? (
+          <Button
+            renderAs="button"
+            layout="secondary"
+            label="Dismiss"
+            onClick={handleCloseModal}
+          />
+        ) : undefined
+      }
+      onClose={handleCloseModal}
+    >
+      <Switch>
+        <Match when={state().status === 'idle'}>
+          <Content>...</Content>
+        </Match>
+        <Match when={importedState()}>
+          {(currentState) => (
+            <Content>
+              <Description>Someone has shared a nozzle wiping sequence with you. Nice!</Description>
+              <ImportConfirmationScene
+                source="token"
+                printerKey={currentState().printerKey}
+                padKey={currentState().padKey}
+                wipingSequence={currentState().wipingSequence}
+                onCancel={handleCloseModal}
+                onClose={handleCloseModal}
+              />
+            </Content>
+          )}
+        </Match>
+        <Match when={failureState()}>
+          {(currentState) => (
+            <Content>
+              <Switch>
+                <Match when={currentState()?.failure === FailureType.Decode}>
+                  <ErrorMessage
+                    title="Failed to decode wiping sequence."
+                    content="The URL appears to be malformatted or incompatibe. Make sure accessed the full link."
+                  />
+                </Match>
+              </Switch>
+            </Content>
+          )}
+        </Match>
+      </Switch>
+    </Modal>
+  );
+}
