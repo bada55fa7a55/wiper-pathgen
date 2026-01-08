@@ -1,6 +1,5 @@
 import { createMemo, createSignal } from 'solid-js';
 
-
 export const ModalKey = {
   Share: 'share',
   ShareLink: 'share-link',

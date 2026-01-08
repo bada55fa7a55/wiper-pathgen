@@ -1,33 +1,7 @@
 import type { JSX, ParentProps } from 'solid-js';
-import { createSignal, Show } from 'solid-js';
-import { Portal } from 'solid-js/web';
-import type { MaybeElement } from 'solidjs-use';
-import { onKeyStroke } from 'solidjs-use';
+import { Show } from 'solid-js';
 import { twc } from 'styles';
 import { Button } from './Button';
-import { useSafeClickOutside } from './useSafeClickOutside';
-import { useScrollLock } from './useScrollLock';
-
-const Backdrop = twc(
-  'div',
-  `
-  fixed
-  inset-0
-  flex
-  justify-center
-  items-center
-  p-4
-
-  animate-in
-  fade-in
-  duration-200
-
-  z-50
-
-  bg-black/50
-  backdrop-blur-sm
-  `,
-);
 
 const Container = twc(
   'div',
@@ -190,59 +164,40 @@ type Props = ParentProps & {
 };
 
 export function Modal(props: Props) {
-  const [target, setTarget] = createSignal<MaybeElement>(null);
-  useScrollLock(() => props.isOpen);
-
-  useSafeClickOutside(
-    target,
-    () => {
-      props.onClose();
-    },
-    { enabled: () => props.isOpen },
-  );
-
-  onKeyStroke('Escape', () => {
-    props.onClose();
-  });
-
   return (
-    <Portal>
-      <Show when={props.isOpen}>
-        <Backdrop>
-          <Container ref={setTarget}>
-            <CloseButtonContaier isSmOnly={!props.withCloseButton}>
-              <Button
-                renderAs="button"
-                layout="ghost"
-                size="sm"
-                label="Close"
-                msIcon="close"
-                withHiddenLabel
-                onClick={props.onClose}
-              />
-            </CloseButtonContaier>
-            <Body>
-              {props.title && (
-                <TitleContainer>
-                  <Title>{props.title}</Title>
-                </TitleContainer>
-              )}
-              <BodyContent>{props.children}</BodyContent>
-            </Body>
-            {(props.actions || props.footerContent) && (
-              <Footer>
-                {props.footerContent && props.withFooterContentAboveActions && (
-                  <FooterContent withActionsAlignment={Boolean(props.actions)}>{props.footerContent}</FooterContent>
-                )}
-                {props.actions && <Actions>{props.actions}</Actions>}
-                {props.footerContent && !props.withFooterContentAboveActions && (
-                  <FooterContent withActionsAlignment={Boolean(props.actions)}>{props.footerContent}</FooterContent>
-                )}
-              </Footer>
+    <Show when={props.isOpen}>
+      <Container>
+        <CloseButtonContaier isSmOnly={!props.withCloseButton}>
+          <Button
+            renderAs="button"
+            layout="ghost"
+            size="sm"
+            label="Close"
+            msIcon="close"
+            withHiddenLabel
+            onClick={props.onClose}
+          />
+        </CloseButtonContaier>
+        <Body>
+          {props.title && (
+            <TitleContainer>
+              <Title>{props.title}</Title>
+            </TitleContainer>
+          )}
+          <BodyContent>{props.children}</BodyContent>
+        </Body>
+        {(props.actions || props.footerContent) && (
+          <Footer>
+            {props.footerContent && props.withFooterContentAboveActions && (
+              <FooterContent withActionsAlignment={Boolean(props.actions)}>{props.footerContent}</FooterContent>
             )}
-          </Container>
-        </Backdrop>
-      </Show>
-    </Portal>
+            {props.actions && <Actions>{props.actions}</Actions>}
+            {props.footerContent && !props.withFooterContentAboveActions && (
+              <FooterContent withActionsAlignment={Boolean(props.actions)}>{props.footerContent}</FooterContent>
+            )}
+          </Footer>
+        )}
+      </Container>
+    </Show>
   );
 }

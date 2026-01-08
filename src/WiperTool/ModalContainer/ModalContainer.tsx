@@ -1,12 +1,19 @@
-import { createEffect, onCleanup } from 'solid-js';
-import { clearModals, getModalStack } from 'WiperTool/store';
+import { clearModals, closeModal, getActiveModal } from 'WiperTool/store';
+import type { ParentProps } from 'solid-js';
+import { createEffect, onCleanup, Show } from 'solid-js';
+import { onKeyStroke } from 'solidjs-use';
+import { Backdrop } from './Backdrop';
+
+type Props = ParentProps;
 
 let hasHistoryEntry = false;
 let handlePopState: (() => void) | null = null;
 let storedScrollY: number | null = null;
 
 const getCurrentScrollY = () => {
-  if (typeof window === 'undefined') return 0;
+  if (typeof window === 'undefined') {
+    return 0;
+  }
 
   const scrollY = window.scrollY;
   if (Number.isFinite(scrollY) && scrollY !== 0) {
@@ -14,12 +21,23 @@ const getCurrentScrollY = () => {
   }
 
   const bodyTop = window.document?.body?.style?.top;
-  const parsedTop = bodyTop ? Number.parseFloat(bodyTop.replace('px', '')) : NaN;
-  return Number.isFinite(parsedTop) ? Math.abs(parsedTop) : 0;
+  if (!bodyTop) {
+    return 0;
+  }
+
+  const parsedTop = Number.parseFloat(bodyTop.replace('px', ''));
+  if (!Number.isFinite(parsedTop)) {
+    return 0;
+  }
+
+  return Math.abs(parsedTop);
 };
 
 const restoreScrollPosition = () => {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined') {
+    return;
+  }
+
   const targetScroll = storedScrollY ?? 0;
   window.requestAnimationFrame(() => window.scrollTo(0, targetScroll));
 };
@@ -38,7 +56,6 @@ const clearHistoryEntry = (shouldGoBack: boolean) => {
 
   detachPopState();
 
-  // Neutralize the modal entry so forward navigation won't reopen it
   window.history.replaceState({ modal: false }, '', window.location.href);
 
   if (shouldGoBack) {
@@ -53,16 +70,31 @@ const clearHistoryEntry = (shouldGoBack: boolean) => {
   storedScrollY = null;
 };
 
-export function useModalHistory() {
-  createEffect(() => {
-    const modalCount = getModalStack().length;
+export function ModalContainer(props: Props) {
+  onCleanup(() => {
+    clearHistoryEntry(true);
+  });
 
-    if (modalCount > 0 && !hasHistoryEntry) {
+  onKeyStroke('Escape', () => {
+    if (getActiveModal() !== null) {
+      closeModal();
+    }
+  });
+
+  createEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    if (getActiveModal() !== null && !hasHistoryEntry) {
       hasHistoryEntry = true;
       storedScrollY = getCurrentScrollY();
 
       handlePopState = () => {
-        if (!hasHistoryEntry) return;
+        if (!hasHistoryEntry) {
+          return;
+        }
+
         detachPopState();
         hasHistoryEntry = false;
         clearModals();
@@ -73,12 +105,18 @@ export function useModalHistory() {
       window.history.pushState({ modal: true }, '', window.location.href);
     }
 
-    if (modalCount === 0 && hasHistoryEntry) {
+    if (getActiveModal() !== null && hasHistoryEntry) {
       clearHistoryEntry(true);
     }
   });
 
-  onCleanup(() => {
-    clearHistoryEntry(true);
-  });
+  const handleBackdropClick = () => {
+    clearModals();
+  };
+
+  return (
+    <Show when={getActiveModal() !== null}>
+      <Backdrop onClick={handleBackdropClick}>{props.children}</Backdrop>
+    </Show>
+  );
 }

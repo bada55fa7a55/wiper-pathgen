@@ -1,4 +1,4 @@
-import { clearModals, closeModal, isModalOpen, ModalKey, settings, wipingSequence } from 'WiperTool/store';
+import { clearModals, closeModal, isModalOpen, ModalKey } from 'WiperTool/store';
 import { Button, Modal } from 'components';
 import { twc } from 'styles';
 

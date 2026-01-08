@@ -7,11 +7,11 @@ import { HardwareSetupSection } from './HardwareSetupSection';
 import { Header } from './Header';
 import { InstallationSection } from './InstallationSection';
 import { IntroSection } from './IntroSection';
+import { ModalContainer } from './ModalContainer/ModalContainer';
 import { SettingsSection } from './SettingsSection';
 import { ShareLinkModal } from './sharing/ShareLinkModal';
 import { ShareModal } from './sharing/ShareModal';
 import { TestingSection } from './TestingSection';
-import { useModalHistory } from './useModalHistory';
 
 const Shell = twc(
   'div',
@@ -36,8 +36,6 @@ const Main = twc(
 );
 
 export function WiperTool() {
-  useModalHistory();
-
   return (
     <Shell>
       <Header />
@@ -51,8 +49,10 @@ export function WiperTool() {
         <InstallationSection />
       </Main>
       <Footer />
-      <ShareModal />
-      <ShareLinkModal />
+      <ModalContainer>
+        <ShareModal />
+        <ShareLinkModal />
+      </ModalContainer>
       <Toaster />
     </Shell>
   );

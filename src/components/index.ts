@@ -14,7 +14,6 @@ export { SectionColumn, SectionColumns } from './SectionColumns';
 export { SectionIntro } from './SectionIntro';
 export { SectionTitle } from './SectionTitle';
 export { Step, StepBody, StepTitle } from './Step';
-export { WarningMessage } from './WarningMessage';
-export { useBackButtonClose } from './useBackButtonClose';
 export { useSafeClickOutside } from './useSafeClickOutside';
 export { useScrollLock } from './useScrollLock';
+export { WarningMessage } from './WarningMessage';
