@@ -245,7 +245,7 @@ export function getShareTokenFromUrl(): string | null {
 
 export function buildShareUrl(token: string): string {
   const url = new URL(window.location.href);
-  const params = new URLSearchParams(url.hash.startsWith('#') ? url.hash.slice(1) : url.hash);
+  const params = new URLSearchParams();
   params.set(SHARE_PARAM, token);
   url.hash = params.toString();
   return url.toString();
