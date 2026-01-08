@@ -1,4 +1,4 @@
-import type { Point, WipingStep } from 'WiperTool/store';
+import type { Point, WipingSequence } from 'WiperTool/store';
 import { umToMm } from './conversion';
 import { formatDateISO, formatMicronsToMmString } from './formatting';
 
@@ -107,7 +107,7 @@ const gCodeCommands = {
 } satisfies Record<string, (...args: any[]) => string>;
 
 type GenerateWipingSequenceGCodeOptions = {
-  wipingSequence: WipingStep[];
+  wipingSequence: WipingSequence;
   padTopRight: Point3D;
   feedRate: number;
   plungeDepth: number;
@@ -139,7 +139,7 @@ function generateFooterGCodeCommands() {
   return [gCodeCommands.comment('End nozzle wiping sequence')];
 }
 
-const getPointsFromSequence = (sequence: WipingStep[]): Point[] =>
+const getPointsFromSequence = (sequence: WipingSequence): Point[] =>
   sequence.flatMap((item) => (item.type === 'point' ? [{ x: item.x, y: item.y }] : []));
 
 function generateWipingSequenceGCodeCommands({

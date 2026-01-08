@@ -21,7 +21,7 @@ export {
   openModal,
   openSubModal,
 } from './ui';
-export type { Point, WipingStep, WipingStepPoint, WipingStepSpeedChange } from './wipingSequence';
+export type { Point, WipingSequence, WipingStep, WipingStepPoint, WipingStepSpeedChange } from './wipingSequence';
 export {
   getWipingStepPoints,
   isWipingStepPoint,

@@ -1,5 +1,5 @@
 import type { PadProperties } from 'WiperTool/configuration';
-import type { Point, WipingStep } from 'WiperTool/store';
+import type { Point, WipingSequence } from 'WiperTool/store';
 import { makeWipingStepPoint } from 'WiperTool/store';
 
 export type PresetType = 'zigzag' | 'zigzag-bidi' | 'hilbert' | 'spiral' | 'crosshatch' | 'ultimate';
@@ -206,7 +206,7 @@ const buildCrosshatch = (geom: PadGeometry, rows: number, cols: number): Point[]
   return pts;
 };
 
-export const generatePresetSequence = (type: PresetType, pad: PadProperties): WipingStep[] => {
+export const generatePresetSequence = (type: PresetType, pad: PadProperties): WipingSequence => {
   const padGeometry = getPadGeometry(pad);
   const path: Point[] = (() => {
     switch (type) {
