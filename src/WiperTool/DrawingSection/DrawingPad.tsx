@@ -3,6 +3,7 @@ import { drawingPointAddedEvent, simulationStartedEvent, simulationStoppedEvent,
 import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
 import type { Point } from 'WiperTool/store';
 import {
+  calibration,
   getWipingStepPoints,
   ModalKey,
   makeWipingStepPoint,
@@ -17,10 +18,10 @@ import {
   wipingSequence,
 } from 'WiperTool/store';
 import { paddings } from 'WiperTool/store/paddings';
+import { WipingSequenceCanvas } from 'WiperTool/WipingSequenceCanvas';
 import { Button } from 'components';
 import { createMemo, createSignal, Show } from 'solid-js';
 import { twc } from 'styles/helpers';
-import { Canvas } from './Canvas';
 import { absToRel, relToAbs } from './helpers';
 import { PathControls } from './PathControls';
 import { SimulationCanvas } from './SimulationCanvas';
@@ -224,7 +225,7 @@ export function DrawingPad() {
             width: '100%',
           }}
         >
-          <Canvas
+          <WipingSequenceCanvas
             padImageSrc={pad().image}
             padWidth={pad().width}
             padHeight={pad().height}
@@ -236,6 +237,12 @@ export function DrawingPad() {
             parkingCoords={printer().parkingCoords}
             printerCenter={printerCenter()}
             points={absolutePoints()}
+            calibrationPoint={
+              calibration.x !== undefined && calibration.y !== undefined
+                ? { x: calibration.x, y: calibration.y }
+                : undefined
+            }
+            showTravelLines
             onAddPoint={handleAddPoint}
             onCursorChange={handleCursorChange}
           />
