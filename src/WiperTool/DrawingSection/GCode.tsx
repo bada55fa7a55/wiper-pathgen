@@ -116,8 +116,9 @@ export function GCode() {
             renderAs="button"
             layout="primary"
             label="Copy G-code"
+            msIcon="content_copy"
             status={copied() ? 'success' : undefined}
-            isDisabled={!gcode()}
+            isDisabled={copied() || !gcode()}
             onClick={handleCopyGCodeClick}
           />
         </CopyRow>

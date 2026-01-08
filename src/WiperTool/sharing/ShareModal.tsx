@@ -129,7 +129,7 @@ export function ShareModal() {
           </IconCircle>
           <ShareOptionTitle>Save to disk</ShareOptionTitle>
           <ShareOptionDescription>
-            Export wiping sequence to file from which you can import later
+            Export the wiping sequence to a file from which you can import later
           </ShareOptionDescription>
           <ShareAction>
             <Button
@@ -149,7 +149,7 @@ export function ShareModal() {
             />
           </IconCircle>
           <ShareOptionTitle>Shareable link</ShareOptionTitle>
-          <ShareOptionDescription>Get read-only link that you can copy and share with others</ShareOptionDescription>
+          <ShareOptionDescription>Get a read-only link that you can copy and share with others</ShareOptionDescription>
           <ShareAction>
             <Button
               renderAs="button"

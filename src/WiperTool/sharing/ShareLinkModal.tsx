@@ -104,9 +104,10 @@ export function ShareLinkModal() {
           <Button
             renderAs="button"
             layout="primary"
-            label="Copy Link"
+            label="Copy link"
             msIcon="content_copy"
             status={copied() ? 'success' : undefined}
+            isDisabled={copied()}
             onClick={handleCopyLinkClick}
           />
         </Actions>
