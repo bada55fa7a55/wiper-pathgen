@@ -128,7 +128,7 @@ const Label = twc('span', '', {
       false: null,
       true: `
       hidden
-      sm:inline
+      md:inline
       `,
     },
   },
