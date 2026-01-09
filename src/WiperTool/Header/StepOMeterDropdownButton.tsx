@@ -52,6 +52,7 @@ export function StepOMeterDropdownButton() {
           position="right"
           onClose={handleCloseDropdown}
           ignore={[() => triggerRef]}
+          anchor={() => triggerRef}
         >
           {Object.values(steps()).map((step, index) => (
             <Button

@@ -1,4 +1,6 @@
 import { clearModals, closeModal, getActiveModal } from 'WiperTool/store';
+import { invariant } from 'lib/invariant';
+import { isClientRuntime } from 'lib/runtime';
 import type { ParentProps } from 'solid-js';
 import { createEffect, onCleanup, Show } from 'solid-js';
 import { onKeyStroke } from 'solidjs-use';
@@ -11,9 +13,7 @@ let handlePopState: (() => void) | null = null;
 let storedScrollY: number | null = null;
 
 const getCurrentScrollY = () => {
-  if (typeof window === 'undefined') {
-    return 0;
-  }
+  invariant(window);
 
   const scrollY = window.scrollY;
   if (Number.isFinite(scrollY) && scrollY !== 0) {
@@ -34,9 +34,7 @@ const getCurrentScrollY = () => {
 };
 
 const restoreScrollPosition = () => {
-  if (typeof window === 'undefined') {
-    return;
-  }
+  invariant(window);
 
   const targetScroll = storedScrollY ?? 0;
   window.requestAnimationFrame(() => window.scrollTo(0, targetScroll));
@@ -44,18 +42,21 @@ const restoreScrollPosition = () => {
 
 const detachPopState = () => {
   if (handlePopState) {
+    invariant(window);
+
     window.removeEventListener('popstate', handlePopState);
     handlePopState = null;
   }
 };
 
 const clearHistoryEntry = (shouldGoBack: boolean) => {
-  if (!hasHistoryEntry || typeof window === 'undefined') {
+  invariant(window);
+
+  if (!hasHistoryEntry) {
     return;
   }
 
   detachPopState();
-
   window.history.replaceState({ modal: false }, '', window.location.href);
 
   if (shouldGoBack) {
@@ -72,6 +73,10 @@ const clearHistoryEntry = (shouldGoBack: boolean) => {
 
 export function ModalContainer(props: Props) {
   onCleanup(() => {
+    if (!isClientRuntime) {
+      return;
+    }
+
     clearHistoryEntry(true);
   });
 
@@ -82,7 +87,7 @@ export function ModalContainer(props: Props) {
   });
 
   createEffect(() => {
-    if (typeof window === 'undefined') {
+    if (!isClientRuntime) {
       return;
     }
 

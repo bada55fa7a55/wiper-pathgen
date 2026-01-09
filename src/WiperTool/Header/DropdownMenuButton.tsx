@@ -64,6 +64,7 @@ export function DropdownMenuButton(props: Props) {
           position="right"
           onClose={handleCloseDropdown}
           ignore={[() => triggerRef]}
+          anchor={() => triggerRef}
         >
           <Button
             renderAs="button"

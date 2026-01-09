@@ -24,28 +24,33 @@ const containerStylesVariants = {
       primary: `
         bg-orange-600
         hover:bg-orange-500
+        active:bg-orange-400
         text-shark-100
         `,
       secondary: `
         bg-zinc-800
         hover:bg-zinc-700
+        active:bg-zinc-600
         border
         border-zinc-700
         text-shark-100
         `,
       ghost: `
         hover:bg-zinc-700
+        active:bg-zinc-600
         text-shark-200
         `,
       danger: `
         bg-red-600
         text-white
         hover:bg-red-700
+        active:bg-red-600
         `,
       list: `
         justify-start
         text-shark-100
         hover:bg-zinc-700
+        active:bg-zinc-600
         px-2
         font-normal
         `,
@@ -53,6 +58,7 @@ const containerStylesVariants = {
         justify-start
         text-emerald-400
         hover:bg-zinc-700
+        active:bg-zinc-600
         px-2
         font-normal
         `,

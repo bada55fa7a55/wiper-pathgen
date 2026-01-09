@@ -1,14 +1,11 @@
 import { sharedLinkModalOpenedEvent, track } from 'WiperTool/lib/analytics';
 import { isModalOpen, ModalKey, openModal } from 'WiperTool/store';
+import { isClientRuntime } from 'lib/runtime';
 import { onCleanup, onMount } from 'solid-js';
 import { getShareTokenFromUrl } from './sharing';
 
 export function useShareHashModal() {
   const handleShareHash = () => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
     const token = getShareTokenFromUrl();
     if (!token) {
       return;
@@ -26,7 +23,7 @@ export function useShareHashModal() {
   });
 
   onCleanup(() => {
-    if (typeof window === 'undefined') {
+    if (!isClientRuntime) {
       return;
     }
 

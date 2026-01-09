@@ -1,6 +1,6 @@
 import { gridStep } from 'WiperTool/configuration';
 import type { Point } from 'WiperTool/store';
-import { isServerRuntime } from 'lib/runtime';
+import { isClientRuntime } from 'lib/runtime';
 import { createEffect, createMemo, createRenderEffect, createSignal } from 'solid-js';
 import { twc } from 'styles/helpers';
 import { relToAbs } from './DrawingSection/helpers';
@@ -44,7 +44,7 @@ export function WipingSequenceCanvas(props: Props) {
   const padTopRight = () => props.padTopRight ?? defaultPadTopRight;
 
   createEffect(() => {
-    if (isServerRuntime) {
+    if (!isClientRuntime) {
       return;
     }
 

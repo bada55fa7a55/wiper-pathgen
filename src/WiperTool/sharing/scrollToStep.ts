@@ -1,10 +1,9 @@
 import type { StepKey } from 'WiperTool/store';
 import { steps } from 'WiperTool/store';
+import { invariant } from 'lib/invariant';
 
 export function scrollToStep(stepKey: StepKey) {
-  if (typeof window === 'undefined') {
-    return;
-  }
+  invariant(window);
 
   const anchor = steps()[stepKey].anchor;
   const target = document.getElementById(anchor);

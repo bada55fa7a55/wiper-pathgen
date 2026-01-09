@@ -17,4 +17,5 @@ export { SectionTitle } from './SectionTitle';
 export { Step, StepBody, StepTitle } from './Step';
 export { useSafeClickOutside } from './useSafeClickOutside';
 export { useScrollLock } from './useScrollLock';
+export { getTailwindBreakpointQuery, useTailwindBreakpoint } from './useTailwindBreakpoint';
 export { WarningMessage } from './WarningMessage';
