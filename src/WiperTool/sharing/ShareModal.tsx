@@ -1,3 +1,4 @@
+import { actionShareLinkModalOpenedEvent, actionWipingSequenceExportedEvent, track } from 'WiperTool/lib/analytics';
 import { clearModals, isModalOpen, ModalKey, openSubModal, settings, wipingSequence } from 'WiperTool/store';
 import { Button, MaterialSymbol, Modal } from 'components';
 import { createSignal } from 'solid-js';
@@ -82,10 +83,12 @@ export function ShareModal() {
   };
 
   const handleGetLinkClick = () => {
+    track(actionShareLinkModalOpenedEvent('share'));
     openSubModal(ModalKey.ShareLink);
   };
 
   const handleExportFileClick = async () => {
+    track(actionWipingSequenceExportedEvent('share'));
     setIsSaving(true);
     const { blob, fileName } = createShareFile({
       padKey: settings.padType,

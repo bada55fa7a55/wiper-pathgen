@@ -1,3 +1,4 @@
+import { actionShareLinkCopiedEvent, track } from 'WiperTool/lib/analytics';
 import { clearModals, closeModal, isModalOpen, ModalKey, settings, wipingSequence } from 'WiperTool/store';
 import { Button, CodeTextArea, Modal } from 'components';
 import { createMemo, createSignal } from 'solid-js';
@@ -81,6 +82,7 @@ export function ShareLinkModal() {
   };
 
   const handleCopyLinkClick = () => {
+    track(actionShareLinkCopiedEvent());
     navigator.clipboard.writeText(buildShareUrl(encoded()));
     showCopied();
   };

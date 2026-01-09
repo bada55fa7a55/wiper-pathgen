@@ -1,5 +1,12 @@
 import { gridStep } from 'WiperTool/configuration';
-import { drawingPointAddedEvent, simulationStartedEvent, simulationStoppedEvent, track } from 'WiperTool/lib/analytics';
+import {
+  actionImportModalOpenedEvent,
+  actionShareModalOpenedEvent,
+  drawingPointAddedEvent,
+  simulationStartedEvent,
+  simulationStoppedEvent,
+  track,
+} from 'WiperTool/lib/analytics';
 import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
 import type { Point } from 'WiperTool/store';
 import {
@@ -156,10 +163,12 @@ export function DrawingPad() {
   };
 
   const handleImportClick = () => {
+    track(actionImportModalOpenedEvent('drawing'));
     openModal(ModalKey.ImportWipingSequence);
   };
 
   const handleShareClick = () => {
+    track(actionShareModalOpenedEvent('drawing'));
     openModal(ModalKey.Share);
   };
 
@@ -218,7 +227,7 @@ export function DrawingPad() {
             type="button"
             layout="secondary"
             label="Share"
-            title="Save or share wiping sequence"
+            title="Export or share wiping sequence"
             msIcon="share"
             isDisabled={!steps()[StepKey.Drawing].isComplete}
             withResponsiveLabel

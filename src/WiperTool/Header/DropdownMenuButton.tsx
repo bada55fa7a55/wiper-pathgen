@@ -1,3 +1,4 @@
+import { actionImportModalOpenedEvent, actionShareModalOpenedEvent, track } from 'WiperTool/lib/analytics';
 import { ModalKey, openModal, StepKey, steps } from 'WiperTool/store';
 import { Button, Dropdown } from 'components';
 import { createSignal } from 'solid-js';
@@ -31,10 +32,14 @@ export function DropdownMenuButton() {
     setIsDropdownOpen((previousValue) => !previousValue);
   };
 
-  const handleImportWipingSequenceItemClick = createDeferredActionHandler(() =>
-    openModal(ModalKey.ImportWipingSequence),
-  );
-  const handleShareItemClick = createDeferredActionHandler(() => openModal(ModalKey.Share));
+  const handleImportWipingSequenceItemClick = createDeferredActionHandler(() => {
+    track(actionImportModalOpenedEvent('header'));
+    openModal(ModalKey.ImportWipingSequence);
+  });
+  const handleShareItemClick = createDeferredActionHandler(() => {
+    track(actionShareModalOpenedEvent('header'));
+    openModal(ModalKey.Share);
+  });
 
   return (
     <DropdownWrapper>
@@ -42,7 +47,7 @@ export function DropdownMenuButton() {
         renderAs="button"
         layout="secondary"
         msIcon={isDropdownOpen() ? 'menu_open' : 'menu'}
-        label="Save & Share"
+        label="Export & Share"
         title="Menu"
         ref={(el) => {
           triggerRef = el;
@@ -67,7 +72,7 @@ export function DropdownMenuButton() {
             renderAs="button"
             layout="list"
             msIcon="share"
-            label="Share & save wiping sequence"
+            label="Export & save wiping sequence"
             isDisabled={!steps()[StepKey.Drawing].isComplete}
             onClick={handleShareItemClick}
           />

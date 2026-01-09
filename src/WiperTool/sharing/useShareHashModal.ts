@@ -1,3 +1,4 @@
+import { sharedLinkModalOpenedEvent, track } from 'WiperTool/lib/analytics';
 import { isModalOpen, ModalKey, openModal } from 'WiperTool/store';
 import { onCleanup, onMount } from 'solid-js';
 import { getShareTokenFromUrl } from './sharing';
@@ -14,6 +15,7 @@ export function useShareHashModal() {
     }
 
     if (!isModalOpen(ModalKey.ImportSharedWipingSequence)) {
+      track(sharedLinkModalOpenedEvent());
       openModal(ModalKey.ImportSharedWipingSequence);
     }
   };

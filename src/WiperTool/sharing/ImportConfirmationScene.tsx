@@ -1,4 +1,5 @@
 import type { PadKey, PrinterKey } from 'WiperTool/configuration';
+import { actionWipingSequenceImportedEvent, track } from 'WiperTool/lib/analytics';
 import type { WipingSequence } from 'WiperTool/store';
 import { clearModals, StepKey, setWipingSequence, steps } from 'WiperTool/store';
 import { Button, WarningMessage } from 'components';
@@ -85,6 +86,8 @@ export function ImportConfirmationScene(props: Props) {
   };
 
   const handleImport = () => {
+    track(actionWipingSequenceImportedEvent(props.source));
+
     if (props.source === 'token') {
       clearShareTokenFromUrl();
     }
