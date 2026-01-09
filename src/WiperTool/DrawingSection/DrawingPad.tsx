@@ -218,7 +218,6 @@ export function DrawingPad() {
             label="Import"
             title="Import a previously exported wiping sequence"
             msIcon="file_open"
-            isDisabled={!steps()[StepKey.Drawing].isComplete}
             withResponsiveLabel
             onClick={handleImportClick}
           />
