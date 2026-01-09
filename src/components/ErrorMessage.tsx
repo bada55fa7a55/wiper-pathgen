@@ -1,9 +1,13 @@
 import type { JSX } from 'solid-js';
 import { twc } from 'styles/helpers';
+import { MaterialSymbol } from './MaterialSymbol';
 
 const Container = twc(
   'div',
   `
+  flex
+  items-start
+  gap-3
   px-4
   py-3
   rounded-sm
@@ -15,6 +19,13 @@ const Container = twc(
   `,
 );
 
+const Content = twc(
+  'div',
+  `
+    grow
+  `,
+);
+
 const Title = twc(
   'span',
   `
@@ -23,16 +34,39 @@ const Title = twc(
   `,
 );
 
-const Content = twc('span', ``);
+const DismissButton = twc(
+  'div',
+  `
+  cursor-pointer
+  text-rose-200
+  hover:text-rose-100
+  `,
+);
+
+const Message = twc('span', ``);
 
 type Props = {
   title: JSX.Element;
   content: JSX.Element;
+  onDismiss?: () => void;
 };
-export function ErrorMessage({ title, content }: Props) {
+export function ErrorMessage(props: Props) {
   return (
     <Container>
-      <Title>{title}</Title> <Content>{content}</Content>
+      <Content>
+        <Title>{props.title}</Title> <Message>{props.content}</Message>
+      </Content>
+      {props.onDismiss && (
+        <DismissButton
+          title="Dismiss"
+          onClick={props.onDismiss}
+        >
+          <MaterialSymbol
+            size={16}
+            symbol="close"
+          />
+        </DismissButton>
+      )}
     </Container>
   );
 }

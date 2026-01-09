@@ -7,7 +7,13 @@ import { HardwareSetupSection } from './HardwareSetupSection';
 import { Header } from './Header';
 import { InstallationSection } from './InstallationSection';
 import { IntroSection } from './IntroSection';
+import { ModalContainer } from './ModalContainer/ModalContainer';
 import { SettingsSection } from './SettingsSection';
+import { ImportSharedWipingSequenceModal } from './sharing/ImportSharedWipingSequenceModal';
+import { ImportWipingSequenceModal } from './sharing/ImportWipingSequenceModal';
+import { ShareLinkModal } from './sharing/ShareLinkModal';
+import { ShareModal } from './sharing/ShareModal';
+import { useShareHashModal } from './sharing/useShareHashModal';
 import { TestingSection } from './TestingSection';
 
 const Shell = twc(
@@ -33,6 +39,8 @@ const Main = twc(
 );
 
 export function WiperTool() {
+  useShareHashModal();
+
   return (
     <Shell>
       <Header />
@@ -46,6 +54,12 @@ export function WiperTool() {
         <InstallationSection />
       </Main>
       <Footer />
+      <ModalContainer>
+        <ShareModal />
+        <ShareLinkModal />
+        <ImportWipingSequenceModal />
+        <ImportSharedWipingSequenceModal />
+      </ModalContainer>
       <Toaster />
     </Shell>
   );

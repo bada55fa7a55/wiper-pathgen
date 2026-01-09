@@ -10,7 +10,8 @@ const Container = twc(
   flex
   flex-row
   items-start
-  gap-3
+  gap-1.5
+  sm:gap-3
   `,
 );
 
@@ -34,15 +35,21 @@ export function PathControls() {
         layout="secondary"
         type="button"
         label="Clear"
+        title="Clear wiping sequence"
+        msIcon="delete"
         isDisabled={isDisabled()}
+        withResponsiveLabel
         onClick={handleClearClick}
       />
       <Button
         renderAs="button"
         layout="secondary"
         type="button"
-        label="undo"
+        label="Undo"
+        title="Undo last point"
+        msIcon="undo"
         isDisabled={isDisabled()}
+        withResponsiveLabel
         onClick={handleUndoClick}
       />
     </Container>

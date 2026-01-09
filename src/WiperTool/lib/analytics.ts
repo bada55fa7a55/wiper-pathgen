@@ -1,6 +1,7 @@
 import { isDevRuntime } from 'lib/runtime';
 
 type AnalyticsTrigger =
+  | 'page_handler'
   | 'header'
   | 'warning'
   | 'hw_setup'
@@ -11,7 +12,10 @@ type AnalyticsTrigger =
   | 'testing'
   | 'calibration'
   | 'settings'
-  | 'hwsetup';
+  | 'hwsetup'
+  | 'import'
+  | 'share'
+  | 'share_link';
 
 type AnalyticsMetadata = Record<string, string | number | boolean | null | undefined>;
 
@@ -226,5 +230,57 @@ export function settingsValueChangedEvent(field: string, trigger: 'settings' | '
     event: 'action_settings_value_changed',
     trigger,
     field,
+  };
+}
+
+export function actionImportModalOpenedEvent(trigger: AnalyticsTrigger): AnalyticsEvent {
+  return {
+    event: 'action_import_modal_opened',
+    trigger,
+  };
+}
+
+export function actionShareModalOpenedEvent(trigger: AnalyticsTrigger): AnalyticsEvent {
+  return {
+    event: 'action_share_modal_opened',
+    trigger,
+  };
+}
+
+export function sharedLinkModalOpenedEvent(): AnalyticsEvent {
+  return {
+    event: 'action_shared_link_modal_opened',
+    trigger: 'page_handler',
+  };
+}
+
+export function actionShareLinkModalOpenedEvent(trigger: AnalyticsTrigger): AnalyticsEvent {
+  return {
+    event: 'action_share_link_modal_opened',
+    trigger,
+  };
+}
+
+export function actionWipingSequenceExportedEvent(trigger: AnalyticsTrigger): AnalyticsEvent {
+  return {
+    event: 'action_wiping_sequence_exported',
+    trigger,
+  };
+}
+
+export function actionShareLinkCopiedEvent(): AnalyticsEvent {
+  return {
+    event: 'action_share_link_copied',
+    trigger: 'share_link',
+  };
+}
+
+type AnalyticsImportSource = 'token' | 'file';
+
+export function actionWipingSequenceImportedEvent(source: AnalyticsImportSource): AnalyticsEvent {
+  return {
+    event: 'action_wiping_sequence_imported',
+    source,
+    trigger: 'import',
   };
 }

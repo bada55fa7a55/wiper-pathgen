@@ -1,12 +1,12 @@
 import { gridStep } from 'WiperTool/configuration';
 import type { Point } from 'WiperTool/store';
-import { calibration } from 'WiperTool/store';
 import { isServerRuntime } from 'lib/runtime';
-import { createEffect, createSignal } from 'solid-js';
+import { createEffect, createMemo, createRenderEffect, createSignal } from 'solid-js';
 import { twc } from 'styles/helpers';
-import { relToAbs } from './helpers';
+import { relToAbs } from './DrawingSection/helpers';
 
 const scale = 0.025; // pixels per micron (25 px/mm)
+const defaultPadTopRight: Point = { x: 0, y: 0 };
 
 const StyledCanvas = twc(
   'canvas',
@@ -16,7 +16,7 @@ const StyledCanvas = twc(
   `,
 );
 
-type CanvasProps = {
+type Props = {
   padImageSrc?: string | null;
   padWidth: number;
   padHeight: number;
@@ -24,22 +24,29 @@ type CanvasProps = {
   paddingRight: number;
   paddingTop: number;
   paddingBottom: number;
-  padTopRight: Point;
-  parkingCoords: Point;
-  printerCenter: Point;
+  padTopRight?: Point;
+  parkingCoords?: Point;
+  printerCenter?: Point;
   points: Point[];
+  showTravelLines?: boolean;
+  calibrationPoint?: Point;
+  showCalibrationPoint?: boolean;
+  isInteractive?: boolean;
   onAddPoint?: (point: Point) => void;
   onCursorChange?: (point: Point | null) => void;
   onCanvasRef?: (el: HTMLCanvasElement) => void;
 };
 
-export function Canvas(props: CanvasProps) {
+export function WipingSequenceCanvas(props: Props) {
   let canvasRef: HTMLCanvasElement | undefined;
   const [mousePos, setMousePos] = createSignal<Point | null>(null);
   const [padImage, setPadImage] = createSignal<HTMLImageElement | null>(null);
+  const padTopRight = () => props.padTopRight ?? defaultPadTopRight;
 
   createEffect(() => {
-    if (isServerRuntime) return;
+    if (isServerRuntime) {
+      return;
+    }
 
     const src = props.padImageSrc;
     if (!src) {
@@ -61,7 +68,7 @@ export function Canvas(props: CanvasProps) {
     };
   });
 
-  const derived = () => {
+  const derived = createMemo(() => {
     const totalPaddingX = props.paddingLeft + props.paddingRight;
     const totalPaddingY = props.paddingTop + props.paddingBottom;
     const widthPx = (props.padWidth + totalPaddingX) * scale;
@@ -77,8 +84,9 @@ export function Canvas(props: CanvasProps) {
     const relLeft = -refPixelX / scale;
     const relBottom = (refPixelY - heightPx) / scale;
 
-    const firstGridRelX = Math.ceil((props.padTopRight.x + relLeft) / gridStep) * gridStep - props.padTopRight.x;
-    const firstGridRelY = Math.ceil((props.padTopRight.y + relBottom) / gridStep) * gridStep - props.padTopRight.y;
+    const padTopRightCoords = padTopRight();
+    const firstGridRelX = Math.ceil((padTopRightCoords.x + relLeft) / gridStep) * gridStep - padTopRightCoords.x;
+    const firstGridRelY = Math.ceil((padTopRightCoords.y + relBottom) / gridStep) * gridStep - padTopRightCoords.y;
     const gridStartXPx = firstGridRelX * scale + refPixelX;
     const gridStartYPx = refPixelY - firstGridRelY * scale;
 
@@ -95,7 +103,7 @@ export function Canvas(props: CanvasProps) {
       refPixelX,
       refPixelY,
     };
-  };
+  });
 
   const getPosPx = (e: MouseEvent): Point => {
     const target = e.currentTarget as HTMLCanvasElement;
@@ -121,37 +129,60 @@ export function Canvas(props: CanvasProps) {
   const absToPixels = (abs: Point, refPixelX: number, refPixelY: number): Point =>
     relToPixels(
       {
-        x: abs.x - props.padTopRight.x,
-        y: abs.y - props.padTopRight.y,
+        x: abs.x - padTopRight().x,
+        y: abs.y - padTopRight().y,
       },
       refPixelX,
       refPixelY,
     );
 
   const handleClick = (e: MouseEvent) => {
+    if (props.isInteractive === false) {
+      return;
+    }
+
     const px = getPosPx(e);
     const relCoords = pxToMicrons(px);
-    props.onAddPoint?.(relToAbs(relCoords, props.padTopRight));
+    props.onAddPoint?.(relToAbs(relCoords, padTopRight()));
   };
 
   const handleMove = (e: MouseEvent) => {
+    if (props.isInteractive === false) {
+      return;
+    }
     const px = getPosPx(e);
     setMousePos(px);
     const relCoords = pxToMicrons(px);
-    props.onCursorChange?.(relToAbs(relCoords, props.padTopRight));
+    props.onCursorChange?.(relToAbs(relCoords, padTopRight()));
   };
 
   const handleMouseLeave = () => {
+    if (props.isInteractive === false) {
+      return;
+    }
     setMousePos(null);
     props.onCursorChange?.(null);
   };
 
-  const draw = (mousePosition: Point | null) => {
-    if (!canvasRef) return;
+  const draw = (
+    mousePosition: Point | null,
+    canvasState: ReturnType<typeof derived>,
+    padImageElement: HTMLImageElement | null,
+    points: Point[],
+    parkingCoords: Point | undefined,
+    printerCenter: Point | undefined,
+    calibrationPoint: Point | undefined,
+    showCalibrationPoint: boolean,
+    showTravelLines: boolean,
+  ) => {
+    if (!canvasRef) {
+      return;
+    }
     const ctx = canvasRef.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {
+      return;
+    }
 
-    const padImageElement = padImage();
     const {
       widthPx,
       heightPx,
@@ -164,8 +195,7 @@ export function Canvas(props: CanvasProps) {
       gridStepPx,
       refPixelX,
       refPixelY,
-    } = derived();
-    const { points } = props;
+    } = canvasState;
 
     const clear = () => {
       ctx.clearRect(0, 0, widthPx, heightPx);
@@ -235,18 +265,22 @@ export function Canvas(props: CanvasProps) {
     };
 
     const drawCalibrationPoint = () => {
-      if (calibration.x === undefined || calibration.y === undefined) {
+      if (!showCalibrationPoint || !calibrationPoint) {
         return;
       }
 
       ctx.fillStyle = '#ff2222';
-      const ptPx = absToPixels({ x: calibration.x, y: calibration.y }, refPixelX, refPixelY);
+      const ptPx = absToPixels(calibrationPoint, refPixelX, refPixelY);
       ctx.beginPath();
       ctx.arc(ptPx.x, ptPx.y, 10, 0, Math.PI * 2);
       ctx.fill();
     };
 
     const drawCursorSegment = () => {
+      if (props.isInteractive === false) {
+        return;
+      }
+
       if (points.length > 0 && mousePosition) {
         const lastPtPx = absToPixels(points[points.length - 1], refPixelX, refPixelY);
 
@@ -276,17 +310,29 @@ export function Canvas(props: CanvasProps) {
     };
 
     const drawParkingToFirstPoint = () => {
+      if (!showTravelLines) {
+        return;
+      }
+      if (!parkingCoords) {
+        return;
+      }
       if (points.length < 1) {
         return;
       }
-      drawDashedLine(props.parkingCoords, points[0], 'oklch(68.5% 0.169 237.323)');
+      drawDashedLine(parkingCoords, points[0], 'oklch(68.5% 0.169 237.323)');
     };
 
     const drawLastPointToCenter = () => {
+      if (!showTravelLines) {
+        return;
+      }
+      if (!printerCenter) {
+        return;
+      }
       if (points.length < 2) {
         return;
       }
-      drawDashedLine(points[points.length - 1], props.printerCenter, 'oklch(79.2% 0.209 151.711)');
+      drawDashedLine(points[points.length - 1], printerCenter, 'oklch(79.2% 0.209 151.711)');
     };
 
     clear();
@@ -298,14 +344,36 @@ export function Canvas(props: CanvasProps) {
     drawLastPointToCenter();
     drawCursorSegment();
 
-    if ('debug' in window) {
-      drawCalibrationPoint();
-    }
+    drawCalibrationPoint();
   };
 
-  createEffect(() => {
+  createRenderEffect(() => {
     const currentMousePos = mousePos();
-    draw(currentMousePos);
+    const canvasState = derived();
+    const padImageElement = padImage();
+    const points = props.points;
+    const parkingCoords = props.parkingCoords;
+    const printerCenter = props.printerCenter;
+    const calibrationPoint = props.calibrationPoint;
+    const showCalibrationPoint = Boolean(props.showCalibrationPoint);
+    const showTravelLines = Boolean(props.showTravelLines);
+
+    if (canvasRef) {
+      canvasRef.width = Math.max(1, Math.round(canvasState.widthPx));
+      canvasRef.height = Math.max(1, Math.round(canvasState.heightPx));
+    }
+
+    draw(
+      currentMousePos,
+      canvasState,
+      padImageElement,
+      points,
+      parkingCoords,
+      printerCenter,
+      calibrationPoint,
+      showCalibrationPoint,
+      showTravelLines,
+    );
   });
 
   return (
@@ -316,15 +384,13 @@ export function Canvas(props: CanvasProps) {
           props.onCanvasRef(el);
         }
       }}
-      width={derived().widthPx}
-      height={derived().heightPx}
       style={{
         width: '100%',
         height: 'auto',
       }}
-      onClick={handleClick}
-      onMouseMove={handleMove}
-      onMouseLeave={handleMouseLeave}
+      onClick={props.isInteractive === false ? undefined : handleClick}
+      onMouseMove={props.isInteractive === false ? undefined : handleMove}
+      onMouseLeave={props.isInteractive === false ? undefined : handleMouseLeave}
     />
   );
 }

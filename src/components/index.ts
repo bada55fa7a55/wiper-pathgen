@@ -1,4 +1,5 @@
 export { Button } from './Button';
+export { CodeTextArea } from './CodeTextArea';
 export { Dropdown } from './Dropdown';
 export { ErrorMessage } from './ErrorMessage';
 export { FormInput } from './FormInput';
@@ -8,9 +9,12 @@ export { InlineCode } from './InlineCode';
 export { Link } from './Link';
 export { MaterialSymbol } from './MaterialSymbol';
 export { MenuBreadcrumb } from './MenuBreadcrumb';
+export { Modal } from './Modal';
 export { Section } from './Section';
 export { SectionColumn, SectionColumns } from './SectionColumns';
 export { SectionIntro } from './SectionIntro';
 export { SectionTitle } from './SectionTitle';
 export { Step, StepBody, StepTitle } from './Step';
+export { useSafeClickOutside } from './useSafeClickOutside';
+export { useScrollLock } from './useScrollLock';
 export { WarningMessage } from './WarningMessage';
