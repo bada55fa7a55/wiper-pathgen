@@ -236,7 +236,19 @@ export function DrawingPad() {
             renderAs="button"
             type="button"
             layout="primary"
-            label={simulation.isSimulating() ? 'Stop simulation' : 'Simulate nozzle path'}
+            label={
+              simulation.isSimulating() ? (
+                <>
+                  <span class="hidden xl:inline">Stop simulation</span>
+                  <span class="xl:hidden">Stop</span>
+                </>
+              ) : (
+                <>
+                  <span class="hidden xl:inline">Simulate nozzle path</span>
+                  <span class="xl:hidden">Simulate</span>
+                </>
+              )
+            }
             msIcon="wand_stars"
             isDisabled={isSimulationDisabled()}
             onClick={handleSimulateClick}
