@@ -47,7 +47,7 @@ export function DropdownMenuButton() {
         renderAs="button"
         layout="secondary"
         msIcon={isDropdownOpen() ? 'menu_open' : 'menu'}
-        label="Export & Share"
+        label="Export & share"
         title="Menu"
         ref={(el) => {
           triggerRef = el;
@@ -72,7 +72,7 @@ export function DropdownMenuButton() {
             renderAs="button"
             layout="list"
             msIcon="share"
-            label="Export & save wiping sequence"
+            label="Export or share wiping sequence"
             isDisabled={!steps()[StepKey.Drawing].isComplete}
             onClick={handleShareItemClick}
           />
