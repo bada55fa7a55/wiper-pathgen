@@ -1,4 +1,6 @@
 import type { MaybeElement, MaybeElementAccessor } from '@solidjs-use/shared';
+import { invariant } from 'lib/invariant';
+import { isClientRuntime } from 'lib/runtime';
 import type { JSX } from 'solid-js';
 import { createEffect, createSignal, onCleanup, onMount } from 'solid-js';
 
@@ -23,9 +25,7 @@ export function useFloatingPosition(options: Options) {
   };
 
   const updatePosition = () => {
-    if (typeof window === 'undefined') {
-      return;
-    }
+    invariant(window);
 
     if (options.isSmallViewport()) {
       setStyle(undefined);
@@ -66,6 +66,10 @@ export function useFloatingPosition(options: Options) {
   };
 
   createEffect(() => {
+    if (!isClientRuntime) {
+      return
+    }
+
     options.getTarget();
     resolveAnchor();
     options.isSmallViewport();
@@ -74,10 +78,6 @@ export function useFloatingPosition(options: Options) {
   });
 
   onMount(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
     const handleUpdate = () => updatePosition();
     window.addEventListener('resize', handleUpdate);
     window.addEventListener('scroll', handleUpdate, true);

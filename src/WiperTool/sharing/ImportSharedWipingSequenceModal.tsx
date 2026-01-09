@@ -3,6 +3,7 @@ import type { WipingSequence } from 'WiperTool/store';
 import { clearModals, isModalOpen, ModalKey } from 'WiperTool/store';
 import { Button, ErrorMessage, Modal } from 'components';
 import { isAppError } from 'lib/errors';
+import { isClientRuntime } from 'lib/runtime';
 import { createSignal, Match, onCleanup, onMount, Switch } from 'solid-js';
 import { twc } from 'styles';
 import { ImportConfirmationScene } from './ImportConfirmationScene';
@@ -63,10 +64,6 @@ export function ImportSharedWipingSequenceModal() {
   };
 
   const handleShareHash = () => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
     const token = getShareTokenFromUrl();
     if (!token) {
       return;
@@ -89,7 +86,7 @@ export function ImportSharedWipingSequenceModal() {
   });
 
   onCleanup(() => {
-    if (typeof window === 'undefined') {
+    if (!isClientRuntime) {
       return;
     }
 

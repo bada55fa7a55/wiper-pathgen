@@ -17,10 +17,6 @@ export function useTailwindBreakpoint(breakpoint: Breakpoint, mode: Mode = 'max'
   const [matches, setMatches] = createSignal(false);
 
   onMount(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
     const media = window.matchMedia(getTailwindBreakpointQuery(breakpoint, mode));
     const update = () => setMatches(media.matches);
     update();
