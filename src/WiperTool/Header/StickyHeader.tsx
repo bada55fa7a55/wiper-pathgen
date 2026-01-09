@@ -96,7 +96,7 @@ export function StickyHeader(props: Props) {
         </LeftSection>
         <RightSection>
           <StepOMeterDropdownButton />
-          <DropdownMenuButton />
+          <DropdownMenuButton layout="secondary" />
         </RightSection>
       </StickyBar>
     </Container>

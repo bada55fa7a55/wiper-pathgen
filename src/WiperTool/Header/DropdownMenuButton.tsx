@@ -13,7 +13,11 @@ const DropdownWrapper = twc(
   `,
 );
 
-export function DropdownMenuButton() {
+type Props = {
+  layout: 'secondary' | 'ghost';
+};
+
+export function DropdownMenuButton(props: Props) {
   const [isDropdownOpen, setIsDropdownOpen] = createSignal(false);
   let triggerRef: HTMLButtonElement | undefined;
 
@@ -45,7 +49,7 @@ export function DropdownMenuButton() {
     <DropdownWrapper>
       <Button
         renderAs="button"
-        layout="secondary"
+        layout={props.layout}
         msIcon={isDropdownOpen() ? 'menu_open' : 'menu'}
         label="Export & share"
         title="Menu"
