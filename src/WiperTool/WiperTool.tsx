@@ -13,6 +13,7 @@ import { ImportSharedWipingSequenceModal } from './sharing/ImportSharedWipingSeq
 import { ImportWipingSequenceModal } from './sharing/ImportWipingSequenceModal';
 import { ShareLinkModal } from './sharing/ShareLinkModal';
 import { ShareModal } from './sharing/ShareModal';
+import { useGlobalFileDrop } from './sharing/useGlobalFileDrop';
 import { useShareHashModal } from './sharing/useShareHashModal';
 import { TestingSection } from './TestingSection';
 
@@ -40,6 +41,7 @@ const Main = twc(
 
 export function WiperTool() {
   useShareHashModal();
+  useGlobalFileDrop();
 
   return (
     <Shell>

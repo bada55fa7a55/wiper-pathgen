@@ -1,34 +1,18 @@
-import type { PadKey, PrinterKey } from 'WiperTool/configuration';
-import type { WipingSequence } from 'WiperTool/store';
 import { clearModals, isModalOpen, ModalKey } from 'WiperTool/store';
-import { Button, ErrorMessage, MaterialSymbol, Modal } from 'components';
-import { createSignal, Match, Show, Switch } from 'solid-js';
-import { useDropZone, useFileDialog } from 'solidjs-use';
+import { Button, ErrorMessage, Modal } from 'components';
+import { Match, Show, Switch } from 'solid-js';
+import { useFileDialog } from 'solidjs-use';
 import { twc } from 'styles';
 import { ImportConfirmationScene } from './ImportConfirmationScene';
-import { decodeShareFile } from './sharing';
-
-const FailureType = {
-  Decode: 'decode',
-  UnsupportedFileType: 'unsupported-file-type',
-} as const;
-
-type FailureType = (typeof FailureType)[keyof typeof FailureType];
-
-type ModalState =
-  | {
-      status: 'idle';
-    }
-  | {
-      status: 'imported';
-      wipingSequence: WipingSequence;
-      printerKey: PrinterKey;
-      padKey: PadKey;
-    }
-  | {
-      status: 'failure';
-      failure: FailureType;
-    };
+import {
+  FailureType,
+  handleImportFile,
+  importState,
+  isImportableFile,
+  resetImportState,
+  setImportFailure,
+} from './importWipingSequenceState';
+import { isDroppingFile } from './useGlobalFileDrop';
 
 const Content = twc(
   'div',
@@ -89,63 +73,48 @@ const Description = twc(
 );
 
 export function ImportWipingSequenceModal() {
-  const [dropZoneRef, setDropZoneRef] = createSignal<HTMLDivElement>();
-  const [state, setState] = createSignal<ModalState>({ status: 'idle' });
-  const { open, onChange } = useFileDialog({ multiple: false, reset: true, accept: 'application/json' });
+  const { open: openFileDialog, onChange: onFileDialogChange } = useFileDialog({
+    multiple: false,
+    reset: true,
+    accept: 'application/json',
+  });
 
   const importedState = () => {
-    const currentState = state();
+    const currentState = importState();
     return currentState.status === 'imported' ? currentState : null;
   };
 
   const failureState = () => {
-    const currentState = state();
+    const currentState = importState();
     return currentState.status === 'failure' ? currentState : null;
   };
 
-  const handleFile = (file: File) => {
-    (async () => {
-      if (file.type !== 'application/json') {
-        setState({ status: 'failure', failure: FailureType.UnsupportedFileType });
+  onFileDialogChange((files) => {
+    if (files && files.length !== 0) {
+      const file = Array.from(files).find(isImportableFile);
+      if (!file) {
+        setImportFailure(FailureType.UnsupportedFileType);
         return;
       }
 
-      const { printerKey, padKey, wipingSequence } = await decodeShareFile(file);
-      setState({ status: 'imported', printerKey, padKey, wipingSequence });
-    })().catch((error) => {
-      console.error(error);
-      setState({ status: 'failure', failure: FailureType.Decode });
-    });
-  };
-
-  onChange((files) => {
-    if (files && files.length !== 0) {
-      handleFile(files[0]);
+      handleImportFile(file);
     }
   });
 
-  const handleDrop = (files: File[] | null) => {
-    if (files && files.length !== 0) {
-      handleFile(files[0]);
-    }
-  };
-
   const handleCancelImport = () => {
-    setState({ status: 'idle' });
+    resetImportState();
   };
-
-  const { isOverDropZone } = useDropZone(dropZoneRef, handleDrop);
 
   const handleCloseModal = () => {
     clearModals();
   };
 
   const handleOpenFileClick = () => {
-    open();
+    openFileDialog();
   };
 
   const handleDismissFailure = () => {
-    setState({ status: 'idle' });
+    resetImportState();
   };
 
   return (
@@ -169,37 +138,24 @@ export function ImportWipingSequenceModal() {
             />
           )}
         </Match>
-        <Match when={['idle', 'failure'].includes(state().status)}>
+        <Match when={['idle', 'failure'].includes(importState().status)}>
           <Content>
             <Description>Import a wiping sequence .json file.</Description>
-            <DropZone
-              isDropping={isOverDropZone()}
-              ref={setDropZoneRef}
-            >
+            <DropZone isDropping={isDroppingFile()}>
               <DropZoneContent>
-                {isOverDropZone() && (
-                  <MaterialSymbol
-                    size={48}
-                    symbol="upload_file"
+                <div>
+                  <Button
+                    renderAs="button"
+                    layout="primary"
+                    label="Choose file"
+                    msIcon="file_open"
+                    onClick={handleOpenFileClick}
                   />
-                )}
-                {!isOverDropZone() && (
-                  <>
-                    <div>
-                      <Button
-                        renderAs="button"
-                        layout="primary"
-                        label="Choose file"
-                        msIcon="file_open"
-                        onClick={handleOpenFileClick}
-                      />
-                    </div>
-                    <div>...or drop a file here</div>
-                  </>
-                )}
+                </div>
+                <div>...or drop a file here</div>
               </DropZoneContent>
             </DropZone>
-            <Show when={state().status === 'failure'}>
+            <Show when={importState().status === 'failure'}>
               <Switch>
                 <Match when={failureState()?.failure === FailureType.UnsupportedFileType}>
                   <ErrorMessage
