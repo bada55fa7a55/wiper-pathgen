@@ -37,13 +37,14 @@ export function StepOMeterDropdownButton() {
     <DropdownWrapper>
       <Button
         renderAs="button"
-        layout="secondary"
+        layout="ghost"
         msIcon="checklist_rtl"
-        label=""
+        label="Steps"
         title="Steps checklist"
         ref={(el) => {
           triggerRef = el;
         }}
+        withHiddenLabel
         onClick={handleToggleDropdown}
       />
       {isDropdownOpen() && (
@@ -51,6 +52,7 @@ export function StepOMeterDropdownButton() {
           position="right"
           onClose={handleCloseDropdown}
           ignore={[() => triggerRef]}
+          anchor={() => triggerRef}
         >
           {Object.values(steps()).map((step, index) => (
             <Button

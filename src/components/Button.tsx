@@ -3,6 +3,7 @@ import { twc } from 'styles/helpers';
 import { MaterialSymbol } from './MaterialSymbol';
 
 const containerStyles = `
+  relative
   inline-flex
   items-center
   justify-center
@@ -23,26 +24,33 @@ const containerStylesVariants = {
       primary: `
         bg-orange-600
         hover:bg-orange-500
-        text-white
-        px-4
+        active:bg-orange-400
+        text-shark-100
         `,
       secondary: `
         bg-zinc-800
         hover:bg-zinc-700
+        active:bg-zinc-600
         border
         border-zinc-700
-        px-4
+        text-shark-100
+        `,
+      ghost: `
+        hover:bg-zinc-700
+        active:bg-zinc-600
+        text-shark-200
         `,
       danger: `
         bg-red-600
         text-white
         hover:bg-red-700
-        px-4
+        active:bg-red-600
         `,
       list: `
         justify-start
         text-shark-100
         hover:bg-zinc-700
+        active:bg-zinc-600
         px-2
         font-normal
         `,
@@ -50,6 +58,7 @@ const containerStylesVariants = {
         justify-start
         text-emerald-400
         hover:bg-zinc-700
+        active:bg-zinc-600
         px-2
         font-normal
         `,
@@ -57,11 +66,13 @@ const containerStylesVariants = {
     size: {
       sm: `
         text-xs
-        py-1
+        p-1
+        leading-6
         `,
       lg: `
-          text-sm
-          py-2
+        text-sm
+        leading-6
+        p-2
         `,
     },
   },
@@ -71,17 +82,74 @@ const containerStylesVariants = {
   },
 } as const;
 
-export const ButtonContainer = twc('button', containerStyles, containerStylesVariants);
+const ButtonContainer = twc('button', containerStyles, containerStylesVariants);
 
-export const LinkContainer = twc('a', containerStyles, containerStylesVariants);
+const LinkContainer = twc('a', containerStyles, containerStylesVariants);
+
+const Overlay = twc(
+  'div',
+  `
+  absolute
+  top-0
+  bottom-0
+  left-0
+  right-0
+
+  flex
+  justify-center
+  items-center
+
+  rounded
+  `,
+  {
+    variants: {
+      status: {
+        success: `
+        bg-emerald-300
+        text-emerald-800
+        `,
+        processing: `
+        bg-sky-600
+        text-shark-200
+        `,
+      },
+    },
+  },
+);
+
+const Spinner = twc(
+  'span',
+  `
+  inline-flex
+  items-center
+  justify-center
+  animate-spin
+  leading-none
+  `,
+);
+
+const Label = twc('span', '', {
+  variants: {
+    isResponsive: {
+      false: null,
+      true: `
+      hidden
+      md:inline
+      `,
+    },
+  },
+});
 
 type CommonProps = {
-  layout: 'primary' | 'secondary' | 'danger' | 'list' | 'list-success';
+  layout: 'primary' | 'secondary' | 'ghost' | 'danger' | 'list' | 'list-success';
   size?: 'lg' | 'sm';
   msIcon?: string;
   title?: string;
   label: JSX.Element;
+  status?: 'success' | 'processing' | undefined;
   isDisabled?: boolean;
+  withHiddenLabel?: boolean;
+  withResponsiveLabel?: boolean;
 };
 
 type Props =
@@ -99,6 +167,33 @@ type Props =
     });
 
 export function Button(props: Props) {
+  const renderOverlay = () => {
+    switch (props.status) {
+      case 'success':
+        return (
+          <Overlay status="success">
+            <MaterialSymbol
+              size={24}
+              symbol="check"
+            />
+          </Overlay>
+        );
+      case 'processing':
+        return (
+          <Overlay status="processing">
+            <Spinner style={{ 'transform-origin': '50% 50%' }}>
+              <MaterialSymbol
+                size={24}
+                symbol="progress_activity"
+              />
+            </Spinner>
+          </Overlay>
+        );
+      default:
+        return null;
+    }
+  };
+
   switch (props.renderAs) {
     case 'link':
       return (
@@ -116,7 +211,8 @@ export function Button(props: Props) {
               symbol={props.msIcon}
             />
           )}
-          {props.label}
+          {!props.withHiddenLabel && <Label isResponsive={props.withResponsiveLabel}>{props.label}</Label>}
+          {renderOverlay()}
         </LinkContainer>
       );
     case 'button':
@@ -136,7 +232,8 @@ export function Button(props: Props) {
               symbol={props.msIcon}
             />
           )}
-          {props.label}
+          {!props.withHiddenLabel && <Label isResponsive={props.withResponsiveLabel}>{props.label}</Label>}
+          {renderOverlay()}
         </ButtonContainer>
       );
   }

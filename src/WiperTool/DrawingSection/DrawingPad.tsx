@@ -1,22 +1,34 @@
 import { gridStep } from 'WiperTool/configuration';
-import { drawingPointAddedEvent, simulationStartedEvent, simulationStoppedEvent, track } from 'WiperTool/lib/analytics';
+import {
+  actionImportModalOpenedEvent,
+  actionShareModalOpenedEvent,
+  drawingPointAddedEvent,
+  simulationStartedEvent,
+  simulationStoppedEvent,
+  track,
+} from 'WiperTool/lib/analytics';
 import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
 import type { Point } from 'WiperTool/store';
 import {
+  calibration,
   getWipingStepPoints,
+  ModalKey,
   makeWipingStepPoint,
+  openModal,
   pad,
   padTopRight,
   printer,
+  StepKey,
   settings,
   setWipingSequence,
+  steps,
   wipingSequence,
 } from 'WiperTool/store';
 import { paddings } from 'WiperTool/store/paddings';
+import { WipingSequenceCanvas } from 'WiperTool/WipingSequenceCanvas';
 import { Button } from 'components';
 import { createMemo, createSignal, Show } from 'solid-js';
 import { twc } from 'styles/helpers';
-import { Canvas } from './Canvas';
 import { absToRel, relToAbs } from './helpers';
 import { PathControls } from './PathControls';
 import { SimulationCanvas } from './SimulationCanvas';
@@ -50,6 +62,26 @@ const TitleRow = twc(
   items-start
   gap-3
   flex-wrap
+  `,
+);
+
+const LeftActions = twc(
+  'div',
+  `
+  flex
+  justify-start
+  items-center
+  grow
+  `,
+);
+
+const RightActions = twc(
+  'div',
+  `
+  flex
+  justify-end
+  items-center
+  gap-3
   `,
 );
 
@@ -130,6 +162,16 @@ export function DrawingPad() {
     track(simulationStartedEvent());
   };
 
+  const handleImportClick = () => {
+    track(actionImportModalOpenedEvent('drawing'));
+    openModal(ModalKey.ImportWipingSequence);
+  };
+
+  const handleShareClick = () => {
+    track(actionShareModalOpenedEvent('drawing'));
+    openModal(ModalKey.Share);
+  };
+
   const handleAddPoint = (absPoint: Point) => {
     const relPoint = toRelative(absPoint);
     setWipingSequence((sequence) => [...sequence, makeWipingStepPoint(relPoint)]);
@@ -165,15 +207,53 @@ export function DrawingPad() {
   return (
     <Container>
       <TitleRow>
-        <PathControls />
-        <Button
-          renderAs="button"
-          type="button"
-          layout="primary"
-          label={simulation.isSimulating() ? 'Stop simulation' : 'Simulate nozzle path'}
-          isDisabled={isSimulationDisabled()}
-          onClick={handleSimulateClick}
-        />
+        <LeftActions>
+          <PathControls />
+        </LeftActions>
+        <RightActions>
+          <Button
+            renderAs="button"
+            type="button"
+            layout="secondary"
+            label="Import"
+            title="Import a previously exported wiping sequence"
+            msIcon="file_open"
+            withResponsiveLabel
+            onClick={handleImportClick}
+          />
+          <Button
+            renderAs="button"
+            type="button"
+            layout="secondary"
+            label="Share"
+            title="Export or share wiping sequence"
+            msIcon="share"
+            isDisabled={!steps()[StepKey.Drawing].isComplete}
+            withResponsiveLabel
+            onClick={handleShareClick}
+          />
+          <Button
+            renderAs="button"
+            type="button"
+            layout="primary"
+            label={
+              simulation.isSimulating() ? (
+                <>
+                  <span class="hidden xl:inline">Stop simulation</span>
+                  <span class="xl:hidden">Stop</span>
+                </>
+              ) : (
+                <>
+                  <span class="hidden xl:inline">Simulate nozzle path</span>
+                  <span class="xl:hidden">Simulate</span>
+                </>
+              )
+            }
+            msIcon="wand_stars"
+            isDisabled={isSimulationDisabled()}
+            onClick={handleSimulateClick}
+          />
+        </RightActions>
       </TitleRow>
       <CanvasWrapper>
         <CanvasFrame
@@ -181,7 +261,7 @@ export function DrawingPad() {
             width: '100%',
           }}
         >
-          <Canvas
+          <WipingSequenceCanvas
             padImageSrc={pad().image}
             padWidth={pad().width}
             padHeight={pad().height}
@@ -193,6 +273,12 @@ export function DrawingPad() {
             parkingCoords={printer().parkingCoords}
             printerCenter={printerCenter()}
             points={absolutePoints()}
+            calibrationPoint={
+              calibration.x !== undefined && calibration.y !== undefined
+                ? { x: calibration.x, y: calibration.y }
+                : undefined
+            }
+            showTravelLines
             onAddPoint={handleAddPoint}
             onCursorChange={handleCursorChange}
           />
