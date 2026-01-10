@@ -1,6 +1,7 @@
 import { isDevRuntime } from 'lib/runtime';
 
 type AnalyticsTrigger =
+  | 'global_drop'
   | 'page_handler'
   | 'header'
   | 'warning'
@@ -282,5 +283,12 @@ export function actionWipingSequenceImportedEvent(source: AnalyticsImportSource)
     event: 'action_wiping_sequence_imported',
     source,
     trigger: 'import',
+  };
+}
+export function actionFileDroppedEvent(fileType: string): AnalyticsEvent {
+  return {
+    event: 'action_file_dropped',
+    trigger: 'global_drop',
+    fileType,
   };
 }

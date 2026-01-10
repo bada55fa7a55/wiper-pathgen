@@ -1,3 +1,4 @@
+import { actionFileDroppedEvent, actionImportModalOpenedEvent, track } from 'WiperTool/lib/analytics';
 import { isModalOpen, ModalKey, openModal } from 'WiperTool/store';
 import { createSignal, onCleanup, onMount } from 'solid-js';
 import { FailureType, handleImportFile, isImportableFile, setImportFailure } from './importWipingSequenceState';
@@ -48,9 +49,14 @@ export function useGlobalFileDrop() {
     setIsDroppingFile(false);
     setDragClass(false);
 
+    track(actionFileDroppedEvent(files[0].type));
+
     const importableFile = files.find(isImportableFile);
     if (importableFile) {
-      openModal(ModalKey.ImportWipingSequence);
+      if (!isModalOpen(ModalKey.ImportWipingSequence)) {
+        track(actionImportModalOpenedEvent('global_drop'));
+        openModal(ModalKey.ImportWipingSequence);
+      }
       handleImportFile(importableFile);
       return;
     }
