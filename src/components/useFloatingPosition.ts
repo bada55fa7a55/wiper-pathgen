@@ -67,7 +67,7 @@ export function useFloatingPosition(options: Options) {
 
   createEffect(() => {
     if (!isClientRuntime) {
-      return
+      return;
     }
 
     options.getTarget();
