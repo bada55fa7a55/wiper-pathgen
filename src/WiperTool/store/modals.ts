@@ -1,5 +1,5 @@
-import { createMemo, createSignal } from 'solid-js';
 import { resetImportState } from 'WiperTool/sharing/importWipingSequenceState';
+import { createMemo, createSignal } from 'solid-js';
 
 export const ModalKey = {
   Share: 'share',
@@ -19,6 +19,10 @@ const activeModal = createMemo<ModalKey | null>(() => {
 
 export function isModalOpen(modal: ModalKey) {
   return activeModal() === modal;
+}
+
+export function isSubModal() {
+  return modalStack().length > 1;
 }
 
 export function openSubModal(modal: ModalKey) {

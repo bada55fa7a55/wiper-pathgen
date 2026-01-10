@@ -9,6 +9,7 @@ export {
   getActiveModal,
   getModalStack,
   isModalOpen,
+  isSubModal,
   ModalKey,
   openModal,
   openSubModal,

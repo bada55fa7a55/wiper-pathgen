@@ -7,6 +7,7 @@ export const Link = twc(
     items-center
     gap-1.5
     whitespace-nowrap
+    cursor-pointer
   `,
   {
     variants: {

@@ -1,13 +1,22 @@
 import { actionShareLinkModalOpenedEvent, actionWipingSequenceExportedEvent, track } from 'WiperTool/lib/analytics';
-import { clearModals, isModalOpen, ModalKey, openSubModal, settings, wipingSequence } from 'WiperTool/store';
-import { Button, MaterialSymbol, Modal } from 'components';
+import { clearModals, isModalOpen, ModalKey, openModal, openSubModal, settings, wipingSequence } from 'WiperTool/store';
+import { Button, Link, MaterialSymbol, Modal } from 'components';
 import { createSignal } from 'solid-js';
 import toast from 'solid-toast';
 import { twc } from 'styles';
 import { createShareFile, SHARE_FILE_EXTENSION } from './sharing';
 import { useSaveFile } from './useSaveFile';
 
-const ContentWrapper = twc(
+const Content = twc(
+  'div',
+  `
+    flex
+    flex-col
+    gap-8
+  `,
+);
+
+const ShareOptions = twc(
   'div',
   `
   flex
@@ -115,6 +124,10 @@ export function ShareModal() {
     }
   };
 
+  const handleImportClick = () => {
+    openModal(ModalKey.ImportWipingSequence);
+  };
+
   return (
     <Modal
       title="Sharing Is Caring"
@@ -123,48 +136,65 @@ export function ShareModal() {
       withCloseButton
       onClose={handleCloseModal}
     >
-      <ContentWrapper>
-        <ShareOption>
-          <IconCircle>
-            <MaterialSymbol
-              size={48}
-              symbol="file_save"
-            />
-          </IconCircle>
-          <ShareOptionTitle>Save to disk</ShareOptionTitle>
-          <ShareOptionDescription>
-            Export the wiping sequence to a file from which you can import later
-          </ShareOptionDescription>
-          <ShareAction>
-            <Button
-              renderAs="button"
-              layout="primary"
-              label="Export file"
-              isDisabled={isSaving()}
-              onClick={handleExportFileClick}
-            />
-          </ShareAction>
-        </ShareOption>
-        <ShareOption>
-          <IconCircle>
-            <MaterialSymbol
-              size={48}
-              symbol="link"
-            />
-          </IconCircle>
-          <ShareOptionTitle>Shareable link</ShareOptionTitle>
-          <ShareOptionDescription>Get a read-only link that you can copy and share with others</ShareOptionDescription>
-          <ShareAction>
-            <Button
-              renderAs="button"
-              layout="primary"
-              label="Get link"
-              isDisabled={isSaving()}
-              onClick={handleGetLinkClick}
-            />
-          </ShareAction>
-        </ShareOption>
-      </ContentWrapper>
+      <Content>
+        <p>
+          Share your nozzle wiping sequence with others via link or as a file, or download it to your computer for your
+          personal archive.
+          <br />
+          You can{' '}
+          <Link
+            layout="internal"
+            onClick={handleImportClick}
+          >
+            import
+          </Link>{' '}
+          saved wiping sequences again later.
+        </p>
+        <ShareOptions>
+          <ShareOption>
+            <IconCircle>
+              <MaterialSymbol
+                size={48}
+                symbol="file_save"
+              />
+            </IconCircle>
+            <ShareOptionTitle>Save to disk</ShareOptionTitle>
+            <ShareOptionDescription>
+              Export the wiping sequence to a file from which you can import later
+            </ShareOptionDescription>
+            <ShareAction>
+              <Button
+                renderAs="button"
+                layout="primary"
+                label="Export file"
+                isDisabled={isSaving()}
+                onClick={handleExportFileClick}
+              />
+            </ShareAction>
+          </ShareOption>
+          <ShareOption>
+            <IconCircle>
+              <MaterialSymbol
+                size={48}
+                symbol="link"
+              />
+            </IconCircle>
+            <ShareOptionTitle>Shareable link</ShareOptionTitle>
+            <ShareOptionDescription>
+              Get a read-only link that you can copy and share with others
+            </ShareOptionDescription>
+            <ShareAction>
+              <Button
+                renderAs="button"
+                layout="primary"
+                label="Get link"
+                isDisabled={isSaving()}
+                onClick={handleGetLinkClick}
+              />
+            </ShareAction>
+          </ShareOption>
+        </ShareOptions>
+      </Content>
     </Modal>
   );
 }
