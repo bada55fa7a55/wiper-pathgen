@@ -1,4 +1,5 @@
 import { createMemo, createSignal } from 'solid-js';
+import { resetImportState } from 'WiperTool/sharing/importWipingSequenceState';
 
 export const ModalKey = {
   Share: 'share',
@@ -34,6 +35,7 @@ export function closeModal() {
 
 export function clearModals() {
   setModalStack([]);
+  resetImportState();
 }
 
 export function getModalStack() {

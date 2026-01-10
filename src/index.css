@@ -74,3 +74,11 @@ html {
   white-space: nowrap;
   direction: ltr;
 }
+
+html::before {
+  content: "";
+  position: fixed;
+  inset: 0px;
+  pointer-events: none;
+  z-index: 9999;
+}
