@@ -15,6 +15,7 @@ export type WipingStepSpeedChange = {
 };
 
 export type WipingStep = WipingStepPoint | WipingStepSpeedChange;
+export type WipingSequence = WipingStep[];
 
 export const isWipingStepPoint = (item: WipingStep): item is WipingStepPoint => item.type === 'point';
 
@@ -24,8 +25,8 @@ export const makeWipingStepPoint = (point: Point): WipingStepPoint => ({
   y: point.y,
 });
 
-export const getWipingStepPoints = (sequence: WipingStep[]): Point[] =>
+export const getWipingStepPoints = (sequence: WipingSequence): Point[] =>
   sequence.flatMap((item) => (item.type === 'point' ? [{ x: item.x, y: item.y }] : []));
 
 // Wiping sequence items are stored relative to the pad's top-right corner (calibration-derived) in microns.
-export const [wipingSequence, setWipingSequence] = createSignal<WipingStep[]>([]);
+export const [wipingSequence, setWipingSequence] = createSignal<WipingSequence>([]);

@@ -3,6 +3,16 @@ export {
   isCalibrated,
   setCalibration,
 } from './calibration';
+export {
+  clearModals,
+  closeModal,
+  getActiveModal,
+  getModalStack,
+  isModalOpen,
+  ModalKey,
+  openModal,
+  openSubModal,
+} from './modals';
 export { pad, padTopRight } from './pad';
 export { printer } from './printer';
 export {
@@ -11,7 +21,7 @@ export {
   settings,
 } from './settings';
 export { areStepsCompleteUpTo, StepKey, steps } from './steps';
-export type { Point, WipingStep, WipingStepPoint, WipingStepSpeedChange } from './wipingSequence';
+export type { Point, WipingSequence, WipingStep, WipingStepPoint, WipingStepSpeedChange } from './wipingSequence';
 export {
   getWipingStepPoints,
   isWipingStepPoint,

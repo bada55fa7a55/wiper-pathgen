@@ -1,7 +1,46 @@
-function createEventAttributes({ event, trigger }: { event: string; trigger: string }) {
+import { isDevRuntime } from 'lib/runtime';
+
+type AnalyticsTrigger =
+  | 'global_drop'
+  | 'page_handler'
+  | 'header'
+  | 'warning'
+  | 'hw_setup'
+  | 'footer'
+  | 'intro'
+  | 'drawing'
+  | 'gcode'
+  | 'testing'
+  | 'calibration'
+  | 'settings'
+  | 'hwsetup'
+  | 'import'
+  | 'share'
+  | 'share_link';
+
+type AnalyticsMetadata = Record<string, string | number | boolean | null | undefined>;
+
+type PrefixedMetadata<M extends Partial<AnalyticsMetadata>> = {
+  [K in keyof M as K extends string ? `data-simple-event-${K}` : never]: M[K];
+};
+
+function prefixMetadataAttributes<M extends Partial<AnalyticsMetadata>>(metadata: M): PrefixedMetadata<M> {
+  return Object.fromEntries(
+    Object.entries(metadata).map(([key, value]) => [`data-simple-event-${key}`, value]),
+  ) as PrefixedMetadata<M>;
+}
+
+function createEventAttributes<T extends AnalyticsTrigger, M extends Partial<AnalyticsMetadata>>({
+  event,
+  trigger,
+  ...metadata
+}: { event: string; trigger: T } & M) {
   return {
     'data-simple-event': event,
-    'data-simple-event-trigger': trigger,
+    ...prefixMetadataAttributes({
+      trigger,
+      ...metadata,
+    }),
   };
 }
 
@@ -98,14 +137,14 @@ export function analyticsIntroPrintablesWA2() {
 
 export type AnalyticsEvent = {
   event: string;
-  trigger: string;
-} & Record<string, string | number | boolean | null | undefined>;
+  trigger: AnalyticsTrigger;
+} & AnalyticsMetadata;
 
 export function track(event: AnalyticsEvent) {
   const { event: eventName, ...metadata } = event;
   const saEvent = (window as Window & { sa_event?: (name: string, meta?: Record<string, unknown>) => void }).sa_event;
 
-  if (import.meta.env.DEV) {
+  if (isDevRuntime) {
     console.group(`Analytics: ${eventName}`);
     if (Object.keys(metadata).length > 0) {
       console.table(metadata);
@@ -131,7 +170,7 @@ export function simulationStartedEvent(): AnalyticsEvent {
 
 export function simulationStoppedEvent(): AnalyticsEvent {
   return {
-    event: 'action_simulation_started',
+    event: 'action_simulation_stopped',
     trigger: 'drawing',
   };
 }
@@ -192,5 +231,64 @@ export function settingsValueChangedEvent(field: string, trigger: 'settings' | '
     event: 'action_settings_value_changed',
     trigger,
     field,
+  };
+}
+
+export function actionImportModalOpenedEvent(trigger: AnalyticsTrigger): AnalyticsEvent {
+  return {
+    event: 'action_import_modal_opened',
+    trigger,
+  };
+}
+
+export function actionShareModalOpenedEvent(trigger: AnalyticsTrigger): AnalyticsEvent {
+  return {
+    event: 'action_share_modal_opened',
+    trigger,
+  };
+}
+
+export function sharedLinkModalOpenedEvent(): AnalyticsEvent {
+  return {
+    event: 'action_shared_link_modal_opened',
+    trigger: 'page_handler',
+  };
+}
+
+export function actionShareLinkModalOpenedEvent(trigger: AnalyticsTrigger): AnalyticsEvent {
+  return {
+    event: 'action_share_link_modal_opened',
+    trigger,
+  };
+}
+
+export function actionWipingSequenceExportedEvent(trigger: AnalyticsTrigger): AnalyticsEvent {
+  return {
+    event: 'action_wiping_sequence_exported',
+    trigger,
+  };
+}
+
+export function actionShareLinkCopiedEvent(): AnalyticsEvent {
+  return {
+    event: 'action_share_link_copied',
+    trigger: 'share_link',
+  };
+}
+
+type AnalyticsImportSource = 'token' | 'file';
+
+export function actionWipingSequenceImportedEvent(source: AnalyticsImportSource): AnalyticsEvent {
+  return {
+    event: 'action_wiping_sequence_imported',
+    source,
+    trigger: 'import',
+  };
+}
+export function actionFileDroppedEvent(fileType: string): AnalyticsEvent {
+  return {
+    event: 'action_file_dropped',
+    trigger: 'global_drop',
+    fileType,
   };
 }

@@ -4,10 +4,12 @@ import { Link } from 'components';
 import { styled } from 'solid-styled-components';
 import { twc } from 'styles/helpers';
 import logo from './assets/logo.svg?url';
+import { DropdownMenuButton } from './DropdownMenuButton';
 
 const Container = twc(
   'header',
   `
+  relative
   w-full
   flex
   flex-col
@@ -16,6 +18,23 @@ const Container = twc(
   py-10
   bg-neutral-900
   px-4
+  `,
+);
+
+const ButtonRow = twc(
+  'div',
+  `
+  absolute
+  top-0
+  flex
+  items-center
+  justify-end
+  gap-4
+  w-full
+  px-4
+  py-3
+
+  md:px-8
   `,
 );
 
@@ -112,6 +131,9 @@ export function NormalHeader(props: Props) {
           Research or Bambu Lab.
         </Disclaimer>
       </Disclaimers>
+      <ButtonRow>
+        <DropdownMenuButton layout="ghost" />
+      </ButtonRow>
     </Container>
   );
 }
