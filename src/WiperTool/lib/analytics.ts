@@ -1,3 +1,4 @@
+import type { PrinterKey } from 'WiperTool/configuration';
 import type { WsWriteAction } from 'WiperTool/store/tracking';
 import { isDevRuntime } from 'lib/runtime';
 
@@ -231,6 +232,23 @@ export function gCodeCopiedEvent(wsWriteAction: WsWriteAction | undefined): Anal
     trigger: 'gcode',
     ws_type,
     ws_source,
+  };
+}
+
+export function calibrationValuesUsedEvent(
+  trigger: AnalyticsTrigger,
+  printer: PrinterKey,
+  x: number | undefined,
+  y: number | undefined,
+  z: number | undefined,
+): AnalyticsEvent {
+  return {
+    event: 'calibration_values_used',
+    trigger,
+    printer,
+    x,
+    y,
+    z,
   };
 }
 

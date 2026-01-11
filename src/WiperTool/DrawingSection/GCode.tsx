@@ -1,4 +1,4 @@
-import { gCodeCopiedEvent, track } from 'WiperTool/lib/analytics';
+import { calibrationValuesUsedEvent, gCodeCopiedEvent, track } from 'WiperTool/lib/analytics';
 import { generateGCodeCommands } from 'WiperTool/lib/gcode';
 import {
   calibration,
@@ -104,6 +104,7 @@ export function GCode() {
     navigator.clipboard.writeText(gcode() ?? '');
     showCopied();
     track(gCodeCopiedEvent(lastWipingSequenceWrite()));
+    track(calibrationValuesUsedEvent('gcode', printer().key, calibration.x, calibration.y, calibration.z));
   };
 
   onCleanup(() => {
