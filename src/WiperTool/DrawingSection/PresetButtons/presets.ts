@@ -5,11 +5,11 @@ import { makeWipingStepPoint } from 'WiperTool/store';
 export type PresetType = 'zigzag' | 'zigzag-bidi' | 'hilbert' | 'spiral' | 'crosshatch' | 'ultimate';
 
 export const presetDefinitions: { id: PresetType; label: string }[] = [
+  { id: 'ultimate', label: 'Ultimate Wipe' },
   { id: 'zigzag-bidi', label: 'Bi-Diagonal ZigZag' },
   { id: 'hilbert', label: 'Stretched Hilbert' },
-  { id: 'spiral', label: 'Spiral' },
   { id: 'crosshatch', label: 'Crosshatch' },
-  { id: 'ultimate', label: 'Ultimate Wipe' },
+  { id: 'spiral', label: 'Spiral' },
 ];
 
 type PadGeometry = {
