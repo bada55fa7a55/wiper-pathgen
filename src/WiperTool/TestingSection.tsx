@@ -130,21 +130,21 @@ export function TestingSection() {
                 layout="internal"
                 href={`#${steps()[StepKey.Calibration].anchor}`}
               >
-                calibration section
+                Calibration section
               </Link>{' '}
               and{' '}
               <Link
                 layout="internal"
                 href={`#${steps()[StepKey.Settings].anchor}`}
               >
-                settings section
+                Settings section
               </Link>
               , then draw a wiping path in the{' '}
               <Link
                 layout="internal"
                 href={`#${steps()[StepKey.Drawing].anchor}`}
               >
-                drawing section
+                Drawing section
               </Link>
               .
             </>
@@ -193,7 +193,7 @@ export function TestingSection() {
                   layout="internal"
                   href={`#${steps()[StepKey.Drawing].anchor}`}
                 >
-                  drawing section
+                  Drawing section
                 </Link>{' '}
                 instead.
               </p>

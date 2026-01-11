@@ -72,14 +72,14 @@ export function DrawingSection() {
                 layout="internal"
                 href={`#${steps()[StepKey.Calibration].anchor}`}
               >
-                calibration section
+                Calibration section
               </Link>{' '}
               and{' '}
               <Link
                 layout="internal"
                 href={`#${steps()[StepKey.Settings].anchor}`}
               >
-                settings section
+                Settings section
               </Link>{' '}
               forms before drawing your wiping path.
             </>
@@ -97,7 +97,7 @@ export function DrawingSection() {
                 layout="internal"
                 href={`#${steps()[StepKey.Calibration].anchor}`}
               >
-                calibration section
+                Calibration section
               </Link>{' '}
               and double-check the values.
             </>

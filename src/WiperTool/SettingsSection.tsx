@@ -125,7 +125,7 @@ export function SettingsSection() {
                     layout="internal"
                     href={`#${steps()[StepKey.Calibration].anchor}`}
                   >
-                    calibration section
+                    Calibration section
                   </Link>{' '}
                   before continuing.
                 </>
