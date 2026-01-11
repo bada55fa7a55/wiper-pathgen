@@ -221,22 +221,40 @@ export function TestingSection() {
               <Content>
                 <Description>
                   <p>
-                    This test file is a safe, ready-to-run G-code file to dry-run your wiping sequence. It does the
-                    following:
+                    <strong>Don't skip this. Run this once to verify your wiping sequence is safe.</strong>
+                    <br />
+                    This test file is a slowed-down, ready-to-run G-code file to dry-run your wiping sequence without
+                    actually printing anything.
                   </p>
+                  <p>It does the following:</p>
                   <OrderedList>
-                    <li>Printer and firmware compatibility check</li>
-                    <li>Auto-home</li>
-                    <li>Move to the parking position, where the nozzle would normally wait for temperature</li>
-                    <li>Perform the wiping sequence you created above</li>
-                    <li>Move to the center of the bed to mimic moving to the probing position</li>
-                    <li>Turn off motors</li>
+                    <li>
+                      <strong>Check compatibility</strong> with your printer / firmware
+                    </li>
+                    <li>
+                      <strong>Auto-home</strong>
+                    </li>
+                    <li>
+                      <strong>Move to the parking position</strong> where the nozzle would normally wait for temperature
+                    </li>
+                    <li>
+                      <strong>Run the wiping sequence</strong> that you created
+                    </li>
+                    <li>
+                      <strong>Move to the bed center</strong> (mimics going to the probing area)
+                    </li>
+                    <li>
+                      <strong>Disable motors</strong>
+                    </li>
                   </OrderedList>
                   <p>
-                    The test file runs at {formatPercentString(feedRateMultiplierValue())} of your configured feed rate
-                    ({feedRateMultiplierValue() * (settings?.feedRate ?? 0)} mm/min). The slower speed gives you time to
-                    press the Reset button if you need to stop it and reduces the chance of damage if something
-                    collides.
+                    The test file{' '}
+                    <strong>
+                      runs at {formatPercentString(feedRateMultiplierValue())} of your configured feed rate (
+                      {feedRateMultiplierValue() * (settings?.feedRate ?? 0)} mm/min)
+                    </strong>
+                    . The slower speed gives you time to press the Reset button if you need to stop it and reduces the
+                    chance of damage if something collides.
                   </p>
                   <p>
                     It does not heat up the nozzle, so make sure there aren't any dangling filament bits stuck to the
