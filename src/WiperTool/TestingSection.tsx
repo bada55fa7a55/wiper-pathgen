@@ -133,7 +133,13 @@ export function TestingSection() {
   const isReadyToPrint = () => areStepsCompleteUpTo(StepKey.Testing);
   const isDisabled = () => !isReadyToPrint() || !testGCode();
 
-  const fileName = createMemo(() => `wiper-path-test-${formatPercent(feedRateMultiplierValue())}p.gcode`);
+  const fileName = createMemo(() => {
+    const lastWrite = lastWipingSequenceWrite();
+    if (lastWrite && lastWrite.type === 'preset') {
+      return `${lastWrite.preset}-preset-test-${formatPercent(feedRateMultiplierValue())}p.gcode`;
+    }
+    return `wiper-path-test-${formatPercent(feedRateMultiplierValue())}p.gcode`;
+  });
 
   const handleDownloadGCodeClick = () => {
     const content = testGCode();
