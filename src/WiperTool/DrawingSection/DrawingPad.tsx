@@ -320,7 +320,7 @@ export function DrawingPad() {
           />
         </CanvasFrame>
         <Show when={sequencePoints().length === 0}>
-          <DrawingHint>Click to add draw wiping path</DrawingHint>
+          <DrawingHint>Click to draw wiping path</DrawingHint>
         </Show>
         <Show
           keyed
