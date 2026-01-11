@@ -66,6 +66,7 @@ const PresetPreview = (props: { type: PresetType }) => {
 
 type Props = {
   layout: 'secondary' | 'ghost';
+  isDisabled?: boolean;
 };
 
 export function PresetsDropdownButton(props: Props) {
@@ -98,6 +99,7 @@ export function PresetsDropdownButton(props: Props) {
         ref={(el) => {
           triggerRef = el;
         }}
+        isDisabled={props.isDisabled}
         onClick={handleToggleDropdown}
       />
       {isDropdownOpen() && (
@@ -119,6 +121,7 @@ export function PresetsDropdownButton(props: Props) {
                   <PresetButtonLabel>{preset.label}</PresetButtonLabel>
                 </PresetButtonContent>
               }
+              isDisabled={props.isDisabled}
               onClick={() => handlePresetClick(preset.id)}
             />
           ))}
