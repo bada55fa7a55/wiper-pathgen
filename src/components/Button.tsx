@@ -4,7 +4,7 @@ import { MaterialSymbol } from './MaterialSymbol';
 
 const containerStyles = `
   relative
-  inline-flex
+  flex
   items-center
   justify-center
   gap-2
