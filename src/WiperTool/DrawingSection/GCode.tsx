@@ -1,6 +1,14 @@
 import { gCodeCopiedEvent, track } from 'WiperTool/lib/analytics';
 import { generateGCodeCommands } from 'WiperTool/lib/gcode';
-import { calibration, getWipingStepPoints, padTopRight, printer, settings, wipingSequence } from 'WiperTool/store';
+import {
+  calibration,
+  getWipingStepPoints,
+  lastWipingSequenceWrite,
+  padTopRight,
+  printer,
+  settings,
+  wipingSequence,
+} from 'WiperTool/store';
 import { Button, CodeTextArea } from 'components';
 import { createMemo, createSignal, onCleanup, Show } from 'solid-js';
 import { twc } from 'styles/helpers';
@@ -95,7 +103,7 @@ export function GCode() {
   const handleCopyGCodeClick = () => {
     navigator.clipboard.writeText(gcode() ?? '');
     showCopied();
-    track(gCodeCopiedEvent());
+    track(gCodeCopiedEvent(lastWipingSequenceWrite()));
   };
 
   onCleanup(() => {

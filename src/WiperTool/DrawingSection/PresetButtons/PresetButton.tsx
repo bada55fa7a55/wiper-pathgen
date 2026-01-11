@@ -1,6 +1,6 @@
 import { WipingSequencePreviewSvg } from 'WiperTool/DrawingSection/PresetButtons/WipingSequencePreviewSvg';
 import { drawingPresetAppliedEvent, track } from 'WiperTool/lib/analytics';
-import { pad, setWipingSequence } from 'WiperTool/store';
+import { pad, setLastWipingSequenceWrite, setWipingSequence } from 'WiperTool/store';
 import { Button, Tooltip } from 'components';
 import { createMemo } from 'solid-js';
 import { twc } from 'styles';
@@ -44,6 +44,7 @@ export function PresetButton(props: Props) {
 
   const handleButtonClick = () => {
     setWipingSequence(generatePresetSequence(props.presetKey, pad()));
+    setLastWipingSequenceWrite({ type: 'preset', preset: props.presetKey });
     track(drawingPresetAppliedEvent(props.presetKey));
   };
 

@@ -22,6 +22,7 @@ export {
   settings,
 } from './settings';
 export { areStepsCompleteUpTo, StepKey, steps } from './steps';
+export { lastWipingSequenceWrite, setLastWipingSequenceWrite } from './tracking';
 export type { Point, WipingSequence, WipingStep, WipingStepPoint, WipingStepSpeedChange } from './wipingSequence';
 export {
   getWipingStepPoints,

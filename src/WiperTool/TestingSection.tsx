@@ -5,6 +5,7 @@ import {
   areStepsCompleteUpTo,
   calibration,
   getWipingStepPoints,
+  lastWipingSequenceWrite,
   padTopRight,
   printer,
   StepKey,
@@ -108,7 +109,7 @@ export function TestingSection() {
     link.click();
     URL.revokeObjectURL(url);
 
-    track(testGCodeDownloadedEvent());
+    track(testGCodeDownloadedEvent(lastWipingSequenceWrite()));
   };
 
   return (

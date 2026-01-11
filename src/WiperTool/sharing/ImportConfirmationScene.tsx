@@ -1,7 +1,7 @@
 import type { PadKey, PrinterKey } from 'WiperTool/configuration';
 import { actionWipingSequenceImportedEvent, track } from 'WiperTool/lib/analytics';
 import type { WipingSequence } from 'WiperTool/store';
-import { clearModals, StepKey, setWipingSequence, steps } from 'WiperTool/store';
+import { clearModals, StepKey, setLastWipingSequenceWrite, setWipingSequence, steps } from 'WiperTool/store';
 import { Button, WarningMessage } from 'components';
 import { createSignal } from 'solid-js';
 import { twc } from 'styles';
@@ -92,6 +92,7 @@ export function ImportConfirmationScene(props: Props) {
       clearShareTokenFromUrl();
     }
     setWipingSequence(props.wipingSequence);
+    setLastWipingSequenceWrite({ type: 'import', source: props.source });
     showImported(() => {
       clearModals();
       scrollToNextStep();

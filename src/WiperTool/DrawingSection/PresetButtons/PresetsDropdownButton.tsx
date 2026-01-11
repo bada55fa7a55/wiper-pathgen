@@ -1,6 +1,6 @@
 import { WipingSequencePreviewSvg } from 'WiperTool/DrawingSection/PresetButtons/WipingSequencePreviewSvg';
 import { drawingPresetAppliedEvent, track } from 'WiperTool/lib/analytics';
-import { pad, setWipingSequence } from 'WiperTool/store';
+import { pad, setLastWipingSequenceWrite, setWipingSequence } from 'WiperTool/store';
 import { Button, Dropdown } from 'components';
 import { createMemo, createSignal } from 'solid-js';
 import { twc } from 'styles';
@@ -82,6 +82,7 @@ export function PresetsDropdownButton(props: Props) {
 
   const handlePresetClick = (presetKey: PresetKey) => {
     setWipingSequence(generatePresetSequence(presetKey, pad()));
+    setLastWipingSequenceWrite({ type: 'preset', preset: presetKey });
     track(drawingPresetAppliedEvent(presetKey));
     handleCloseDropdown();
   };
