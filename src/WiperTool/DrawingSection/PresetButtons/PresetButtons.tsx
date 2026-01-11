@@ -30,11 +30,19 @@ const RowOuter = twc(
 const RowInner = twc(
   'div',
   `
-  inline-flex
+  flex
   flex-row
   flex-nowrap
   items-center
   gap-3
+  `,
+);
+
+const PresetButtonWrapper = twc(
+  'div',
+  `
+  hidden
+  sm:block
   `,
 );
 
@@ -145,11 +153,13 @@ export function PresetButtons() {
         >
           <PresetsLabel isDisabled={isDisabled()}>Presets:</PresetsLabel>
           {presetDefinitions.slice(0, visibleCount()).map((preset) => (
-            <PresetButton
-              presetKey={preset.id}
-              label={preset.label}
-              isDisabled={isDisabled()}
-            />
+            <PresetButtonWrapper>
+              <PresetButton
+                presetKey={preset.id}
+                label={preset.label}
+                isDisabled={isDisabled()}
+              />
+            </PresetButtonWrapper>
           ))}
           <PresetsDropdownButton
             layout="secondary"

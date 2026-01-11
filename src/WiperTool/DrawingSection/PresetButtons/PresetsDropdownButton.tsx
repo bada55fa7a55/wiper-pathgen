@@ -4,7 +4,6 @@ import { pad, setWipingSequence } from 'WiperTool/store';
 import { Button, Dropdown } from 'components';
 import { createMemo, createSignal } from 'solid-js';
 import { twc } from 'styles';
-import { isPadCutOff } from '../helpers';
 import type { PresetType } from './presets';
 import { generatePresetSequence, presetDefinitions } from './presets';
 
@@ -94,7 +93,12 @@ export function PresetsDropdownButton(props: Props) {
         layout={props.layout}
         msIcon={isDropdownOpen() ? 'arrow_drop_up' : 'arrow_drop_down'}
         iconPosition="right"
-        label="All presets"
+        label={
+          <>
+            <span class="hidden sm:inline">All presets</span>
+            <span class="sm:hidden">Select preset</span>
+          </>
+        }
         title="Menu"
         ref={(el) => {
           triggerRef = el;
@@ -114,7 +118,6 @@ export function PresetsDropdownButton(props: Props) {
               renderAs="button"
               layout="shark"
               type="button"
-              title={isPadCutOff() ? 'Only available when full pad is reachable by the nozzle' : undefined}
               content={
                 <PresetButtonContent>
                   <PresetPreview type={preset.id} />
