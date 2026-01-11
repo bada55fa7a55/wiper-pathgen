@@ -1,3 +1,5 @@
+import type { PrinterKey } from 'WiperTool/configuration';
+import type { WsWriteAction } from 'WiperTool/store/tracking';
 import { isDevRuntime } from 'lib/runtime';
 
 type AnalyticsTrigger =
@@ -42,6 +44,22 @@ function createEventAttributes<T extends AnalyticsTrigger, M extends Partial<Ana
       ...metadata,
     }),
   };
+}
+
+function marshalWsWriteAction(wsWriteAction: WsWriteAction | undefined) {
+  if (!wsWriteAction) {
+    return ['unknown', undefined];
+  }
+  switch (wsWriteAction.type) {
+    case 'point':
+      return ['point', undefined];
+    case 'preset':
+      return ['preset', wsWriteAction.preset];
+    case 'import':
+      return ['import', wsWriteAction.source];
+    default:
+      return unreachable(wsWriteAction);
+  }
 }
 
 export function analyticsHeaderPrintablesWA2() {
@@ -161,10 +179,13 @@ export function track(event: AnalyticsEvent) {
   saEvent(eventName, metadata);
 }
 
-export function simulationStartedEvent(): AnalyticsEvent {
+export function simulationStartedEvent(wsWriteAction: WsWriteAction | undefined): AnalyticsEvent {
+  const [ws_type, ws_source] = marshalWsWriteAction(wsWriteAction);
   return {
     event: 'action_simulation_started',
     trigger: 'drawing',
+    ws_type,
+    ws_source,
   };
 }
 
@@ -204,17 +225,40 @@ export function drawingPresetAppliedEvent(preset: string): AnalyticsEvent {
   };
 }
 
-export function gCodeCopiedEvent(): AnalyticsEvent {
+export function gCodeCopiedEvent(wsWriteAction: WsWriteAction | undefined): AnalyticsEvent {
+  const [ws_type, ws_source] = marshalWsWriteAction(wsWriteAction);
   return {
     event: 'action_gcode_copied',
     trigger: 'gcode',
+    ws_type,
+    ws_source,
   };
 }
 
-export function testGCodeDownloadedEvent(): AnalyticsEvent {
+export function calibrationValuesUsedEvent(
+  trigger: AnalyticsTrigger,
+  printer: PrinterKey,
+  x: number | undefined,
+  y: number | undefined,
+  z: number | undefined,
+): AnalyticsEvent {
+  return {
+    event: 'calibration_values_used',
+    trigger,
+    printer,
+    x,
+    y,
+    z,
+  };
+}
+
+export function testGCodeDownloadedEvent(wsWriteAction: WsWriteAction | undefined): AnalyticsEvent {
+  const [ws_type, ws_source] = marshalWsWriteAction(wsWriteAction);
   return {
     event: 'action_test_gcode_downloaded',
     trigger: 'testing',
+    ws_type,
+    ws_source,
   };
 }
 
@@ -262,17 +306,26 @@ export function actionShareLinkModalOpenedEvent(trigger: AnalyticsTrigger): Anal
   };
 }
 
-export function actionWipingSequenceExportedEvent(trigger: AnalyticsTrigger): AnalyticsEvent {
+export function actionWipingSequenceExportedEvent(
+  trigger: AnalyticsTrigger,
+  wsWriteAction: WsWriteAction | undefined,
+): AnalyticsEvent {
+  const [ws_type, ws_source] = marshalWsWriteAction(wsWriteAction);
   return {
     event: 'action_wiping_sequence_exported',
     trigger,
+    ws_type,
+    ws_source,
   };
 }
 
-export function actionShareLinkCopiedEvent(): AnalyticsEvent {
+export function actionShareLinkCopiedEvent(wsWriteAction: WsWriteAction | undefined): AnalyticsEvent {
+  const [ws_type, ws_source] = marshalWsWriteAction(wsWriteAction);
   return {
     event: 'action_share_link_copied',
     trigger: 'share_link',
+    ws_type,
+    ws_source,
   };
 }
 

@@ -12,6 +12,7 @@ import type { Point } from 'WiperTool/store';
 import {
   calibration,
   getWipingStepPoints,
+  lastWipingSequenceWrite,
   ModalKey,
   makeWipingStepPoint,
   openModal,
@@ -19,6 +20,7 @@ import {
   padTopRight,
   printer,
   StepKey,
+  setLastWipingSequenceWrite,
   settings,
   setWipingSequence,
   steps,
@@ -159,7 +161,7 @@ export function DrawingPad() {
       return;
     }
     simulation.startSimulation();
-    track(simulationStartedEvent());
+    track(simulationStartedEvent(lastWipingSequenceWrite()));
   };
 
   const handleImportClick = () => {
@@ -175,6 +177,7 @@ export function DrawingPad() {
   const handleAddPoint = (absPoint: Point) => {
     const relPoint = toRelative(absPoint);
     setWipingSequence((sequence) => [...sequence, makeWipingStepPoint(relPoint)]);
+    setLastWipingSequenceWrite({ type: 'point' });
     track(drawingPointAddedEvent());
   };
 

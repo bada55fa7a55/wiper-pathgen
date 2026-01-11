@@ -1,10 +1,11 @@
-import { testGCodeDownloadedEvent, track } from 'WiperTool/lib/analytics';
+import { calibrationValuesUsedEvent, testGCodeDownloadedEvent, track } from 'WiperTool/lib/analytics';
 import { formatPercent, formatPercentString } from 'WiperTool/lib/formatting';
 import { generateTestGCodeCommands } from 'WiperTool/lib/gcode';
 import {
   areStepsCompleteUpTo,
   calibration,
   getWipingStepPoints,
+  lastWipingSequenceWrite,
   padTopRight,
   printer,
   StepKey,
@@ -108,7 +109,8 @@ export function TestingSection() {
     link.click();
     URL.revokeObjectURL(url);
 
-    track(testGCodeDownloadedEvent());
+    track(testGCodeDownloadedEvent(lastWipingSequenceWrite()));
+    track(calibrationValuesUsedEvent('testing', printer().key, calibration.x, calibration.y, calibration.z));
   };
 
   return (

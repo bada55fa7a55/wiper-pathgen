@@ -5,6 +5,7 @@ import type { JSX } from 'solid-js';
 import { createEffect, createSignal, onCleanup, onMount } from 'solid-js';
 
 type Position = 'left' | 'right' | 'top' | 'bottom';
+type Align = 'start' | 'center' | 'end';
 
 const defaultOffset = 8;
 
@@ -14,6 +15,7 @@ type Options = {
   position: () => Position;
   isSmallViewport: () => boolean;
   offset?: number;
+  align?: () => Align;
 };
 
 export function useFloatingPosition(options: Options) {
@@ -45,8 +47,17 @@ export function useFloatingPosition(options: Options) {
       let left = anchorRect.left;
       let top = anchorRect.bottom + offset;
       const position = options.position();
+      const align = options.align?.() ?? 'start';
 
-      if (position === 'right' || position === 'top') {
+      if (position === 'top' || position === 'bottom') {
+        if (align === 'center') {
+          left = anchorRect.left + (anchorRect.width - elRect.width) / 2;
+        } else if (align === 'end') {
+          left = anchorRect.right - elRect.width;
+        } else {
+          left = anchorRect.left;
+        }
+      } else if (position === 'right') {
         left = anchorRect.right - elRect.width;
       }
       if (position === 'top') {
