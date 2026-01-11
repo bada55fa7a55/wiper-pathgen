@@ -2,14 +2,14 @@ import type { PadProperties } from 'WiperTool/configuration';
 import type { Point, WipingSequence } from 'WiperTool/store';
 import { makeWipingStepPoint } from 'WiperTool/store';
 
-export type PresetType = 'zigzag' | 'zigzag-bidi' | 'hilbert' | 'spiral' | 'crosshatch' | 'ultimate';
+export type PresetKey = 'zigzag' | 'zigzag-bidi' | 'hilbert' | 'spiral' | 'crosshatch' | 'ultimate';
 
-export const presetDefinitions: { id: PresetType; label: string }[] = [
-  { id: 'ultimate', label: 'Ultimate Wipe' },
-  { id: 'zigzag-bidi', label: 'Bi-Diagonal ZigZag' },
-  { id: 'hilbert', label: 'Stretched Hilbert' },
-  { id: 'crosshatch', label: 'Crosshatch' },
-  { id: 'spiral', label: 'Spiral' },
+export const presetDefinitions: { key: PresetKey; label: string }[] = [
+  { key: 'ultimate', label: 'Ultimate Wipe' },
+  { key: 'zigzag-bidi', label: 'Bi-Diagonal ZigZag' },
+  { key: 'hilbert', label: 'Stretched Hilbert' },
+  { key: 'crosshatch', label: 'Crosshatch' },
+  { key: 'spiral', label: 'Spiral' },
 ];
 
 type PadGeometry = {
@@ -206,10 +206,10 @@ const buildCrosshatch = (geom: PadGeometry, rows: number, cols: number): Point[]
   return pts;
 };
 
-export const generatePresetSequence = (type: PresetType, pad: PadProperties): WipingSequence => {
+export const generatePresetSequence = (presetKey: PresetKey, pad: PadProperties): WipingSequence => {
   const padGeometry = getPadGeometry(pad);
   const path: Point[] = (() => {
-    switch (type) {
+    switch (presetKey) {
       case 'zigzag':
         return buildZigZag(padGeometry);
       case 'zigzag-bidi':

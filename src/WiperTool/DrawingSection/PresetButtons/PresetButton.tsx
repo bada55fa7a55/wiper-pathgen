@@ -5,7 +5,7 @@ import { Button, Tooltip } from 'components';
 import { createMemo } from 'solid-js';
 import { twc } from 'styles';
 import { isPadCutOff } from '../helpers';
-import type { PresetType } from './presets';
+import type { PresetKey } from './presets';
 import { generatePresetSequence } from './presets';
 
 const PresetPreviewFrame = twc(
@@ -18,8 +18,8 @@ const PresetPreviewFrame = twc(
   `,
 );
 
-const PresetPreview = (props: { type: PresetType }) => {
-  const sequence = createMemo(() => generatePresetSequence(props.type, pad()));
+const PresetPreview = (props: { presetKey: PresetKey }) => {
+  const sequence = createMemo(() => generatePresetSequence(props.presetKey, pad()));
   const padAspect = createMemo(() => pad().width / pad().height);
 
   return (
@@ -34,7 +34,7 @@ const PresetPreview = (props: { type: PresetType }) => {
 };
 
 type Props = {
-  presetKey: PresetType;
+  presetKey: PresetKey;
   label: string;
   isDisabled?: boolean;
 };
@@ -65,7 +65,7 @@ export function PresetButton(props: Props) {
         type="button"
         size="lg-p0"
         title={isPadCutOff() ? 'Only available when full pad is reachable by the nozzle' : undefined}
-        content={<PresetPreview type={props.presetKey} />}
+        content={<PresetPreview presetKey={props.presetKey} />}
         isDisabled={props.isDisabled}
         onClick={handleButtonClick}
       />

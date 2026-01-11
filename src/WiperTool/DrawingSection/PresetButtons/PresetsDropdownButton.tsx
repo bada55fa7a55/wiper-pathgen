@@ -4,7 +4,7 @@ import { pad, setWipingSequence } from 'WiperTool/store';
 import { Button, Dropdown } from 'components';
 import { createMemo, createSignal } from 'solid-js';
 import { twc } from 'styles';
-import type { PresetType } from './presets';
+import type { PresetKey } from './presets';
 import { generatePresetSequence, presetDefinitions } from './presets';
 
 const DropdownWrapper = twc(
@@ -48,8 +48,8 @@ const PresetButtonLabel = twc(
   `,
 );
 
-const PresetPreview = (props: { type: PresetType }) => {
-  const sequence = createMemo(() => generatePresetSequence(props.type, pad()));
+const PresetPreview = (props: { presetKey: PresetKey }) => {
+  const sequence = createMemo(() => generatePresetSequence(props.presetKey, pad()));
   const padAspect = createMemo(() => pad().width / pad().height);
 
   return (
@@ -80,9 +80,9 @@ export function PresetsDropdownButton(props: Props) {
     setIsDropdownOpen((previousValue) => !previousValue);
   };
 
-  const handlePresetClick = (type: PresetType) => {
-    setWipingSequence(generatePresetSequence(type, pad()));
-    track(drawingPresetAppliedEvent(type));
+  const handlePresetClick = (presetKey: PresetKey) => {
+    setWipingSequence(generatePresetSequence(presetKey, pad()));
+    track(drawingPresetAppliedEvent(presetKey));
     handleCloseDropdown();
   };
 
@@ -120,12 +120,12 @@ export function PresetsDropdownButton(props: Props) {
               type="button"
               content={
                 <PresetButtonContent>
-                  <PresetPreview type={preset.id} />
+                  <PresetPreview presetKey={preset.key} />
                   <PresetButtonLabel>{preset.label}</PresetButtonLabel>
                 </PresetButtonContent>
               }
               isDisabled={props.isDisabled}
-              onClick={() => handlePresetClick(preset.id)}
+              onClick={() => handlePresetClick(preset.key)}
             />
           ))}
         </Dropdown>

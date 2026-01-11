@@ -155,7 +155,7 @@ export function PresetButtons() {
           {presetDefinitions.slice(0, visibleCount()).map((preset) => (
             <PresetButtonWrapper>
               <PresetButton
-                presetKey={preset.id}
+                presetKey={preset.key}
                 label={preset.label}
                 isDisabled={isDisabled()}
               />
