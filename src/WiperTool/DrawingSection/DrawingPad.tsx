@@ -140,6 +140,29 @@ const Legend = twc(
   `,
 );
 
+const DrawingHint = twc(
+  'div',
+  `
+    absolute
+    top-0
+    bottom-0
+    left-0
+    right-0
+    
+    flex
+    justify-center
+    items-center
+
+    text-xl
+    text-shark-300
+    
+    pointer-events-none
+    text-shadow-lg/30
+
+    hover:hidden
+  `,
+);
+
 export function DrawingPad() {
   const [cursorMicrons, setCursorMicrons] = createSignal<Point | null>(null);
 
@@ -296,6 +319,9 @@ export function DrawingPad() {
             padTopRight={padTopRight()}
           />
         </CanvasFrame>
+        <Show when={sequencePoints().length === 0}>
+          <DrawingHint>Click to add draw wiping path</DrawingHint>
+        </Show>
         <Show
           keyed
           when={cursorMicrons()}

@@ -140,7 +140,12 @@ export function ImportWipingSequenceModal() {
         </Match>
         <Match when={['idle', 'failure'].includes(importState().status)}>
           <Content>
-            <Description>Import a wiping sequence .json file.</Description>
+            <Description>
+              Import a wiping sequence <code>.json</code> file that you have previously exported or that has been shared
+              with you.
+              <br />
+              You can preview the sequence in the next step.
+            </Description>
             <DropZone isDropping={isDroppingFile()}>
               <DropZoneContent>
                 <div>

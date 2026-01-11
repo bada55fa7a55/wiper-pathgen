@@ -25,8 +25,15 @@ const PreviewWrapper = twc(
   `
   flex
   flex-col
-  gap-1
+  gap-2
   w-full
+  `,
+);
+
+const PreviewDescription = twc(
+  'p',
+  `
+  text-sm
   `,
 );
 
@@ -50,9 +57,9 @@ const Label = twc(
 );
 
 const Description = twc(
-  'div',
+  'p',
   `
-    text-md
+  text-md
   `,
 );
 
@@ -112,6 +119,7 @@ export function ImportConfirmationScene(props: Props) {
 
   return (
     <Content>
+      <Description>The wiping sequence will be directly applied to the drawing pad once you confirm.</Description>
       <PreviewWrapper>
         <Label>Preview:</Label>
         <PreviewWipingSequenceCanvas
@@ -119,8 +127,8 @@ export function ImportConfirmationScene(props: Props) {
           padKey={props.padKey}
           wipingSequence={props.wipingSequence}
         />
+        <PreviewDescription>Here's a preview of the wiping sequence that you are about to import.</PreviewDescription>
       </PreviewWrapper>
-      <Description>Here's a preview of the wiping sequence that you are about to import.</Description>
       {!steps()[StepKey.Calibration].isComplete && (
         <WarningMessage
           title="Note:"
