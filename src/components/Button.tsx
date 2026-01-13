@@ -4,7 +4,7 @@ import { MaterialSymbol } from './MaterialSymbol';
 
 const containerStyles = `
   relative
-  inline-flex
+  flex
   items-center
   justify-center
   gap-2
@@ -34,6 +34,15 @@ const containerStylesVariants = {
         border
         border-zinc-700
         text-shark-100
+        `,
+      shark: `
+        bg-shark-700
+        hover:bg-shark-600
+        active:bg-shark-500
+        border
+        border-shark-500
+        text-orange-400
+        hover:text-porange-500
         `,
       ghost: `
         hover:bg-zinc-700
@@ -73,6 +82,11 @@ const containerStylesVariants = {
         text-sm
         leading-6
         p-2
+        `,
+      'lg-p0': `
+        text-sm
+        leading-10
+        p-0
         `,
     },
   },
@@ -141,12 +155,14 @@ const Label = twc('span', '', {
 });
 
 type CommonProps = {
-  layout: 'primary' | 'secondary' | 'ghost' | 'danger' | 'list' | 'list-success';
-  size?: 'lg' | 'sm';
+  layout: 'primary' | 'secondary' | 'shark' | 'ghost' | 'danger' | 'list' | 'list-success';
+  size?: 'lg' | 'sm' | 'lg-p0';
   msIcon?: string;
   title?: string;
-  label: JSX.Element;
+  label?: JSX.Element;
+  content?: JSX.Element;
   status?: 'success' | 'processing' | undefined;
+  iconPosition?: 'left' | 'right';
   isDisabled?: boolean;
   withHiddenLabel?: boolean;
   withResponsiveLabel?: boolean;
@@ -205,13 +221,22 @@ export function Button(props: Props) {
           ref={props.ref}
           onClick={props.onClick}
         >
-          {props.msIcon && (
+          {props.msIcon && props.iconPosition !== 'right' && (
             <MaterialSymbol
               size={24}
               symbol={props.msIcon}
             />
           )}
-          {!props.withHiddenLabel && <Label isResponsive={props.withResponsiveLabel}>{props.label}</Label>}
+          {props.label && !props.withHiddenLabel && (
+            <Label isResponsive={props.withResponsiveLabel}>{props.label}</Label>
+          )}
+          {props.content}
+          {props.msIcon && props.iconPosition === 'right' && (
+            <MaterialSymbol
+              size={24}
+              symbol={props.msIcon}
+            />
+          )}
           {renderOverlay()}
         </LinkContainer>
       );
@@ -226,13 +251,22 @@ export function Button(props: Props) {
           onClick={props.onClick}
           ref={props.ref}
         >
-          {props.msIcon && (
+          {props.msIcon && props.iconPosition !== 'right' && (
             <MaterialSymbol
               size={24}
               symbol={props.msIcon}
             />
           )}
-          {!props.withHiddenLabel && <Label isResponsive={props.withResponsiveLabel}>{props.label}</Label>}
+          {props.label && !props.withHiddenLabel && (
+            <Label isResponsive={props.withResponsiveLabel}>{props.label}</Label>
+          )}
+          {props.content}
+          {props.msIcon && props.iconPosition === 'right' && (
+            <MaterialSymbol
+              size={24}
+              symbol={props.msIcon}
+            />
+          )}
           {renderOverlay()}
         </ButtonContainer>
       );

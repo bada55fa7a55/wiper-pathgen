@@ -1,5 +1,14 @@
 import { actionShareLinkCopiedEvent, track } from 'WiperTool/lib/analytics';
-import { clearModals, closeModal, isModalOpen, ModalKey, settings, wipingSequence } from 'WiperTool/store';
+import {
+  clearModals,
+  closeModal,
+  isModalOpen,
+  isSubModal,
+  lastWipingSequenceWrite,
+  ModalKey,
+  settings,
+  wipingSequence,
+} from 'WiperTool/store';
 import { Button, CodeTextArea, Modal } from 'components';
 import { createMemo, createSignal } from 'solid-js';
 import { twc } from 'styles';
@@ -12,7 +21,16 @@ const Content = twc(
   gap-4
   
   flex-col
-  items-center
+  `,
+);
+
+const LinkPreviewContainer = twc(
+  'div',
+  `
+  flex
+  gap-2
+  
+  flex-col
   `,
 );
 
@@ -46,7 +64,7 @@ const Label = twc(
   `,
 );
 
-const Description = twc(
+const PreviewDescription = twc(
   'p',
   `
   text-sm
@@ -82,7 +100,7 @@ export function ShareLinkModal() {
   };
 
   const handleCopyLinkClick = () => {
-    track(actionShareLinkCopiedEvent());
+    track(actionShareLinkCopiedEvent(lastWipingSequenceWrite()));
     navigator.clipboard.writeText(buildShareUrl(encoded()));
     showCopied();
   };
@@ -90,30 +108,38 @@ export function ShareLinkModal() {
   return (
     <Modal
       title="Share Link"
-      footerContent="Links are private and are not saved on a server."
+      footerContent={
+        <>
+          Links are private and are not saved on a server. <br />
+          The entire wiping sequence is contained in the link.
+        </>
+      }
       withFooterContentAboveActions
       isOpen={isModalOpen(ModalKey.ShareLink)}
       withCloseButton
       onClose={handleCloseModal}
     >
       <Content>
-        <TextAreaWrapper>
-          <Label>Link:</Label>
-          <CodeTextArea
-            readOnly
-            value={buildShareUrl(encoded())}
-          />
-        </TextAreaWrapper>
-        <Description>
-          Copy the above link and share it via email, your favorite messenger app, or post it online.
-        </Description>
+        <p>Copy the link below and share it via email, your favorite messenger app, or post it online.</p>
+        <LinkPreviewContainer>
+          <TextAreaWrapper>
+            <Label>Link:</Label>
+            <CodeTextArea
+              readOnly
+              value={buildShareUrl(encoded())}
+            />
+          </TextAreaWrapper>
+          <PreviewDescription>The link contains the full wiping sequence.</PreviewDescription>
+        </LinkPreviewContainer>
         <Actions>
-          <Button
-            renderAs="button"
-            layout="secondary"
-            label="Back"
-            onClick={handleBackClick}
-          />
+          {isSubModal() && (
+            <Button
+              renderAs="button"
+              layout="secondary"
+              label="Back"
+              onClick={handleBackClick}
+            />
+          )}
           <Button
             renderAs="button"
             layout="primary"

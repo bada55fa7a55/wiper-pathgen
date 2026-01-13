@@ -12,6 +12,7 @@ import type { Point } from 'WiperTool/store';
 import {
   calibration,
   getWipingStepPoints,
+  lastWipingSequenceWrite,
   ModalKey,
   makeWipingStepPoint,
   openModal,
@@ -19,6 +20,7 @@ import {
   padTopRight,
   printer,
   StepKey,
+  setLastWipingSequenceWrite,
   settings,
   setWipingSequence,
   steps,
@@ -138,6 +140,29 @@ const Legend = twc(
   `,
 );
 
+const DrawingHint = twc(
+  'div',
+  `
+    absolute
+    top-0
+    bottom-0
+    left-0
+    right-0
+    
+    flex
+    justify-center
+    items-center
+
+    text-xl
+    text-shark-300
+    
+    pointer-events-none
+    text-shadow-lg/30
+
+    hover:hidden
+  `,
+);
+
 export function DrawingPad() {
   const [cursorMicrons, setCursorMicrons] = createSignal<Point | null>(null);
 
@@ -159,7 +184,7 @@ export function DrawingPad() {
       return;
     }
     simulation.startSimulation();
-    track(simulationStartedEvent());
+    track(simulationStartedEvent(lastWipingSequenceWrite()));
   };
 
   const handleImportClick = () => {
@@ -175,6 +200,7 @@ export function DrawingPad() {
   const handleAddPoint = (absPoint: Point) => {
     const relPoint = toRelative(absPoint);
     setWipingSequence((sequence) => [...sequence, makeWipingStepPoint(relPoint)]);
+    setLastWipingSequenceWrite({ type: 'point' });
     track(drawingPointAddedEvent());
   };
 
@@ -293,6 +319,9 @@ export function DrawingPad() {
             padTopRight={padTopRight()}
           />
         </CanvasFrame>
+        <Show when={sequencePoints().length === 0}>
+          <DrawingHint>Click to draw wiping path</DrawingHint>
+        </Show>
         <Show
           keyed
           when={cursorMicrons()}

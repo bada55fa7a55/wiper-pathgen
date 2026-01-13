@@ -15,6 +15,7 @@ export { SectionColumn, SectionColumns } from './SectionColumns';
 export { SectionIntro } from './SectionIntro';
 export { SectionTitle } from './SectionTitle';
 export { Step, StepBody, StepTitle } from './Step';
+export { Tooltip } from './Tooltip';
 export { useSafeClickOutside } from './useSafeClickOutside';
 export { useScrollLock } from './useScrollLock';
 export { getTailwindBreakpointQuery, useTailwindBreakpoint } from './useTailwindBreakpoint';
