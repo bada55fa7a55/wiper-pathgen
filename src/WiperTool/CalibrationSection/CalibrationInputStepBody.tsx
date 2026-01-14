@@ -6,14 +6,34 @@ import { twc } from 'styles/helpers';
 import { mmToUm } from '../lib/conversion';
 import { validateSignedDecimal } from '../lib/validation';
 import { calibration, setCalibration } from '../store';
+import { CalibrationPadPreview } from './CalibrationPadPreview';
 
-const FormRow = twc(
+const StepBodyContent = twc(
   'div',
   `
+  flex
+  flex-col
+  sm:flex-row
+  gap-8
+  items-start
+  `,
+);
+
+const FormContainer = twc(
+  'div',
+  `
+  shrink-0
   grid
-  grid-rows-1
-  md:grid-cols-3
+  grid-rows-3
   gap-4
+  w-64
+  `,
+);
+
+const CalibrationPadWrapper = twc(
+  'div',
+  `
+  sm:min-w-64
   `,
 );
 
@@ -69,29 +89,34 @@ export function CalibrationInputStepBody() {
   return (
     <StepBody>
       <p>Enter the nozzle position coordinates from the previous step into the form fields below.</p>
-      <FormRow>
-        <FormInput
-          label="Nozzle position X (mm)"
-          value={formValues.x}
-          error={errors.x ? { type: 'error', message: errors.x } : undefined}
-          onInput={handleCalibrationInput('x')}
-          onBlur={handleCalibrationBlur('x')}
-        />
-        <FormInput
-          label="Nozzle position Y (mm)"
-          value={formValues.y}
-          error={errors.y ? { type: 'error', message: errors.y } : undefined}
-          onInput={handleCalibrationInput('y')}
-          onBlur={handleCalibrationBlur('y')}
-        />
-        <FormInput
-          label="Nozzle position Z (mm)"
-          value={formValues.z}
-          error={errors.z ? { type: 'error', message: errors.z } : undefined}
-          onInput={handleCalibrationInput('z')}
-          onBlur={handleCalibrationBlur('z')}
-        />
-      </FormRow>
+      <StepBodyContent>
+        <FormContainer>
+          <FormInput
+            label="Nozzle position X (mm)"
+            value={formValues.x}
+            error={errors.x ? { type: 'error', message: errors.x } : undefined}
+            onInput={handleCalibrationInput('x')}
+            onBlur={handleCalibrationBlur('x')}
+          />
+          <FormInput
+            label="Nozzle position Y (mm)"
+            value={formValues.y}
+            error={errors.y ? { type: 'error', message: errors.y } : undefined}
+            onInput={handleCalibrationInput('y')}
+            onBlur={handleCalibrationBlur('y')}
+          />
+          <FormInput
+            label="Nozzle position Z (mm)"
+            value={formValues.z}
+            error={errors.z ? { type: 'error', message: errors.z } : undefined}
+            onInput={handleCalibrationInput('z')}
+            onBlur={handleCalibrationBlur('z')}
+          />
+        </FormContainer>
+        <CalibrationPadWrapper>
+          <CalibrationPadPreview />
+        </CalibrationPadWrapper>
+      </StepBodyContent>
     </StepBody>
   );
 }
