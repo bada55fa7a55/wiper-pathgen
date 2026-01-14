@@ -1,6 +1,6 @@
 import type { PrinterKey } from 'WiperTool/configuration';
 import type { WsWriteAction } from 'WiperTool/store/tracking';
-import { isDevRuntime } from 'lib/runtime';
+import { isClientRuntime, isDevRuntime } from 'lib/runtime';
 
 type AnalyticsTrigger =
   | 'global_drop'
@@ -26,6 +26,19 @@ type PrefixedMetadata<M extends Partial<AnalyticsMetadata>> = {
   [K in keyof M as K extends string ? `data-simple-event-${K}` : never]: M[K];
 };
 
+function generateUUID() {
+  if (!isClientRuntime) {
+    return '';
+  }
+
+  const id = window.crypto.randomUUID();
+  return id.replace(/-/g, '');
+}
+
+if (isClientRuntime && !window.tid) {
+  window.tid = generateUUID();
+}
+
 function prefixMetadataAttributes<M extends Partial<AnalyticsMetadata>>(metadata: M): PrefixedMetadata<M> {
   return Object.fromEntries(
     Object.entries(metadata).map(([key, value]) => [`data-simple-event-${key}`, value]),
@@ -37,11 +50,14 @@ function createEventAttributes<T extends AnalyticsTrigger, M extends Partial<Ana
   trigger,
   ...metadata
 }: { event: string; trigger: T } & M) {
+  const traceid = isClientRuntime ? window.tid : '';
+
   return {
     'data-simple-event': event,
     ...prefixMetadataAttributes({
       trigger,
       ...metadata,
+      traceid,
     }),
   };
 }
@@ -158,14 +174,25 @@ export type AnalyticsEvent = {
   trigger: AnalyticsTrigger;
 } & AnalyticsMetadata;
 
+export type AnalyticsEvent2 = {
+  event: string;
+  trigger: AnalyticsTrigger;
+} & AnalyticsMetadata;
+
 export function track(event: AnalyticsEvent) {
+  const traceid = isClientRuntime ? window.tid : '';
   const { event: eventName, ...metadata } = event;
   const saEvent = (window as Window & { sa_event?: (name: string, meta?: Record<string, unknown>) => void }).sa_event;
 
+  const eventMetadata = {
+    ...metadata,
+    traceid,
+  };
+
   if (isDevRuntime) {
     console.group(`Analytics: ${eventName}`);
-    if (Object.keys(metadata).length > 0) {
-      console.table(metadata);
+    if (Object.keys(eventMetadata).length > 0) {
+      console.table(eventMetadata);
     } else {
       console.log('No metadata');
     }
@@ -176,7 +203,7 @@ export function track(event: AnalyticsEvent) {
     return;
   }
 
-  saEvent(eventName, metadata);
+  saEvent(eventName, eventMetadata);
 }
 
 export function simulationStartedEvent(wsWriteAction: WsWriteAction | undefined): AnalyticsEvent {
