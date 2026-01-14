@@ -28,14 +28,14 @@ export type PadProperties = {
 };
 
 export type PrinterBedShape = {
-  path: [number, number][],
-  offset: [number, number],
-  negativeVolumes: ({
+  path: [number, number][];
+  offset: [number, number];
+  negativeVolumes: {
     type: 'circle';
     x: number;
     y: number;
     radius: number;
-  })[],
+  }[];
 };
 
 export type PrinterProperties = {
