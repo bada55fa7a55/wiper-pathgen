@@ -5,17 +5,6 @@ import { hydrate } from 'solid-js/web';
 import '@fontsource-variable/material-symbols-rounded';
 import './index.css';
 
-declare global {
-  interface Window {
-    _$HY?: {
-      completed?: WeakSet<object>;
-      events?: unknown[];
-      r?: Record<string, unknown>;
-      done?: boolean;
-    };
-  }
-}
-
 if (isClientRuntime) {
   // biome-ignore lint/suspicious/noAssignInExpressions: Assign to both window and hydrationState
   const hydrationState = (window._$HY ||= {});

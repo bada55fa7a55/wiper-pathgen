@@ -1,5 +1,6 @@
 import bblA1PadSvg from 'WiperTool/assets/bbl-a1-pad.svg';
 import type { Point } from 'WiperTool/store';
+import { prusaCoreOneBedShape } from './prusaCoreOneBedShape';
 
 export const PrinterKey = {
   PrusaCoreOne: 'prusa-core-one',
@@ -26,6 +27,17 @@ export type PadProperties = {
   refPointOffsetY: number;
 };
 
+export type PrinterBedShape = {
+  path: [number, number][];
+  offset: [number, number];
+  negativeVolumes: {
+    type: 'circle';
+    x: number;
+    y: number;
+    radius: number;
+  }[];
+};
+
 export type PrinterProperties = {
   key: PrinterKey;
   name: string;
@@ -37,6 +49,7 @@ export type PrinterProperties = {
   originalCleaningGCode: string;
   parkingZHeight: number;
   parkingCoords: Point;
+  bedShape?: PrinterBedShape;
   status: 'supported' | 'in-progress' | 'planned';
 };
 
@@ -69,6 +82,7 @@ export const printerProperties: Record<string, PrinterProperties> = {
       x: 242000,
       y: -9000,
     },
+    bedShape: prusaCoreOneBedShape,
     status: 'supported',
   },
   [PrinterKey.PrusaCoreOneL]: {

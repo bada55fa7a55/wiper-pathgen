@@ -1,29 +1,8 @@
 import { MenuBreadcrumb, SectionColumn, SectionColumns, Step, StepBody, StepTitle } from 'components';
-import { twc } from 'styles/helpers';
 import calibrationNozzlePosition1Asset from './assets/coreone/calibration-nozzle-position-1.png';
 import calibrationNozzlePosition2Asset from './assets/coreone/calibration-nozzle-position-2.png';
 import { CalibrationInputStepBody } from './CalibrationInputStepBody';
-
-const Illustration = twc(
-  'div',
-  `
-  basis-03
-  flex
-  flex-col
-  gap-2
-  `,
-);
-
-const IllustrationImage = twc('img', '');
-
-const IllustrationCaption = twc(
-  'div',
-  `
-  text-xs
-  text-center
-  text-gray-400
-  `,
-);
+import { Illustration } from './Illustration';
 
 export function CoreOneInstructions() {
   return (
@@ -60,20 +39,14 @@ export function CoreOneInstructions() {
         </Step>
       </SectionColumn>
       <SectionColumn>
-        <Illustration>
-          <IllustrationImage
-            src={calibrationNozzlePosition1Asset}
-            alt=""
-          />
-          <IllustrationCaption>Nozzle position illustration</IllustrationCaption>
-        </Illustration>
-        <Illustration>
-          <IllustrationImage
-            src={calibrationNozzlePosition2Asset}
-            alt=""
-          />
-          <IllustrationCaption>The red dot indicates the pad calibration point</IllustrationCaption>
-        </Illustration>
+        <Illustration
+          src={calibrationNozzlePosition1Asset}
+          caption="Nozzle position illustration"
+        />
+        <Illustration
+          src={calibrationNozzlePosition2Asset}
+          caption="The red dot indicates the pad calibration point"
+        />
       </SectionColumn>
     </SectionColumns>
   );

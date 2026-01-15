@@ -1,6 +1,5 @@
 import type { PadKey, PrinterKey } from 'WiperTool/configuration';
 import type { WipingSequence } from 'WiperTool/store';
-import { clearModals, isModalOpen, ModalKey } from 'WiperTool/store';
 import { Button, ErrorMessage, Modal } from 'components';
 import { isAppError } from 'lib/errors';
 import { isClientRuntime } from 'lib/runtime';
@@ -50,7 +49,12 @@ const Description = twc(
   `,
 );
 
-export function ImportSharedWipingSequenceModal() {
+type Props = {
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+export function ImportSharedWipingSequenceModal(props: Props) {
   const [state, setState] = createSignal<ModalState>({ status: 'idle' });
 
   const importedState = () => {
@@ -95,14 +99,14 @@ export function ImportSharedWipingSequenceModal() {
 
   const handleCloseModal = () => {
     clearShareTokenFromUrl();
-    clearModals();
+    props.onClose();
   };
 
   return (
     <Modal
       title="Import Shared Wiping Sequence"
       withFooterContentAboveActions
-      isOpen={isModalOpen(ModalKey.ImportSharedWipingSequence)}
+      isOpen={props.isOpen}
       withCloseButton
       actions={
         failureState() ? (

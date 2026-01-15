@@ -17,5 +17,6 @@ export const SectionColumn = twc(
   flex
   flex-col
   gap-4
+  min-w-64
   `,
 );
