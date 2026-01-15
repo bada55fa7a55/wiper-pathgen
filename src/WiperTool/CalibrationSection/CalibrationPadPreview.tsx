@@ -1,6 +1,36 @@
+import { ModalPortal } from 'WiperTool/modals';
 import { calibration, pad, padTopRight, printer } from 'WiperTool/store';
-import { createMemo, For, Show } from 'solid-js';
+import { createMemo, createSignal, For, Show } from 'solid-js';
 import { twc } from 'styles/helpers';
+
+const Container = twc(
+  'div',
+  `
+  flex
+  flex-col
+  gap-2
+
+  cursor-pointer
+  hover:scale-[1.01]
+  `,
+);
+
+const ModalContainer = twc(
+  'div',
+  `
+  flex
+  flex-col
+  gap-2
+  p-4
+  w-full
+  max-h-[90vh]
+  max-w-[min(92vw,1100px)]
+
+  animate-in
+  zoom-in-95
+  duration-200
+  `,
+);
 
 const SvgFrame = twc(
   'div',
@@ -77,7 +107,7 @@ type SvgRect = {
 
 const padding = 15000;
 
-export function CalibrationPadPreview() {
+function CalibrationPadPreviewImpl() {
   const hasCalibration = createMemo(() => calibration.x !== undefined && calibration.y !== undefined);
 
   const viewSettings = createMemo(() => {
@@ -211,5 +241,41 @@ export function CalibrationPadPreview() {
         </LegendRow>
       </Legend>
     </SvgFrame>
+  );
+}
+
+export function CalibrationPadPreview() {
+  const [isOpen, setIsOpen] = createSignal(false);
+
+  const handleOpen = () => {
+    setIsOpen(true);
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+
+  return (
+    <>
+      <Container
+        aria-haspopup="dialog"
+        aria-expanded={isOpen()}
+        onClick={handleOpen}
+      >
+        <CalibrationPadPreviewImpl />
+      </Container>
+      <ModalPortal
+        isOpen={isOpen}
+        onClose={handleClose}
+      >
+        <ModalContainer
+          role="dialog"
+          aria-modal="true"
+          onClick={handleClose}
+        >
+          <CalibrationPadPreviewImpl />
+        </ModalContainer>
+      </ModalPortal>
+    </>
   );
 }
