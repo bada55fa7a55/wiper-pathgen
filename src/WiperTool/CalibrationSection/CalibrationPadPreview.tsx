@@ -52,6 +52,8 @@ const Svg = twc(
   `
   block
   w-full
+  h-auto
+  max-h-[min(70vh, 90vw)]
   `,
 );
 
@@ -164,7 +166,9 @@ function CalibrationPadPreviewImpl() {
       <Svg
         viewBox={`${viewSettings().minX} ${viewSettings().minY} ${viewSettings().width} ${viewSettings().height}`}
         preserveAspectRatio="xMidYMid meet"
-        style={{ 'aspect-ratio': `${viewSettings().width} / ${viewSettings().height}` }}
+        style={{
+          'aspect-ratio': `${viewSettings().width} / ${viewSettings().height}`,
+        }}
         role="img"
         aria-label="Printer bounds with silicone pad position"
       >
