@@ -1,4 +1,3 @@
-import { clearModals, isModalOpen, ModalKey } from 'WiperTool/store';
 import { Button, ErrorMessage, Modal } from 'components';
 import { Match, Show, Switch } from 'solid-js';
 import { useFileDialog } from 'solidjs-use';
@@ -72,7 +71,12 @@ const Description = twc(
   `,
 );
 
-export function ImportWipingSequenceModal() {
+type Props = {
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+export function ImportWipingSequenceModal(props: Props) {
   const { open: openFileDialog, onChange: onFileDialogChange } = useFileDialog({
     multiple: false,
     reset: true,
@@ -105,10 +109,6 @@ export function ImportWipingSequenceModal() {
     resetImportState();
   };
 
-  const handleCloseModal = () => {
-    clearModals();
-  };
-
   const handleOpenFileClick = () => {
     openFileDialog();
   };
@@ -121,9 +121,9 @@ export function ImportWipingSequenceModal() {
     <Modal
       title="Import Wiping Sequence"
       withFooterContentAboveActions
-      isOpen={isModalOpen(ModalKey.ImportWipingSequence)}
+      isOpen={props.isOpen}
       withCloseButton
-      onClose={handleCloseModal}
+      onClose={props.onClose}
     >
       <Switch>
         <Match when={importedState()}>
@@ -134,13 +134,18 @@ export function ImportWipingSequenceModal() {
               padKey={currentState().padKey}
               wipingSequence={currentState().wipingSequence}
               onCancel={handleCancelImport}
-              onClose={handleCloseModal}
+              onClose={props.onClose}
             />
           )}
         </Match>
         <Match when={['idle', 'failure'].includes(importState().status)}>
           <Content>
-            <Description>Import a wiping sequence .json file.</Description>
+            <Description>
+              Import a wiping sequence <code>.json</code> file that you have previously exported or that has been shared
+              with you.
+              <br />
+              You can preview the sequence in the next step.
+            </Description>
             <DropZone isDropping={isDroppingFile()}>
               <DropZoneContent>
                 <div>

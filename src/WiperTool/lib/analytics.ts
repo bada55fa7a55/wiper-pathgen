@@ -1,4 +1,6 @@
-import { isDevRuntime } from 'lib/runtime';
+import type { PrinterKey } from 'WiperTool/configuration';
+import type { WsWriteAction } from 'WiperTool/store/tracking';
+import { isClientRuntime, isDevRuntime } from 'lib/runtime';
 
 type AnalyticsTrigger =
   | 'global_drop'
@@ -24,6 +26,19 @@ type PrefixedMetadata<M extends Partial<AnalyticsMetadata>> = {
   [K in keyof M as K extends string ? `data-simple-event-${K}` : never]: M[K];
 };
 
+function generateUUID() {
+  if (!isClientRuntime) {
+    return '';
+  }
+
+  const id = window.crypto.randomUUID();
+  return id.replace(/-/g, '');
+}
+
+if (isClientRuntime && !window.tid) {
+  window.tid = generateUUID();
+}
+
 function prefixMetadataAttributes<M extends Partial<AnalyticsMetadata>>(metadata: M): PrefixedMetadata<M> {
   return Object.fromEntries(
     Object.entries(metadata).map(([key, value]) => [`data-simple-event-${key}`, value]),
@@ -35,13 +50,32 @@ function createEventAttributes<T extends AnalyticsTrigger, M extends Partial<Ana
   trigger,
   ...metadata
 }: { event: string; trigger: T } & M) {
+  const traceid = isClientRuntime ? window.tid : '';
+
   return {
     'data-simple-event': event,
     ...prefixMetadataAttributes({
       trigger,
       ...metadata,
+      traceid,
     }),
   };
+}
+
+function marshalWsWriteAction(wsWriteAction: WsWriteAction | undefined) {
+  if (!wsWriteAction) {
+    return ['unknown', undefined];
+  }
+  switch (wsWriteAction.type) {
+    case 'point':
+      return ['point', undefined];
+    case 'preset':
+      return ['preset', wsWriteAction.preset];
+    case 'import':
+      return ['import', wsWriteAction.source];
+    default:
+      return unreachable(wsWriteAction);
+  }
 }
 
 export function analyticsHeaderPrintablesWA2() {
@@ -140,14 +174,25 @@ export type AnalyticsEvent = {
   trigger: AnalyticsTrigger;
 } & AnalyticsMetadata;
 
+export type AnalyticsEvent2 = {
+  event: string;
+  trigger: AnalyticsTrigger;
+} & AnalyticsMetadata;
+
 export function track(event: AnalyticsEvent) {
+  const traceid = isClientRuntime ? window.tid : '';
   const { event: eventName, ...metadata } = event;
   const saEvent = (window as Window & { sa_event?: (name: string, meta?: Record<string, unknown>) => void }).sa_event;
 
+  const eventMetadata = {
+    ...metadata,
+    traceid,
+  };
+
   if (isDevRuntime) {
     console.group(`Analytics: ${eventName}`);
-    if (Object.keys(metadata).length > 0) {
-      console.table(metadata);
+    if (Object.keys(eventMetadata).length > 0) {
+      console.table(eventMetadata);
     } else {
       console.log('No metadata');
     }
@@ -158,13 +203,16 @@ export function track(event: AnalyticsEvent) {
     return;
   }
 
-  saEvent(eventName, metadata);
+  saEvent(eventName, eventMetadata);
 }
 
-export function simulationStartedEvent(): AnalyticsEvent {
+export function simulationStartedEvent(wsWriteAction: WsWriteAction | undefined): AnalyticsEvent {
+  const [ws_type, ws_source] = marshalWsWriteAction(wsWriteAction);
   return {
     event: 'action_simulation_started',
     trigger: 'drawing',
+    ws_type,
+    ws_source,
   };
 }
 
@@ -204,17 +252,40 @@ export function drawingPresetAppliedEvent(preset: string): AnalyticsEvent {
   };
 }
 
-export function gCodeCopiedEvent(): AnalyticsEvent {
+export function gCodeCopiedEvent(wsWriteAction: WsWriteAction | undefined): AnalyticsEvent {
+  const [ws_type, ws_source] = marshalWsWriteAction(wsWriteAction);
   return {
     event: 'action_gcode_copied',
     trigger: 'gcode',
+    ws_type,
+    ws_source,
   };
 }
 
-export function testGCodeDownloadedEvent(): AnalyticsEvent {
+export function calibrationValuesUsedEvent(
+  trigger: AnalyticsTrigger,
+  printer: PrinterKey,
+  x: number | undefined,
+  y: number | undefined,
+  z: number | undefined,
+): AnalyticsEvent {
+  return {
+    event: 'calibration_values_used',
+    trigger,
+    printer,
+    x,
+    y,
+    z,
+  };
+}
+
+export function testGCodeDownloadedEvent(wsWriteAction: WsWriteAction | undefined): AnalyticsEvent {
+  const [ws_type, ws_source] = marshalWsWriteAction(wsWriteAction);
   return {
     event: 'action_test_gcode_downloaded',
     trigger: 'testing',
+    ws_type,
+    ws_source,
   };
 }
 
@@ -262,17 +333,26 @@ export function actionShareLinkModalOpenedEvent(trigger: AnalyticsTrigger): Anal
   };
 }
 
-export function actionWipingSequenceExportedEvent(trigger: AnalyticsTrigger): AnalyticsEvent {
+export function actionWipingSequenceExportedEvent(
+  trigger: AnalyticsTrigger,
+  wsWriteAction: WsWriteAction | undefined,
+): AnalyticsEvent {
+  const [ws_type, ws_source] = marshalWsWriteAction(wsWriteAction);
   return {
     event: 'action_wiping_sequence_exported',
     trigger,
+    ws_type,
+    ws_source,
   };
 }
 
-export function actionShareLinkCopiedEvent(): AnalyticsEvent {
+export function actionShareLinkCopiedEvent(wsWriteAction: WsWriteAction | undefined): AnalyticsEvent {
+  const [ws_type, ws_source] = marshalWsWriteAction(wsWriteAction);
   return {
     event: 'action_share_link_copied',
     trigger: 'share_link',
+    ws_type,
+    ws_source,
   };
 }
 

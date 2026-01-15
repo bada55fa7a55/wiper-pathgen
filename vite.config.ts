@@ -34,7 +34,7 @@ const simpleAnalyticsPlugin = (enabled: boolean, hostname?: string): Plugin => (
         attrs: {
           async: true,
           defer: true,
-          src: 'https://scripts.simpleanalyticscdn.com/latest.js',
+          src: 'https://wiper-pathgen.6d6178.com/proxy.js',
           'data-simple-analytics': 'true',
           ...hostnameAttr,
         },
@@ -44,7 +44,7 @@ const simpleAnalyticsPlugin = (enabled: boolean, hostname?: string): Plugin => (
         injectTo: 'body',
         attrs: {
           async: true,
-          src: 'https://scripts.simpleanalyticscdn.com/inline-events.js',
+          src: 'https://wiper-pathgen.6d6178.com/inline-events.js',
           ...hostnameAttr,
         },
       },

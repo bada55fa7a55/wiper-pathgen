@@ -1,10 +1,11 @@
-import { testGCodeDownloadedEvent, track } from 'WiperTool/lib/analytics';
+import { calibrationValuesUsedEvent, testGCodeDownloadedEvent, track } from 'WiperTool/lib/analytics';
 import { formatPercent, formatPercentString } from 'WiperTool/lib/formatting';
 import { generateTestGCodeCommands } from 'WiperTool/lib/gcode';
 import {
   areStepsCompleteUpTo,
   calibration,
   getWipingStepPoints,
+  lastWipingSequenceWrite,
   padTopRight,
   printer,
   StepKey,
@@ -43,6 +44,44 @@ const FormRow = twc(
   grid-rows-1
   md:grid-cols-3
   gap-4
+  `,
+);
+
+const Content = twc(
+  'div',
+  `
+  flex
+  flex-col
+  gap-6
+  `,
+);
+
+const Description = twc(
+  'div',
+  `
+  flex
+  flex-col
+  gap-3
+  `,
+);
+
+const OrderedList = twc(
+  'ol',
+  `
+  list-outside
+  list-decimal
+  px-8
+  text-md
+  `,
+);
+
+const StrongEmphasis = twc(
+  'p',
+  `
+  border-l-6
+  border-porange-500
+  py-1
+  pl-4
   `,
 );
 
@@ -94,7 +133,13 @@ export function TestingSection() {
   const isReadyToPrint = () => areStepsCompleteUpTo(StepKey.Testing);
   const isDisabled = () => !isReadyToPrint() || !testGCode();
 
-  const fileName = createMemo(() => `wiper-path-test-${formatPercent(feedRateMultiplierValue())}p.gcode`);
+  const fileName = createMemo(() => {
+    const lastWrite = lastWipingSequenceWrite();
+    if (lastWrite && lastWrite.type === 'preset') {
+      return `${lastWrite.preset}-preset-test-${formatPercent(feedRateMultiplierValue())}p.gcode`;
+    }
+    return `wiper-path-test-${formatPercent(feedRateMultiplierValue())}p.gcode`;
+  });
 
   const handleDownloadGCodeClick = () => {
     const content = testGCode();
@@ -108,15 +153,16 @@ export function TestingSection() {
     link.click();
     URL.revokeObjectURL(url);
 
-    track(testGCodeDownloadedEvent());
+    track(testGCodeDownloadedEvent(lastWipingSequenceWrite()));
+    track(calibrationValuesUsedEvent('testing', printer().key, calibration.x, calibration.y, calibration.z));
   };
 
   return (
     <Section id={steps()[StepKey.Testing].anchor}>
       <SectionTitle>Testing</SectionTitle>
       <SectionIntro>
-        Download a test G-code file that mirrors the wiping portion of your Start G-code. It runs the sequence at a
-        slower speed so you can watch safely and stop if something looks off.
+        Download a ready-to-run test G-code file that runs your drawn wiping sequence as a complete, standalone test. It
+        runs at a reduced speed to give you time to watch safely and stop if anything looks off.
       </SectionIntro>
       <Show when={!isReadyToPrint()}>
         <ErrorMessage
@@ -128,21 +174,21 @@ export function TestingSection() {
                 layout="internal"
                 href={`#${steps()[StepKey.Calibration].anchor}`}
               >
-                calibration section
+                Calibration section
               </Link>{' '}
               and{' '}
               <Link
                 layout="internal"
                 href={`#${steps()[StepKey.Settings].anchor}`}
               >
-                settings section
+                Settings section
               </Link>
               , then draw a wiping path in the{' '}
               <Link
                 layout="internal"
                 href={`#${steps()[StepKey.Drawing].anchor}`}
               >
-                drawing section
+                Drawing section
               </Link>
               .
             </>
@@ -172,38 +218,70 @@ export function TestingSection() {
           <Step>
             <StepTitle>Download Test File</StepTitle>
             <StepBody>
-              <p>
-                This test G-code recreates the Start G-code portion that handles wiping. It moves the nozzle to the
-                parking position, performs the wiping path you drew, and then moves the nozzle to the center of the bed.
-                That sequence matches how your printer will enter and exit wiping during a real print.
-              </p>
-              <p>
-                The test file runs at {formatPercentString(feedRateMultiplierValue())} of your configured feed rate (
-                {feedRateMultiplierValue() * (settings?.feedRate ?? 0)} mm/min). The slower speed gives you time to
-                press Reset on the LCD if you need to stop it and reduces the chance of damage if something collides.
-                <br />
-                It does not heat up the nozzle, so make sure there aren't any dangling filament bits stuck to the nozzle
-                before running the test file.
-              </p>
-              <p>
-                Do not paste G-code from this test file into your Start G-code. Copy the G-code from the{' '}
-                <Link
-                  layout="internal"
-                  href={`#${steps()[StepKey.Drawing].anchor}`}
-                >
-                  drawing section
-                </Link>{' '}
-                instead.
-              </p>
-              <ButtonWrapper>
-                <Button
-                  renderAs="button"
-                  layout="primary"
-                  label={<>Download {fileName()}</>}
-                  isDisabled={isDisabled()}
-                  onClick={handleDownloadGCodeClick}
-                />
-              </ButtonWrapper>
+              <Content>
+                <Description>
+                  <p>
+                    <strong>Don't skip this. Run this once to verify your wiping sequence is safe.</strong>
+                    <br />
+                    This test file is a slowed-down, ready-to-run G-code file to dry-run your wiping sequence without
+                    actually printing anything.
+                  </p>
+                  <p>It does the following:</p>
+                  <OrderedList>
+                    <li>
+                      <strong>Check compatibility</strong> with your printer / firmware
+                    </li>
+                    <li>
+                      <strong>Auto-home</strong>
+                    </li>
+                    <li>
+                      <strong>Move to the parking position</strong> where the nozzle would normally wait for temperature
+                    </li>
+                    <li>
+                      <strong>Run the wiping sequence</strong> that you created
+                    </li>
+                    <li>
+                      <strong>Move to the bed center</strong> (mimics going to the probing area)
+                    </li>
+                    <li>
+                      <strong>Disable motors</strong>
+                    </li>
+                  </OrderedList>
+                  <p>
+                    The test file{' '}
+                    <strong>
+                      runs at {formatPercentString(feedRateMultiplierValue())} of your configured feed rate (
+                      {feedRateMultiplierValue() * (settings?.feedRate ?? 0)} mm/min)
+                    </strong>
+                    . The slower speed gives you time to press the Reset button if you need to stop it and reduces the
+                    chance of damage if something collides.
+                  </p>
+                  <p>
+                    It does not heat up the nozzle, so make sure there aren't any dangling filament bits stuck to the
+                    nozzle before running the test file.
+                  </p>
+                  <StrongEmphasis>
+                    <strong>This file is for testing only.</strong> Do not paste G-code from this test file into your
+                    Start G-code. Copy the G-code from the{' '}
+                    <Link
+                      layout="internal"
+                      href={`#${steps()[StepKey.Drawing].anchor}`}
+                    >
+                      Drawing section
+                    </Link>{' '}
+                    instead.
+                  </StrongEmphasis>
+                </Description>
+                <ButtonWrapper>
+                  <Button
+                    renderAs="button"
+                    layout="primary"
+                    label={<>Download "{fileName()}"</>}
+                    isDisabled={isDisabled()}
+                    onClick={handleDownloadGCodeClick}
+                  />
+                </ButtonWrapper>
+              </Content>
             </StepBody>
           </Step>
           {/* <pre>{testGCode()}</pre> */}

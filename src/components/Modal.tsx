@@ -67,7 +67,7 @@ const Body = twc(
   flex
   flex-col
   grow
-  gap-4
+  gap-2
   p-4
   min-h-0
   `,
@@ -111,6 +111,7 @@ const FooterContent = twc(
       withActionsAlignment: {
         false: `
         items-center
+        text-center
         `,
         true: `
         items-end
