@@ -110,7 +110,7 @@ export function ModalContainer(props: Props) {
       window.history.pushState({ modal: true }, '', window.location.href);
     }
 
-    if (getActiveModal() !== null && hasHistoryEntry) {
+    if (getActiveModal() === null && hasHistoryEntry) {
       clearHistoryEntry(true);
     }
   });
