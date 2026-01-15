@@ -1,14 +1,5 @@
 import { actionShareLinkCopiedEvent, track } from 'WiperTool/lib/analytics';
-import {
-  clearModals,
-  closeModal,
-  isModalOpen,
-  isSubModal,
-  lastWipingSequenceWrite,
-  ModalKey,
-  settings,
-  wipingSequence,
-} from 'WiperTool/store';
+import { lastWipingSequenceWrite, settings, wipingSequence } from 'WiperTool/store';
 import { Button, CodeTextArea, Modal } from 'components';
 import { createMemo, createSignal } from 'solid-js';
 import { twc } from 'styles';
@@ -71,7 +62,13 @@ const PreviewDescription = twc(
   `,
 );
 
-export function ShareLinkModal() {
+type Props = {
+  isOpen: boolean;
+  onClose: () => void;
+  onBack?: () => void;
+};
+
+export function ShareLinkModal(props: Props) {
   const [copied, setCopied] = createSignal(false);
   let copyTimeout: number | undefined;
 
@@ -91,14 +88,6 @@ export function ShareLinkModal() {
     copyTimeout = window.setTimeout(() => setCopied(false), 1500);
   };
 
-  const handleCloseModal = () => {
-    clearModals();
-  };
-
-  const handleBackClick = () => {
-    closeModal();
-  };
-
   const handleCopyLinkClick = () => {
     track(actionShareLinkCopiedEvent(lastWipingSequenceWrite()));
     navigator.clipboard.writeText(buildShareUrl(encoded()));
@@ -115,9 +104,9 @@ export function ShareLinkModal() {
         </>
       }
       withFooterContentAboveActions
-      isOpen={isModalOpen(ModalKey.ShareLink)}
+      isOpen={props.isOpen}
       withCloseButton
-      onClose={handleCloseModal}
+      onClose={props.onClose}
     >
       <Content>
         <p>Copy the link below and share it via email, your favorite messenger app, or post it online.</p>
@@ -132,12 +121,12 @@ export function ShareLinkModal() {
           <PreviewDescription>The link contains the full wiping sequence.</PreviewDescription>
         </LinkPreviewContainer>
         <Actions>
-          {isSubModal() && (
+          {props.onBack && (
             <Button
               renderAs="button"
               layout="secondary"
               label="Back"
-              onClick={handleBackClick}
+              onClick={props.onBack}
             />
           )}
           <Button

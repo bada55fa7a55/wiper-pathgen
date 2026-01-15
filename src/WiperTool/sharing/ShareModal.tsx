@@ -1,14 +1,5 @@
 import { actionShareLinkModalOpenedEvent, actionWipingSequenceExportedEvent, track } from 'WiperTool/lib/analytics';
-import {
-  clearModals,
-  isModalOpen,
-  lastWipingSequenceWrite,
-  ModalKey,
-  openModal,
-  openSubModal,
-  settings,
-  wipingSequence,
-} from 'WiperTool/store';
+import { lastWipingSequenceWrite, settings, wipingSequence } from 'WiperTool/store';
 import { Button, Link, MaterialSymbol, Modal } from 'components';
 import { createSignal } from 'solid-js';
 import toast from 'solid-toast';
@@ -92,17 +83,20 @@ const ShareAction = twc(
   `,
 );
 
-export function ShareModal() {
+type Props = {
+  isOpen: boolean;
+  onClose: () => void;
+  onOpenShareLink: () => void;
+  onOpenImport: () => void;
+};
+
+export function ShareModal(props: Props) {
   const { saveFile } = useSaveFile();
   const [isSaving, setIsSaving] = createSignal(false);
 
-  const handleCloseModal = () => {
-    clearModals();
-  };
-
   const handleGetLinkClick = () => {
     track(actionShareLinkModalOpenedEvent('share'));
-    openSubModal(ModalKey.ShareLink);
+    props.onOpenShareLink();
   };
 
   const handleExportFileClick = async () => {
@@ -124,7 +118,7 @@ export function ShareModal() {
       });
 
       if (wasSaved) {
-        handleCloseModal();
+        props.onClose();
       }
     } catch (error) {
       toast.error(String(error));
@@ -134,16 +128,16 @@ export function ShareModal() {
   };
 
   const handleImportClick = () => {
-    openModal(ModalKey.ImportWipingSequence);
+    props.onOpenImport();
   };
 
   return (
     <Modal
       title="Sharing Is Caring"
       footerContent="Files and links are private and are not saved on a server."
-      isOpen={isModalOpen(ModalKey.Share)}
+      isOpen={props.isOpen}
       withCloseButton
-      onClose={handleCloseModal}
+      onClose={props.onClose}
     >
       <Content>
         <p>
