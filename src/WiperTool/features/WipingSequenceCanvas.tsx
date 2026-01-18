@@ -3,7 +3,7 @@ import type { Point } from 'WiperTool/lib/geometry';
 import { isClientRuntime } from 'lib/runtime';
 import { createEffect, createMemo, createRenderEffect, createSignal } from 'solid-js';
 import { twc } from 'styles/helpers';
-import { relToAbs } from './sections/DrawingSection/helpers';
+import { relToAbs } from '../sections/DrawingSection/helpers';
 
 const scale = 0.025; // pixels per micron (25 px/mm)
 const defaultPadTopRight: Point = { x: 0, y: 0 };

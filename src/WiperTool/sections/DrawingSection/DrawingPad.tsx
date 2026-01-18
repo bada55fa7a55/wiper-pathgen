@@ -1,5 +1,6 @@
 import { gridStep } from 'WiperTool/configuration';
 import { getWipingStepPoints, makeWipingStepPoint } from 'WiperTool/domain/wipingSequence';
+import { WipingSequenceCanvas } from 'WiperTool/features/WipingSequenceCanvas';
 import {
   actionImportModalOpenedEvent,
   actionShareModalOpenedEvent,
@@ -22,7 +23,6 @@ import {
 } from 'WiperTool/providers/AppModelProvider';
 import { ModalKeys } from 'WiperTool/ui/modals';
 import { StepKeys } from 'WiperTool/ui/steps';
-import { WipingSequenceCanvas } from 'WiperTool/WipingSequenceCanvas';
 import { Button } from 'components';
 import { createMemo, createSignal, Show } from 'solid-js';
 import { twc } from 'styles/helpers';

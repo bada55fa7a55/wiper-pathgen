@@ -4,7 +4,7 @@ import type { PrinterKey } from 'WiperTool/domain/printers';
 import { printerProperties } from 'WiperTool/domain/printers';
 import type { WipingSequence } from 'WiperTool/domain/wipingSequence';
 import { getWipingStepPoints } from 'WiperTool/domain/wipingSequence';
-import { WipingSequenceCanvas } from 'WiperTool/WipingSequenceCanvas';
+import { WipingSequenceCanvas } from 'WiperTool/features/WipingSequenceCanvas';
 import { createMemo } from 'solid-js';
 import { twc } from 'styles';
 
