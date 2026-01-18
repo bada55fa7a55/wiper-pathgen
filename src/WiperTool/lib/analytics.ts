@@ -1,4 +1,4 @@
-import type { PrinterKey } from 'WiperTool/configuration';
+import type { PrinterKey } from 'WiperTool/domain/printers';
 import type { WsWriteAction } from 'WiperTool/ui/tracking';
 import { isClientRuntime, isDevRuntime } from 'lib/runtime';
 

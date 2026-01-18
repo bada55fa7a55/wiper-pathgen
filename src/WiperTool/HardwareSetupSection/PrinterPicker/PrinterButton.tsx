@@ -1,4 +1,4 @@
-import type { PrinterProperties } from 'WiperTool/configuration';
+import type { PrinterProperties } from 'WiperTool/domain/printers';
 import { MaterialSymbol } from 'components';
 import { twc } from 'styles';
 
