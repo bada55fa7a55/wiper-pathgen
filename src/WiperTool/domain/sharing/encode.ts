@@ -4,7 +4,7 @@ import type { WipingSequence, WipingStep } from 'WiperTool/domain/wipingSequence
 import { base64UrlEncode } from 'WiperTool/lib/base64';
 import { createError } from 'lib/errors';
 import type { EncodedSharePayload } from './common';
-import { SHARE_FILE_EXTENSION, SHARE_FILE_PREFIX, SHARE_PARAM, SHARE_VERSION } from './common';
+import { SHARE_FILE_EXTENSION, SHARE_FILE_PREFIX, SHARE_VERSION } from './common';
 
 type EncodedWipingStepPoint = ['p', number, number];
 type EncodedWipingStepSpeedChange = ['s', number];
@@ -80,14 +80,6 @@ export function encodeShareToken(encodeShareOptions: EncodeShareOptions): string
       cause: error,
     });
   }
-}
-
-export function buildShareUrl(token: string): string {
-  const url = new URL(window.location.href);
-  const params = new URLSearchParams();
-  params.set(SHARE_PARAM, token);
-  url.hash = params.toString();
-  return url.toString();
 }
 
 export function buildShareFileName(): string {

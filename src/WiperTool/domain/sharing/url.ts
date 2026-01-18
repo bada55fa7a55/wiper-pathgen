@@ -9,3 +9,11 @@ export function getShareTokenFromUrl(): string | null {
   const params = new URLSearchParams(hash);
   return params.get(SHARE_PARAM);
 }
+
+export function buildShareUrl(token: string): string {
+  const url = new URL(window.location.href);
+  const params = new URLSearchParams();
+  params.set(SHARE_PARAM, token);
+  url.hash = params.toString();
+  return url.toString();
+}
