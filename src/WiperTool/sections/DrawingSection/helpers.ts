@@ -88,12 +88,22 @@ export function useDrawingPadBoundsWarning() {
       paddings.left <= -padWidth ||
       paddings.right <= -padWidth;
 
-    if (isOutOfBounds) return { kind: 'full' };
+    if (isOutOfBounds) {
+      return { kind: 'full' };
+    }
 
-    if (paddings.top < 0) return { kind: 'partial', side: 'top' };
-    if (paddings.bottom < 0) return { kind: 'partial', side: 'bottom' };
-    if (paddings.left < 0) return { kind: 'partial', side: 'left' };
-    if (paddings.right < 0) return { kind: 'partial', side: 'right' };
+    if (paddings.top < 0) {
+      return { kind: 'partial', side: 'top' };
+    }
+    if (paddings.bottom < 0) {
+      return { kind: 'partial', side: 'bottom' };
+    }
+    if (paddings.left < 0) {
+      return { kind: 'partial', side: 'left' };
+    }
+    if (paddings.right < 0) {
+      return { kind: 'partial', side: 'right' };
+    }
 
     return { kind: 'none' };
   });

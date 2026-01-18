@@ -4,7 +4,7 @@ import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
 import { usePrinters, useSteps } from 'WiperTool/providers/AppModelProvider';
 import { StepKeys } from 'WiperTool/ui/steps';
 import { ErrorMessage, Link, Section, SectionIntro, SectionTitle, WarningMessage } from 'components';
-import { Show } from 'solid-js';
+import { createMemo, Show } from 'solid-js';
 import { twc } from 'styles/helpers';
 import { DrawingPad } from './DrawingPad';
 import { GCode } from './GCode';
@@ -54,7 +54,14 @@ export function DrawingSection() {
   const isReadyToDraw = () => areStepsCompleteUpTo(StepKeys.Drawing);
   const isDisabled = () => !isReadyToDraw();
 
-  const warning = drawingPadBoundsWarning(); // accessor // or: const warning = useDrawingPadBoundsWarning();
+  const fullBoundsWarning = createMemo(() => {
+    const currentWarning = drawingPadBoundsWarning();
+    return currentWarning.kind === 'full' ? currentWarning : null;
+  });
+  const partialBoundsWarning = createMemo(() => {
+    const currentWarning = drawingPadBoundsWarning();
+    return currentWarning.kind === 'partial' ? currentWarning : null;
+  });
 
   return (
     <Section id={steps()[StepKeys.Drawing].anchor}>
@@ -93,7 +100,7 @@ export function DrawingSection() {
           }
         />
       </Show>
-      <Show when={warning.kind === 'full'}>
+      <Show when={fullBoundsWarning()}>
         <ErrorMessage
           title="Error: Silicone pad beyond the printer's reach."
           content={
@@ -111,15 +118,18 @@ export function DrawingSection() {
           }
         />
       </Show>
-      <Show when={warning.kind === 'partial' ? warning : null}>
-        {(w) => (
+      <Show
+        when={partialBoundsWarning()}
+        keyed
+      >
+        {(warning) => (
           <WarningMessage
             title="Why is the pad cut off?"
             content={
               <>
                 Based on the pad position calibration and the printer's{' '}
-                {w().side === 'top' || w().side === 'bottom' ? 'Y-axis' : 'X-axis'} range (
-                {w().side === 'top' || w().side === 'bottom'
+                {warning.side === 'top' || warning.side === 'bottom' ? 'Y-axis' : 'X-axis'} range (
+                {warning.side === 'top' || warning.side === 'bottom'
                   ? `${formatMicronsToMmString(selectedPrinter().minY)}mm - ${formatMicronsToMmString(selectedPrinter().maxY)}mm`
                   : `${formatMicronsToMmString(selectedPrinter().minX)}mm - ${formatMicronsToMmString(selectedPrinter().maxX)}mm`}
                 ), your printer's nozzle cannot reach the full silicone pad. You can still draw a wiping path, but it
