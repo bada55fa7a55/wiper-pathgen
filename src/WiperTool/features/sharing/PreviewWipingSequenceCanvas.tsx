@@ -69,10 +69,18 @@ export function PreviewWipingSequenceCanvas(props: Props) {
 
     for (let i = 1; i < points.length; i += 1) {
       const { x, y } = points[i];
-      if (x < minX) minX = x;
-      if (x > maxX) maxX = x;
-      if (y < minY) minY = y;
-      if (y > maxY) maxY = y;
+      if (x < minX) {
+        minX = x;
+      }
+      if (x > maxX) {
+        maxX = x;
+      }
+      if (y < minY) {
+        minY = y;
+      }
+      if (y > maxY) {
+        maxY = y;
+      }
     }
 
     const left = Math.max(extraPadding, -minX - padSize.width + extraPadding);

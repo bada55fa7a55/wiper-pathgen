@@ -35,10 +35,18 @@ export function WipingSequencePreviewSvg(props: Props) {
     let maxY = pts[0].y;
     for (let i = 1; i < pts.length; i += 1) {
       const { x, y } = pts[i];
-      if (x < minX) minX = x;
-      if (x > maxX) maxX = x;
-      if (y < minY) minY = y;
-      if (y > maxY) maxY = y;
+      if (x < minX) {
+        minX = x;
+      }
+      if (x > maxX) {
+        maxX = x;
+      }
+      if (y < minY) {
+        minY = y;
+      }
+      if (y > maxY) {
+        maxY = y;
+      }
     }
     const width = Math.max(1, maxX - minX);
     const height = Math.max(1, maxY - minY);

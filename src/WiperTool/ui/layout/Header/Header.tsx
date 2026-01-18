@@ -7,7 +7,9 @@ export function Header() {
   const [showStickyHeader, setShowStickyHeader] = createSignal(false);
 
   onMount(() => {
-    if (!headerRef) return;
+    if (!headerRef) {
+      return;
+    }
 
     const observer = new IntersectionObserver(([entry]) => setShowStickyHeader(!entry.isIntersecting), {
       threshold: 0,

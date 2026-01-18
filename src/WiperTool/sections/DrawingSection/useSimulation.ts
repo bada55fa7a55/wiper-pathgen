@@ -12,16 +12,24 @@ const calculatePathLength = (path: Point[]) => {
 };
 
 const isSamePath = (a: Point[] | null, b: Point[]) => {
-  if (!a || a.length !== b.length) return false;
+  if (!a || a.length !== b.length) {
+    return false;
+  }
   for (let i = 0; i < a.length; i++) {
-    if (a[i].x !== b[i].x || a[i].y !== b[i].y) return false;
+    if (a[i].x !== b[i].x || a[i].y !== b[i].y) {
+      return false;
+    }
   }
   return true;
 };
 
 const getPointAtDistance = (path: Point[], distance: number): Point => {
-  if (path.length === 0) return { x: 0, y: 0 };
-  if (distance <= 0) return path[0];
+  if (path.length === 0) {
+    return { x: 0, y: 0 };
+  }
+  if (distance <= 0) {
+    return path[0];
+  }
 
   let remaining = distance;
   for (let i = 1; i < path.length; i++) {
@@ -83,7 +91,9 @@ export function createNozzleSimulation({
   };
 
   const stepSimulation = (timestamp: number) => {
-    if (!isSimulating()) return;
+    if (!isSimulating()) {
+      return;
+    }
 
     const feedRate = getFeedRate();
     if (!feedRate || totalPathLength === 0 || simulatedPath.length < 2) {
@@ -118,13 +128,19 @@ export function createNozzleSimulation({
   const startSimulation = () => {
     const feedRate = getFeedRate();
     const currentPoints = getPoints();
-    if (!feedRate || feedRate <= 0) return;
-    if (currentPoints.length < 2) return;
+    if (!feedRate || feedRate <= 0) {
+      return;
+    }
+    if (currentPoints.length < 2) {
+      return;
+    }
 
     stopSimulation();
     simulatedPath = [getParkingCoords(), ...currentPoints, getBedCenter()];
     totalPathLength = calculatePathLength(simulatedPath);
-    if (totalPathLength === 0) return;
+    if (totalPathLength === 0) {
+      return;
+    }
 
     lastSimPointsSnapshot = currentPoints.map((pt) => ({ ...pt }));
     lastSimFeedRate = feedRate;

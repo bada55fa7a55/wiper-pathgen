@@ -48,15 +48,21 @@ export function SimulationCanvas(props: SimulationCanvasProps) {
   };
 
   const draw = () => {
-    if (!canvasRef) return;
+    if (!canvasRef) {
+      return;
+    }
     const ctx = canvasRef.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {
+      return;
+    }
 
     const { widthPx, heightPx, refPixelX, refPixelY } = derived();
     const { nozzlePos } = props;
     ctx.clearRect(0, 0, widthPx, heightPx);
 
-    if (!nozzlePos) return;
+    if (!nozzlePos) {
+      return;
+    }
 
     const relCoords = absToRel(nozzlePos, props.padTopRight);
     const nozzlePx = {

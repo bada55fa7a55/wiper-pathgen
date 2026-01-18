@@ -66,7 +66,9 @@ export function AppModelProvider(props: ParentProps) {
 
 export function useAppModel() {
   const ctx = useContext(AppModelContext);
-  if (!ctx) throw new Error('useAppModel must be used within <AppModelProvider>');
+  if (!ctx) {
+    throw new Error('useAppModel must be used within <AppModelProvider>');
+  }
   return ctx;
 }
 

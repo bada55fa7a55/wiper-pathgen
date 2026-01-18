@@ -9,8 +9,11 @@ export function useScrollToStep() {
     const target = document.getElementById(anchor);
 
     requestAnimationFrame(() => {
-      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      else window.location.hash = `#${anchor}`;
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.location.hash = `#${anchor}`;
+      }
     });
   };
 

@@ -179,7 +179,9 @@ export function DrawingPad() {
   const isSimulationDisabled = createMemo(() => sequencePoints().length < 2 || (settings.feedRate() ?? 0) <= 0);
   const lastPoint = createMemo(() => {
     const currentPoints = sequencePoints();
-    if (currentPoints.length === 0) return null;
+    if (currentPoints.length === 0) {
+      return null;
+    }
     return currentPoints[currentPoints.length - 1];
   });
 

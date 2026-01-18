@@ -156,7 +156,9 @@ export function TestingSection() {
 
   const handleDownloadGCodeClick = () => {
     const content = testGCode();
-    if (!content) return;
+    if (!content) {
+      return;
+    }
 
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);

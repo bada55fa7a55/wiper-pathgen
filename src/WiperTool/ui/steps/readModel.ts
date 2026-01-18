@@ -47,8 +47,12 @@ export function createSteps(inputs: Inputs) {
   const areStepsCompleteUpTo = (targetStep: StepKey) => {
     const current = steps();
     for (const key of stepOrder) {
-      if (key === targetStep) return true;
-      if (!current[key].isComplete) return false;
+      if (key === targetStep) {
+        return true;
+      }
+      if (!current[key].isComplete) {
+        return false;
+      }
     }
     return true;
   };

@@ -46,6 +46,7 @@
         "noUselessElse": "off",
         "noNonNullAssertion": "off",
         "useNodejsImportProtocol": "off",
+        "useBlockStatements": "error",
         "useImportType": {
           "level": "error",
           "options": {
