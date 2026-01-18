@@ -1,4 +1,4 @@
-import { ModalPortal } from 'WiperTool/modals';
+import { ModalPortal } from 'WiperTool/ui/modals';
 import { createSignal } from 'solid-js';
 import { twc } from 'styles/helpers';
 

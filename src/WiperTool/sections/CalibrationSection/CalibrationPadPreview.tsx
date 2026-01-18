@@ -1,5 +1,5 @@
-import { ModalPortal } from 'WiperTool/modals';
 import { useCalibration, usePads, usePrinters } from 'WiperTool/providers/AppModelProvider';
+import { ModalPortal } from 'WiperTool/ui/modals';
 import { createMemo, createSignal, For, Show } from 'solid-js';
 import { twc } from 'styles/helpers';
 
