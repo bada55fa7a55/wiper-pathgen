@@ -1,19 +1,22 @@
+import { useModals } from 'WiperTool/AppModelProvider';
 import { sharedLinkModalOpenedEvent, track } from 'WiperTool/lib/analytics';
-import { isModalOpen, ModalKey, openModal } from 'WiperTool/store';
+import { ModalKeys } from 'WiperTool/ui/modals';
 import { isClientRuntime } from 'lib/runtime';
 import { onCleanup, onMount } from 'solid-js';
 import { getShareTokenFromUrl } from './sharing';
 
 export function useShareHashModal() {
+  const modals = useModals();
+
   const handleShareHash = () => {
     const token = getShareTokenFromUrl();
     if (!token) {
       return;
     }
 
-    if (!isModalOpen(ModalKey.ImportSharedWipingSequence)) {
+    if (!modals.isModalOpen(ModalKeys.ImportSharedWipingSequence)) {
       track(sharedLinkModalOpenedEvent());
-      openModal(ModalKey.ImportSharedWipingSequence);
+      modals.actions.openModal(ModalKeys.ImportSharedWipingSequence);
     }
   };
 

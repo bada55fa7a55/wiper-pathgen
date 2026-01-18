@@ -1,5 +1,5 @@
 import type { PrinterKey } from 'WiperTool/configuration';
-import type { WsWriteAction } from 'WiperTool/store/tracking';
+import type { WsWriteAction } from 'WiperTool/ui/tracking';
 import { isClientRuntime, isDevRuntime } from 'lib/runtime';
 
 type AnalyticsTrigger =

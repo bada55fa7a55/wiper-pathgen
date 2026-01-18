@@ -1,11 +1,15 @@
-import { PrinterKey } from 'WiperTool/configuration';
-import { StepKey, settings, steps } from 'WiperTool/store';
+import { useSettings, useSteps } from 'WiperTool/AppModelProvider';
+import { PrinterKeys } from 'WiperTool/domain/printers';
+import { StepKeys } from 'WiperTool/ui/steps';
 import { Section, SectionIntro, SectionTitle } from 'components';
 import { CoreOneInstructions } from './CoreOneInstructions';
 
 export function ClaibrationSection() {
+  const settings = useSettings();
+  const { steps } = useSteps();
+
   return (
-    <Section id={steps()[StepKey.Calibration].anchor}>
+    <Section id={steps()[StepKeys.Calibration].anchor}>
       <SectionTitle>Silicone Pad Position Calibration</SectionTitle>
       <SectionIntro>
         <p>
@@ -14,14 +18,16 @@ export function ClaibrationSection() {
         </p>
       </SectionIntro>
       {(() => {
-        switch (settings.printer) {
-          case PrinterKey.PrusaCoreOne:
-          case PrinterKey.PrusaCoreOneL:
-          case PrinterKey.PrusaXl:
-          case PrinterKey.PrusaMk4:
+        const printer = settings.printer();
+
+        switch (printer) {
+          case PrinterKeys.PrusaCoreOne:
+          case PrinterKeys.PrusaCoreOneL:
+          case PrinterKeys.PrusaXl:
+          case PrinterKeys.PrusaMk4:
             return <CoreOneInstructions />;
           default: {
-            return unreachable(settings.printer);
+            return unreachable(printer);
           }
         }
       })()}

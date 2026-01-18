@@ -1,4 +1,4 @@
-import { steps } from 'WiperTool/store';
+import { useSteps } from 'WiperTool/AppModelProvider';
 import { Link, MaterialSymbol } from 'components';
 import { Show } from 'solid-js';
 import { twc } from 'styles';
@@ -41,6 +41,8 @@ const Step = twc(
 );
 
 export function StepOMeter() {
+  const { steps } = useSteps();
+
   const getStepIcon = (stepIndex: number, isComplete: boolean) => {
     if (isComplete) {
       return (

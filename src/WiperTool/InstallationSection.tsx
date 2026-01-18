@@ -1,4 +1,5 @@
-import { printer, StepKey, steps } from 'WiperTool/store';
+import { usePrinters, useSteps } from 'WiperTool/AppModelProvider';
+import { StepKeys } from 'WiperTool/ui/steps';
 import {
   InlineCode,
   Link,
@@ -14,6 +15,9 @@ import {
 } from 'components';
 
 export function InstallationSection() {
+  const { selectedPrinter } = usePrinters();
+  const { steps } = useSteps();
+
   return (
     <Section id="installation">
       <SectionTitle>Installation</SectionTitle>
@@ -21,7 +25,7 @@ export function InstallationSection() {
         Add the wiping G-code from the{' '}
         <Link
           layout="internal"
-          href={`#${steps()[StepKey.Drawing].anchor}`}
+          href={`#${steps()[StepKeys.Drawing].anchor}`}
         >
           Drawing section
         </Link>{' '}
@@ -36,7 +40,7 @@ export function InstallationSection() {
                 In the{' '}
                 <Link
                   layout="internal"
-                  href={`#${steps()[StepKey.Drawing].anchor}`}
+                  href={`#${steps()[StepKeys.Drawing].anchor}`}
                 >
                   Drawing section
                 </Link>
@@ -52,8 +56,9 @@ export function InstallationSection() {
                 <MenuBreadcrumb path={['Printer Settings', 'Custom G-code', 'Start G-code']} />.
               </p>
               <p>
-                Find the current nozzle cleaning command (<InlineCode>{printer().originalCleaningGCode}</InlineCode>)
-                and replace that line with the G-code you copied from this tool.
+                Find the current nozzle cleaning command (
+                <InlineCode>{selectedPrinter().originalCleaningGCode}</InlineCode>) and replace that line with the
+                G-code you copied from this tool.
               </p>
               <p>
                 Keep the rest of your Start G-code unchanged. Only swap the original cleaning command for your new

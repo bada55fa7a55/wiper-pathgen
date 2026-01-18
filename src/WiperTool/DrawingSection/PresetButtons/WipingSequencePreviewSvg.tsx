@@ -1,5 +1,5 @@
-import type { WipingSequence } from 'WiperTool/store';
-import { getWipingStepPoints } from 'WiperTool/store';
+import type { WipingSequence } from 'WiperTool/domain/wipingSequence';
+import { getWipingStepPoints } from 'WiperTool/domain/wipingSequence';
 import { createMemo } from 'solid-js';
 
 type Props = {

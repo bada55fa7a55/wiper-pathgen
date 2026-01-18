@@ -1,5 +1,5 @@
+import { useSettings, useTracking, useWipingSequence } from 'WiperTool/AppModelProvider';
 import { actionShareLinkModalOpenedEvent, actionWipingSequenceExportedEvent, track } from 'WiperTool/lib/analytics';
-import { lastWipingSequenceWrite, settings, wipingSequence } from 'WiperTool/store';
 import { Button, Link, MaterialSymbol, Modal } from 'components';
 import { createSignal } from 'solid-js';
 import toast from 'solid-toast';
@@ -91,6 +91,10 @@ type Props = {
 };
 
 export function ShareModal(props: Props) {
+  const settings = useSettings();
+  const wipingSequence = useWipingSequence();
+  const tracking = useTracking();
+
   const { saveFile } = useSaveFile();
   const [isSaving, setIsSaving] = createSignal(false);
 
@@ -100,12 +104,12 @@ export function ShareModal(props: Props) {
   };
 
   const handleExportFileClick = async () => {
-    track(actionWipingSequenceExportedEvent('share', lastWipingSequenceWrite()));
+    track(actionWipingSequenceExportedEvent('share', tracking.lastWipingSequenceWrite()));
     setIsSaving(true);
     const { blob, fileName } = createShareFile({
-      padKey: settings.padType,
-      printerKey: settings.printer,
-      wipingSequence: wipingSequence(),
+      padKey: settings.padType(),
+      printerKey: settings.printer(),
+      wipingSequence: wipingSequence.wipingSteps(),
     });
 
     try {

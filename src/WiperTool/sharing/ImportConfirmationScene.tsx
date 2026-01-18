@@ -1,13 +1,15 @@
-import type { PadKey, PrinterKey } from 'WiperTool/configuration';
+import { useSteps, useTracking, useWipingSequence } from 'WiperTool/AppModelProvider';
+import type { PadKey } from 'WiperTool/domain/pads';
+import type { PrinterKey } from 'WiperTool/domain/printers';
+import type { WipingSequence } from 'WiperTool/domain/wipingSequence';
 import { actionWipingSequenceImportedEvent, track } from 'WiperTool/lib/analytics';
-import type { WipingSequence } from 'WiperTool/store';
-import { clearModals, StepKey, setLastWipingSequenceWrite, setWipingSequence, steps } from 'WiperTool/store';
+import { StepKeys } from 'WiperTool/ui/steps';
 import { Button, WarningMessage } from 'components';
 import { createSignal } from 'solid-js';
 import { twc } from 'styles';
 import { PreviewWipingSequenceCanvas } from './PreviewWipingSequenceCanvas';
-import { scrollToStep } from './scrollToStep';
 import { clearShareTokenFromUrl } from './sharing';
+import { useScrollToStep } from './useScrollToStep';
 
 const Content = twc(
   'div',
@@ -73,11 +75,17 @@ type Props = {
 };
 
 export function ImportConfirmationScene(props: Props) {
+  const wipingSequence = useWipingSequence();
+  const { steps } = useSteps();
+  const tracking = useTracking();
+
+  const { scrollToStep } = useScrollToStep();
+
   let importTimeout: number | undefined;
   const [imported, setImported] = createSignal(false);
 
   const scrollToNextStep = () => {
-    const targetStep = steps()[StepKey.Calibration].isComplete ? StepKey.Drawing : StepKey.Calibration;
+    const targetStep = steps()[StepKeys.Calibration].isComplete ? StepKeys.Drawing : StepKeys.Calibration;
     scrollToStep(targetStep);
   };
 
@@ -98,10 +106,10 @@ export function ImportConfirmationScene(props: Props) {
     if (props.source === 'token') {
       clearShareTokenFromUrl();
     }
-    setWipingSequence(props.wipingSequence);
-    setLastWipingSequenceWrite({ type: 'import', source: props.source });
+    wipingSequence.actions.setWipingSequence(props.wipingSequence);
+    tracking.actions.setLastWipingSequenceWrite({ type: 'import', source: props.source });
     showImported(() => {
-      clearModals();
+      props.onClose();
       scrollToNextStep();
     });
   };
@@ -129,7 +137,7 @@ export function ImportConfirmationScene(props: Props) {
         />
         <PreviewDescription>Here's a preview of the wiping sequence that you are about to import.</PreviewDescription>
       </PreviewWrapper>
-      {!steps()[StepKey.Calibration].isComplete && (
+      {!steps()[StepKeys.Calibration].isComplete && (
         <WarningMessage
           title="Note:"
           content={

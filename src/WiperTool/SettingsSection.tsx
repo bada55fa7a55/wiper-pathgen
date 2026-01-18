@@ -1,8 +1,11 @@
+import { useSettings, useSteps } from 'WiperTool/AppModelProvider';
+import type { PadKey } from 'WiperTool/domain/pads';
+import type { PrinterKey } from 'WiperTool/domain/printers';
 import { settingsValueChangedEvent, track } from 'WiperTool/lib/analytics';
 import { mmToUm } from 'WiperTool/lib/conversion';
 import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
 import { validatePositiveDecimal, validatePositiveInteger } from 'WiperTool/lib/validation';
-import { areStepsCompleteUpTo, StepKey, setSettings, settings, steps } from 'WiperTool/store';
+import { StepKeys } from 'WiperTool/ui/steps';
 import {
   ErrorMessage,
   FormInput,
@@ -21,19 +24,22 @@ import { createMemo, Show } from 'solid-js';
 import { createStore } from 'solid-js/store';
 
 export function SettingsSection() {
-  const isDisabled = createMemo(() => !areStepsCompleteUpTo(StepKey.Settings));
+  const settings = useSettings();
+  const { steps, areStepsCompleteUpTo } = useSteps();
+
+  const isDisabled = createMemo(() => !areStepsCompleteUpTo(StepKeys.Settings));
 
   const [formValues, setFormValues] = createStore({
-    plungeDepth: formatMicronsToMmString(settings.plungeDepth),
-    feedRate: settings.feedRate?.toString() ?? '',
-    zLift: formatMicronsToMmString(settings.zLift),
-    padType: settings.padType,
-    printer: settings.printer,
+    plungeDepth: formatMicronsToMmString(settings.plungeDepth()),
+    feedRate: settings.feedRate()?.toString() ?? '',
+    zLift: formatMicronsToMmString(settings.zLift()),
+    padType: settings.padType(),
+    printer: settings.printer(),
   });
   const [lastTrackedValues, setLastTrackedValues] = createStore({
-    plungeDepth: formatMicronsToMmString(settings.plungeDepth),
-    feedRate: settings.feedRate?.toString() ?? '',
-    zLift: formatMicronsToMmString(settings.zLift),
+    plungeDepth: formatMicronsToMmString(settings.plungeDepth()),
+    feedRate: settings.feedRate()?.toString() ?? '',
+    zLift: formatMicronsToMmString(settings.zLift()),
   });
 
   type FormValueKey = keyof typeof formValues;
@@ -70,28 +76,28 @@ export function SettingsSection() {
       switch (formValueKey) {
         case 'plungeDepth': {
           const micronValue = parsedValue === undefined ? undefined : mmToUm(parsedValue);
-          setSettings(formValueKey, micronValue);
+          settings.actions.setSettings(formValueKey, micronValue);
           break;
         }
         case 'zLift': {
           const micronValue = parsedValue === undefined ? undefined : mmToUm(parsedValue);
-          setSettings(formValueKey, micronValue);
+          settings.actions.setSettings(formValueKey, micronValue);
           break;
         }
         default:
-          setSettings(formValueKey, parsedValue);
+          settings.actions.setSettings(formValueKey, parsedValue);
       }
       setErrors(formValueKey, errorMessage);
       return;
     }
 
     if (formValueKey === 'padType') {
-      setSettings(formValueKey, rawValue as typeof settings.padType);
+      settings.actions.setSettings(formValueKey, rawValue as PadKey);
       return;
     }
 
     if (formValueKey === 'printer') {
-      setSettings(formValueKey, rawValue as typeof settings.printer);
+      settings.actions.setSettings(formValueKey, rawValue as PrinterKey);
       return;
     }
 
@@ -111,7 +117,7 @@ export function SettingsSection() {
     };
 
   return (
-    <Section id={steps()[StepKey.Settings].anchor}>
+    <Section id={steps()[StepKeys.Settings].anchor}>
       <SectionTitle>Settings</SectionTitle>
       <SectionColumns>
         <SectionColumn>
@@ -123,7 +129,7 @@ export function SettingsSection() {
                   Fill out the{' '}
                   <Link
                     layout="internal"
-                    href={`#${steps()[StepKey.Calibration].anchor}`}
+                    href={`#${steps()[StepKeys.Calibration].anchor}`}
                   >
                     Calibration section
                   </Link>{' '}

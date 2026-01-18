@@ -1,5 +1,7 @@
+import { useModals, useSteps } from 'WiperTool/AppModelProvider';
 import { actionImportModalOpenedEvent, actionShareModalOpenedEvent, track } from 'WiperTool/lib/analytics';
-import { ModalKey, openModal, StepKey, steps } from 'WiperTool/store';
+import { ModalKeys } from 'WiperTool/ui/modals';
+import { StepKeys } from 'WiperTool/ui/steps';
 import { Button, Dropdown } from 'components';
 import { createSignal } from 'solid-js';
 import { twc } from 'styles';
@@ -18,6 +20,9 @@ type Props = {
 };
 
 export function DropdownMenuButton(props: Props) {
+  const { steps } = useSteps();
+  const modals = useModals();
+
   const [isDropdownOpen, setIsDropdownOpen] = createSignal(false);
   let triggerRef: HTMLButtonElement | undefined;
 
@@ -38,11 +43,11 @@ export function DropdownMenuButton(props: Props) {
 
   const handleImportWipingSequenceItemClick = createDeferredActionHandler(() => {
     track(actionImportModalOpenedEvent('header'));
-    openModal(ModalKey.ImportWipingSequence);
+    modals.actions.openModal(ModalKeys.ImportWipingSequence);
   });
   const handleShareItemClick = createDeferredActionHandler(() => {
     track(actionShareModalOpenedEvent('header'));
-    openModal(ModalKey.Share);
+    modals.actions.openModal(ModalKeys.Share);
   });
 
   return (
@@ -78,7 +83,7 @@ export function DropdownMenuButton(props: Props) {
             layout="list"
             msIcon="share"
             label="Export or share wiping sequence"
-            isDisabled={!steps()[StepKey.Drawing].isComplete}
+            isDisabled={!steps()[StepKeys.Drawing].isComplete}
             onClick={handleShareItemClick}
           />
         </Dropdown>

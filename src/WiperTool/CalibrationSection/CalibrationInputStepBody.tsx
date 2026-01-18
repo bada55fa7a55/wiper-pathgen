@@ -1,11 +1,11 @@
+import { useCalibration } from 'WiperTool/AppModelProvider';
 import { calibrationValueChangedEvent, track } from 'WiperTool/lib/analytics';
+import { mmToUm } from 'WiperTool/lib/conversion';
 import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
+import { validateSignedDecimal } from 'WiperTool/lib/validation';
 import { FormInput, StepBody } from 'components';
 import { createStore } from 'solid-js/store';
 import { twc } from 'styles/helpers';
-import { mmToUm } from '../lib/conversion';
-import { validateSignedDecimal } from '../lib/validation';
-import { calibration, setCalibration } from '../store';
 import { CalibrationPadPreview } from './CalibrationPadPreview';
 
 const StepBodyContent = twc(
@@ -38,15 +38,18 @@ const CalibrationPadWrapper = twc(
 );
 
 export function CalibrationInputStepBody() {
+  const calibration = useCalibration();
+
   const [formValues, setFormValues] = createStore({
-    x: formatMicronsToMmString(calibration.x),
-    y: formatMicronsToMmString(calibration.y),
-    z: formatMicronsToMmString(calibration.z),
+    x: formatMicronsToMmString(calibration.x()),
+    y: formatMicronsToMmString(calibration.y()),
+    z: formatMicronsToMmString(calibration.z()),
   });
+
   const [lastTrackedValues, setLastTrackedValues] = createStore({
-    x: formatMicronsToMmString(calibration.x),
-    y: formatMicronsToMmString(calibration.y),
-    z: formatMicronsToMmString(calibration.z),
+    x: formatMicronsToMmString(calibration.x()),
+    y: formatMicronsToMmString(calibration.y()),
+    z: formatMicronsToMmString(calibration.z()),
   });
 
   type FormValueKey = keyof typeof formValues;
@@ -71,7 +74,7 @@ export function CalibrationInputStepBody() {
 
       const { parsedValue, errorMessage } = validators[formValueKey](rawValue);
       const micronValue = parsedValue === undefined ? undefined : mmToUm(parsedValue);
-      setCalibration(formValueKey, micronValue);
+      calibration.actions.setCalibration(formValueKey, micronValue);
       setErrors(formValueKey, errorMessage);
     };
 

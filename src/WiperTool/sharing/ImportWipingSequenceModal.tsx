@@ -1,16 +1,10 @@
+import { useImports } from 'WiperTool/AppModelProvider';
+import { FailureTypes, isImportableWipingSequenceFile } from 'WiperTool/domain/imports';
 import { Button, ErrorMessage, Modal } from 'components';
 import { Match, Show, Switch } from 'solid-js';
 import { useFileDialog } from 'solidjs-use';
 import { twc } from 'styles';
 import { ImportConfirmationScene } from './ImportConfirmationScene';
-import {
-  FailureType,
-  handleImportFile,
-  importState,
-  isImportableFile,
-  resetImportState,
-  setImportFailure,
-} from './importWipingSequenceState';
 import { isDroppingFile } from './useGlobalFileDrop';
 
 const Content = twc(
@@ -77,6 +71,8 @@ type Props = {
 };
 
 export function ImportWipingSequenceModal(props: Props) {
+  const imports = useImports();
+
   const { open: openFileDialog, onChange: onFileDialogChange } = useFileDialog({
     multiple: false,
     reset: true,
@@ -84,29 +80,29 @@ export function ImportWipingSequenceModal(props: Props) {
   });
 
   const importedState = () => {
-    const currentState = importState();
+    const currentState = imports.wipingSequenceImport();
     return currentState.status === 'imported' ? currentState : null;
   };
 
   const failureState = () => {
-    const currentState = importState();
+    const currentState = imports.wipingSequenceImport();
     return currentState.status === 'failure' ? currentState : null;
   };
 
   onFileDialogChange((files) => {
     if (files && files.length !== 0) {
-      const file = Array.from(files).find(isImportableFile);
+      const file = Array.from(files).find(isImportableWipingSequenceFile);
       if (!file) {
-        setImportFailure(FailureType.UnsupportedFileType);
+        imports.actions.setWipingSequenceImportFailure(FailureTypes.UnsupportedFileType);
         return;
       }
 
-      handleImportFile(file);
+      imports.actions.importWipingSequenceFile(file);
     }
   });
 
   const handleCancelImport = () => {
-    resetImportState();
+    imports.actions.resetWipingSequenceImport();
   };
 
   const handleOpenFileClick = () => {
@@ -114,7 +110,7 @@ export function ImportWipingSequenceModal(props: Props) {
   };
 
   const handleDismissFailure = () => {
-    resetImportState();
+    imports.actions.resetWipingSequenceImport();
   };
 
   return (
@@ -138,7 +134,7 @@ export function ImportWipingSequenceModal(props: Props) {
             />
           )}
         </Match>
-        <Match when={['idle', 'failure'].includes(importState().status)}>
+        <Match when={['idle', 'failure'].includes(imports.wipingSequenceImport().status)}>
           <Content>
             <Description>
               Import a wiping sequence <code>.json</code> file that you have previously exported or that has been shared
@@ -160,16 +156,16 @@ export function ImportWipingSequenceModal(props: Props) {
                 <div>...or drop a file here</div>
               </DropZoneContent>
             </DropZone>
-            <Show when={importState().status === 'failure'}>
+            <Show when={imports.wipingSequenceImport().status === 'failure'}>
               <Switch>
-                <Match when={failureState()?.failure === FailureType.UnsupportedFileType}>
+                <Match when={failureState()?.failure === FailureTypes.UnsupportedFileType}>
                   <ErrorMessage
                     title="Unsupported file type."
                     content="Upload a .json file that was generated with this tool."
                     onDismiss={handleDismissFailure}
                   />
                 </Match>
-                <Match when={failureState()?.failure === FailureType.Decode}>
+                <Match when={failureState()?.failure === FailureTypes.Decode}>
                   <ErrorMessage
                     title="Failed to decode wiping sequence."
                     content="The file appears to be malformatted or incompatibe. Try a different file."

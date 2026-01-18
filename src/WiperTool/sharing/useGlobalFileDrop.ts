@@ -1,7 +1,8 @@
+import { useImports, useModals } from 'WiperTool/AppModelProvider';
+import { FailureTypes, isImportableWipingSequenceFile } from 'WiperTool/domain/imports';
 import { actionFileDroppedEvent, actionImportModalOpenedEvent, track } from 'WiperTool/lib/analytics';
-import { isModalOpen, ModalKey, openModal } from 'WiperTool/store';
+import { ModalKeys } from 'WiperTool/ui/modals';
 import { createSignal, onCleanup, onMount } from 'solid-js';
-import { FailureType, handleImportFile, isImportableFile, setImportFailure } from './importWipingSequenceState';
 
 const [isDroppingFile, setIsDroppingFile] = createSignal(false);
 export { isDroppingFile };
@@ -31,6 +32,9 @@ function getDragFiles(event: DragEvent): File[] {
 }
 
 export function useGlobalFileDrop() {
+  const imports = useImports();
+  const modals = useModals();
+
   let dragCounter = 0;
 
   const handleDrop = (event: DragEvent) => {
@@ -51,18 +55,18 @@ export function useGlobalFileDrop() {
 
     track(actionFileDroppedEvent(files[0].type));
 
-    const importableFile = files.find(isImportableFile);
+    const importableFile = files.find(isImportableWipingSequenceFile);
     if (importableFile) {
-      if (!isModalOpen(ModalKey.ImportWipingSequence)) {
+      if (!modals.isModalOpen(ModalKeys.ImportWipingSequence)) {
         track(actionImportModalOpenedEvent('global_drop'));
-        openModal(ModalKey.ImportWipingSequence);
+        modals.actions.openModal(ModalKeys.ImportWipingSequence);
       }
-      handleImportFile(importableFile);
+      imports.actions.importWipingSequenceFile(importableFile);
       return;
     }
 
-    if (isModalOpen(ModalKey.ImportWipingSequence)) {
-      setImportFailure(FailureType.UnsupportedFileType);
+    if (modals.isModalOpen(ModalKeys.ImportWipingSequence)) {
+      imports.actions.setWipingSequenceImportFailure(FailureTypes.UnsupportedFileType);
     }
   };
 

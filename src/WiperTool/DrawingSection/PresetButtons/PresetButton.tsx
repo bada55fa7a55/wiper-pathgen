@@ -1,12 +1,13 @@
+import { usePads, useTracking, useWipingSequence } from 'WiperTool/AppModelProvider';
 import { WipingSequencePreviewSvg } from 'WiperTool/DrawingSection/PresetButtons/WipingSequencePreviewSvg';
+import type { PadProperties } from 'WiperTool/domain/pads';
+import type { PresetKey } from 'WiperTool/domain/presets';
+import { generatePresetSequence } from 'WiperTool/domain/presets';
 import { drawingPresetAppliedEvent, track } from 'WiperTool/lib/analytics';
-import { pad, setLastWipingSequenceWrite, setWipingSequence } from 'WiperTool/store';
 import { Button, Tooltip } from 'components';
 import { createMemo } from 'solid-js';
 import { twc } from 'styles';
-import { isPadCutOff } from '../helpers';
-import type { PresetKey } from './presets';
-import { generatePresetSequence } from './presets';
+import { useDrawingPadBoundsWarning } from '../helpers';
 
 const PresetPreviewFrame = twc(
   'div',
@@ -18,9 +19,14 @@ const PresetPreviewFrame = twc(
   `,
 );
 
-const PresetPreview = (props: { presetKey: PresetKey }) => {
-  const sequence = createMemo(() => generatePresetSequence(props.presetKey, pad()));
-  const padAspect = createMemo(() => pad().width / pad().height);
+type PresetPreviewProps = {
+  presetKey: PresetKey;
+  pad: PadProperties;
+};
+
+const PresetPreview = (props: PresetPreviewProps) => {
+  const sequence = createMemo(() => generatePresetSequence(props.presetKey, props.pad));
+  const padAspect = createMemo(() => props.pad.width / props.pad.height);
 
   return (
     <PresetPreviewFrame>
@@ -40,11 +46,17 @@ type Props = {
 };
 
 export function PresetButton(props: Props) {
+  const wipingSequence = useWipingSequence();
+  const { selectedPad } = usePads();
+  const tracking = useTracking();
+
+  const { drawingPadBoundsWarning } = useDrawingPadBoundsWarning();
+
   let buttonRef: HTMLButtonElement | undefined;
 
   const handleButtonClick = () => {
-    setWipingSequence(generatePresetSequence(props.presetKey, pad()));
-    setLastWipingSequenceWrite({ type: 'preset', preset: props.presetKey });
+    wipingSequence.actions.setWipingSequence(generatePresetSequence(props.presetKey, selectedPad()));
+    tracking.actions.setLastWipingSequenceWrite({ type: 'preset', preset: props.presetKey });
     track(drawingPresetAppliedEvent(props.presetKey));
   };
 
@@ -65,8 +77,17 @@ export function PresetButton(props: Props) {
         layout="secondary"
         type="button"
         size="lg-p0"
-        title={isPadCutOff() ? 'Only available when full pad is reachable by the nozzle' : undefined}
-        content={<PresetPreview presetKey={props.presetKey} />}
+        title={
+          drawingPadBoundsWarning().kind !== 'none'
+            ? 'Only available when full pad is reachable by the nozzle'
+            : undefined
+        }
+        content={
+          <PresetPreview
+            presetKey={props.presetKey}
+            pad={selectedPad()}
+          />
+        }
         isDisabled={props.isDisabled}
         onClick={handleButtonClick}
       />

@@ -1,5 +1,6 @@
-import type { PadKey, PrinterKey } from 'WiperTool/configuration';
-import type { WipingSequence } from 'WiperTool/store';
+import type { PadKey } from 'WiperTool/domain/pads';
+import type { PrinterKey } from 'WiperTool/domain/printers';
+import type { WipingSequence } from 'WiperTool/domain/wipingSequence';
 import { Button, ErrorMessage, Modal } from 'components';
 import { isAppError } from 'lib/errors';
 import { isClientRuntime } from 'lib/runtime';

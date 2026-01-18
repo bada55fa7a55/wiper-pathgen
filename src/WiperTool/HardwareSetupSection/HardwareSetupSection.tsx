@@ -1,5 +1,6 @@
+import { useSteps } from 'WiperTool/AppModelProvider';
 import { analyticsHwSetupGitHubIssues, analyticsHwSetupGitHubPullRequests } from 'WiperTool/lib/analytics';
-import { StepKey, steps } from 'WiperTool/store';
+import { StepKeys } from 'WiperTool/ui/steps';
 import { Link, Section, SectionColumn, SectionColumns, SectionIntro, SectionTitle } from 'components';
 import { twc } from 'styles';
 import { PrinterPicker } from './PrinterPicker/PrinterPicker';
@@ -13,8 +14,10 @@ const Notice = twc(
 );
 
 export function HardwareSetupSection() {
+  const { steps } = useSteps();
+
   return (
-    <Section id={steps()[StepKey.SelectPrinter].anchor}>
+    <Section id={steps()[StepKeys.SelectPrinter].anchor}>
       <SectionTitle>Select Your Printer</SectionTitle>
       <SectionIntro>
         <p>

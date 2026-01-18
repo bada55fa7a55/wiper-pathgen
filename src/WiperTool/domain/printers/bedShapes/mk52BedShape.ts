@@ -1,4 +1,4 @@
-import type { PrinterBedShape } from '.';
+import type { PrinterBedShape } from '../model';
 
 export const bedShapePath: [number, number][] = [
   [25, 0],
@@ -45,7 +45,7 @@ const offsetX = -2000;
 const offsetY = -14000;
 const offset: [number, number] = [offsetX, offsetY];
 
-export const prusaCoreOneBedShape = {
+export const mk52BedShape = {
   path: bedShapePath,
   negativeVolumes,
   offset,

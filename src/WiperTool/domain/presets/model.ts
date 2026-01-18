@@ -1,6 +1,7 @@
-import type { PadProperties } from 'WiperTool/configuration';
-import type { Point, WipingSequence } from 'WiperTool/store';
-import { makeWipingStepPoint } from 'WiperTool/store';
+import type { PadProperties } from 'WiperTool/domain/pads';
+import type { WipingSequence } from 'WiperTool/domain/wipingSequence';
+import { makeWipingStepPoint } from 'WiperTool/domain/wipingSequence';
+import type { Point } from 'WiperTool/lib/geometry';
 
 export type PresetKey = 'zigzag' | 'zigzag-bidi' | 'hilbert' | 'spiral' | 'crosshatch' | 'ultimate';
 

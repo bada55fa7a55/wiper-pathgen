@@ -1,13 +1,14 @@
+import { usePrinters, useSteps } from 'WiperTool/AppModelProvider';
 import { wiperArmv2Link } from 'WiperTool/configuration';
 import { analyticsWarningPrintablesWA2 } from 'WiperTool/lib/analytics';
 import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
-import { areStepsCompleteUpTo, printer, StepKey, steps } from 'WiperTool/store';
+import { StepKeys } from 'WiperTool/ui/steps';
 import { ErrorMessage, Link, Section, SectionIntro, SectionTitle, WarningMessage } from 'components';
 import { Show } from 'solid-js';
 import { twc } from 'styles/helpers';
 import { DrawingPad } from './DrawingPad';
 import { GCode } from './GCode';
-import { isPadCutOff, isPadInvisible, padCutOffWarning } from './helpers';
+import { useDrawingPadBoundsWarning } from './helpers';
 import { PresetButtons } from './PresetButtons';
 
 const DrawingContainer = twc(
@@ -46,17 +47,23 @@ const GCodeWrapper = twc(
 );
 
 export function DrawingSection() {
-  const isReadyToDraw = () => areStepsCompleteUpTo(StepKey.Drawing);
+  const { selectedPrinter } = usePrinters();
+  const { steps, areStepsCompleteUpTo } = useSteps();
+
+  const { drawingPadBoundsWarning } = useDrawingPadBoundsWarning();
+  const isReadyToDraw = () => areStepsCompleteUpTo(StepKeys.Drawing);
   const isDisabled = () => !isReadyToDraw();
 
+  const warning = drawingPadBoundsWarning(); // accessor // or: const warning = useDrawingPadBoundsWarning();
+
   return (
-    <Section id={steps()[StepKey.Drawing].anchor}>
+    <Section id={steps()[StepKeys.Drawing].anchor}>
       <SectionTitle>Draw Wiping Path</SectionTitle>
       <SectionIntro>
         Draw a custom nozzle wiping path or choose a preset. After creating your path, use the{' '}
         <Link
           layout="internal"
-          href={`#${steps()[StepKey.Testing].anchor}`}
+          href={`#${steps()[StepKeys.Testing].anchor}`}
         >
           Testing section
         </Link>{' '}
@@ -70,14 +77,14 @@ export function DrawingSection() {
               Complete the{' '}
               <Link
                 layout="internal"
-                href={`#${steps()[StepKey.Calibration].anchor}`}
+                href={`#${steps()[StepKeys.Calibration].anchor}`}
               >
                 Calibration section
               </Link>{' '}
               and{' '}
               <Link
                 layout="internal"
-                href={`#${steps()[StepKey.Settings].anchor}`}
+                href={`#${steps()[StepKeys.Settings].anchor}`}
               >
                 Settings section
               </Link>{' '}
@@ -86,7 +93,7 @@ export function DrawingSection() {
           }
         />
       </Show>
-      <Show when={isPadInvisible()}>
+      <Show when={warning.kind === 'full'}>
         <ErrorMessage
           title="Error: Silicone pad beyond the printer's reach."
           content={
@@ -95,7 +102,7 @@ export function DrawingSection() {
               nozzle's reach. If this seems incorrect, revisit the{' '}
               <Link
                 layout="internal"
-                href={`#${steps()[StepKey.Calibration].anchor}`}
+                href={`#${steps()[StepKeys.Calibration].anchor}`}
               >
                 Calibration section
               </Link>{' '}
@@ -104,30 +111,33 @@ export function DrawingSection() {
           }
         />
       </Show>
-      <Show when={isPadCutOff()}>
-        <WarningMessage
-          title="Why is the pad cut off?"
-          content={
-            <>
-              Based on the pad position calibration and the printer's{' '}
-              {padCutOffWarning() === 'top' || padCutOffWarning() === 'bottom' ? 'Y-axis' : 'X-axis'} range (
-              {padCutOffWarning() === 'top' || padCutOffWarning() === 'bottom'
-                ? `${formatMicronsToMmString(printer().minY)}mm - ${formatMicronsToMmString(printer().maxY)}mm`
-                : `${formatMicronsToMmString(printer().minX)}mm - ${formatMicronsToMmString(printer().maxX)}mm`}
-              ), your printer's nozzle cannot reach the full silicone pad. You can still draw a wiping path, but it must
-              stay within the reachable area of the pad.
-              <br />
-              If your current nozzle wiping arm places the silicone pad partly outside the nozzle's reach, check out{' '}
-              <Link
-                href={wiperArmv2Link.href}
-                {...analyticsWarningPrintablesWA2()}
-              >
-                {wiperArmv2Link.label}
-              </Link>{' '}
-              for a solution that places the silicone pad fully within reach.
-            </>
-          }
-        />
+      <Show when={warning.kind === 'partial' ? warning : null}>
+        {(w) => (
+          <WarningMessage
+            title="Why is the pad cut off?"
+            content={
+              <>
+                Based on the pad position calibration and the printer's{' '}
+                {w().side === 'top' || w().side === 'bottom' ? 'Y-axis' : 'X-axis'} range (
+                {w().side === 'top' || w().side === 'bottom'
+                  ? `${formatMicronsToMmString(selectedPrinter().minY)}mm - ${formatMicronsToMmString(selectedPrinter().maxY)}mm`
+                  : `${formatMicronsToMmString(selectedPrinter().minX)}mm - ${formatMicronsToMmString(selectedPrinter().maxX)}mm`}
+                ), your printer's nozzle cannot reach the full silicone pad. You can still draw a wiping path, but it
+                must stay within the reachable area of the pad.
+                <br />
+                If your current nozzle wiping arm places the silicone pad partially outside the nozzle's reach, check
+                out{' '}
+                <Link
+                  href={wiperArmv2Link.href}
+                  {...analyticsWarningPrintablesWA2()}
+                >
+                  {wiperArmv2Link.label}
+                </Link>{' '}
+                for a solution that places the silicone pad fully within reach.
+              </>
+            }
+          />
+        )}
       </Show>
       <PresetButtons />
       <DrawingContainer disabled={isDisabled()}>

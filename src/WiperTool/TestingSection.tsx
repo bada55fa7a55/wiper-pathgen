@@ -1,18 +1,16 @@
+import {
+  useCalibration,
+  usePads,
+  usePrinters,
+  useSettings,
+  useSteps,
+  useTracking,
+  useWipingSequence,
+} from 'WiperTool/AppModelProvider';
 import { calibrationValuesUsedEvent, testGCodeDownloadedEvent, track } from 'WiperTool/lib/analytics';
 import { formatPercent, formatPercentString } from 'WiperTool/lib/formatting';
 import { generateTestGCodeCommands } from 'WiperTool/lib/gcode';
-import {
-  areStepsCompleteUpTo,
-  calibration,
-  getWipingStepPoints,
-  lastWipingSequenceWrite,
-  padTopRight,
-  printer,
-  StepKey,
-  settings,
-  steps,
-  wipingSequence,
-} from 'WiperTool/store';
+import { StepKeys } from 'WiperTool/ui/steps';
 import {
   Button,
   ErrorMessage,
@@ -86,55 +84,70 @@ const StrongEmphasis = twc(
 );
 
 export function TestingSection() {
+  const { selectedPrinter } = usePrinters();
+  const { selectedPadTopRight } = usePads();
+  const calibration = useCalibration();
+  const settings = useSettings();
+  const wipingSequence = useWipingSequence();
+  const tracking = useTracking();
+  const { steps, areStepsCompleteUpTo } = useSteps();
+
   const [feedRateMultiplier, setFeedRateMultiplier] = createSignal<string>('0.05');
   const feedRateMultiplierValue = createMemo(() => Number(feedRateMultiplier()));
-  const sequencePoints = createMemo(() => getWipingStepPoints(wipingSequence()));
 
   const testGCode = createMemo(() => {
+    const feedRate = settings.feedRate();
+    const plungeDepth = settings.plungeDepth();
+    const zLift = settings.zLift();
+    const x = calibration.x();
+    const y = calibration.y();
+    const z = calibration.z();
+
     if (
-      sequencePoints().length < 2 ||
-      calibration.x === undefined ||
-      calibration.y === undefined ||
-      calibration.z === undefined ||
-      settings.feedRate === undefined ||
-      settings.plungeDepth === undefined ||
-      settings.zLift === undefined
+      !wipingSequence.isComplete() ||
+      x === undefined ||
+      y === undefined ||
+      z === undefined ||
+      feedRate === undefined ||
+      plungeDepth === undefined ||
+      zLift === undefined
     ) {
       return null;
     }
+
     return (
       generateTestGCodeCommands({
-        printerName: printer().name,
-        printerOriginalCleaningGcode: printer().originalCleaningGCode,
-        printerId: printer().printerId,
+        printerName: selectedPrinter().name,
+        printerOriginalCleaningGcode: selectedPrinter().originalCleaningGCode,
+        printerId: selectedPrinter().printerId,
         printerMaxCoords: {
-          x: printer().maxX,
-          y: printer().maxY,
+          x: selectedPrinter().maxX,
+          y: selectedPrinter().maxY,
         },
         printerParkingCoords: {
-          x: printer().parkingCoords.x,
-          y: printer().parkingCoords.y,
-          z: printer().parkingZHeight,
+          x: selectedPrinter().parkingCoords.x,
+          y: selectedPrinter().parkingCoords.y,
+          z: selectedPrinter().parkingZHeight,
         },
         padRef: {
-          x: calibration.x,
-          y: calibration.y,
-          z: calibration.z,
+          x,
+          y,
+          z,
         },
-        wipingSequence: wipingSequence(),
-        padTopRight: { ...padTopRight(), z: calibration.z },
-        feedRate: settings.feedRate * feedRateMultiplierValue(),
-        plungeDepth: settings.plungeDepth,
-        zLift: settings.zLift,
+        wipingSequence: wipingSequence.wipingSteps(),
+        padTopRight: { ...selectedPadTopRight(), z },
+        feedRate: feedRate * feedRateMultiplierValue(),
+        plungeDepth,
+        zLift,
       })?.join('\n') || ''
     );
   });
 
-  const isReadyToPrint = () => areStepsCompleteUpTo(StepKey.Testing);
+  const isReadyToPrint = () => areStepsCompleteUpTo(StepKeys.Testing);
   const isDisabled = () => !isReadyToPrint() || !testGCode();
 
   const fileName = createMemo(() => {
-    const lastWrite = lastWipingSequenceWrite();
+    const lastWrite = tracking.lastWipingSequenceWrite();
     if (lastWrite && lastWrite.type === 'preset') {
       return `${lastWrite.preset}-preset-test-${formatPercent(feedRateMultiplierValue())}p.gcode`;
     }
@@ -153,12 +166,14 @@ export function TestingSection() {
     link.click();
     URL.revokeObjectURL(url);
 
-    track(testGCodeDownloadedEvent(lastWipingSequenceWrite()));
-    track(calibrationValuesUsedEvent('testing', printer().key, calibration.x, calibration.y, calibration.z));
+    track(testGCodeDownloadedEvent(tracking.lastWipingSequenceWrite()));
+    track(
+      calibrationValuesUsedEvent('testing', selectedPrinter().key, calibration.x(), calibration.y(), calibration.z()),
+    );
   };
 
   return (
-    <Section id={steps()[StepKey.Testing].anchor}>
+    <Section id={steps()[StepKeys.Testing].anchor}>
       <SectionTitle>Testing</SectionTitle>
       <SectionIntro>
         Download a ready-to-run test G-code file that runs your drawn wiping sequence as a complete, standalone test. It
@@ -172,21 +187,21 @@ export function TestingSection() {
               Fill out the{' '}
               <Link
                 layout="internal"
-                href={`#${steps()[StepKey.Calibration].anchor}`}
+                href={`#${steps()[StepKeys.Calibration].anchor}`}
               >
                 Calibration section
               </Link>{' '}
               and{' '}
               <Link
                 layout="internal"
-                href={`#${steps()[StepKey.Settings].anchor}`}
+                href={`#${steps()[StepKeys.Settings].anchor}`}
               >
                 Settings section
               </Link>
               , then draw a wiping path in the{' '}
               <Link
                 layout="internal"
-                href={`#${steps()[StepKey.Drawing].anchor}`}
+                href={`#${steps()[StepKeys.Drawing].anchor}`}
               >
                 Drawing section
               </Link>
@@ -251,7 +266,7 @@ export function TestingSection() {
                     The test file{' '}
                     <strong>
                       runs at {formatPercentString(feedRateMultiplierValue())} of your configured feed rate (
-                      {feedRateMultiplierValue() * (settings?.feedRate ?? 0)} mm/min)
+                      {feedRateMultiplierValue() * (settings.feedRate() ?? 0)} mm/min)
                     </strong>
                     . The slower speed gives you time to press the Reset button if you need to stop it and reduces the
                     chance of damage if something collides.
@@ -265,7 +280,7 @@ export function TestingSection() {
                     Start G-code. Copy the G-code from the{' '}
                     <Link
                       layout="internal"
-                      href={`#${steps()[StepKey.Drawing].anchor}`}
+                      href={`#${steps()[StepKeys.Drawing].anchor}`}
                     >
                       Drawing section
                     </Link>{' '}
@@ -284,7 +299,7 @@ export function TestingSection() {
               </Content>
             </StepBody>
           </Step>
-          {/* <pre>{testGCode()}</pre> */}
+          <pre>{testGCode()}</pre>
         </SectionColumn>
       </SectionColumns>
     </Section>

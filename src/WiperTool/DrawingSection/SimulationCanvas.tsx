@@ -1,4 +1,4 @@
-import type { Point } from 'WiperTool/store';
+import type { Point } from 'WiperTool/lib/geometry';
 import { createEffect } from 'solid-js';
 import { twc } from 'styles/helpers';
 import { absToRel } from './helpers';

@@ -1,5 +1,5 @@
+import { useSettings, useTracking, useWipingSequence } from 'WiperTool/AppModelProvider';
 import { actionShareLinkCopiedEvent, track } from 'WiperTool/lib/analytics';
-import { lastWipingSequenceWrite, settings, wipingSequence } from 'WiperTool/store';
 import { Button, CodeTextArea, Modal } from 'components';
 import { createMemo, createSignal } from 'solid-js';
 import { twc } from 'styles';
@@ -69,14 +69,18 @@ type Props = {
 };
 
 export function ShareLinkModal(props: Props) {
+  const settings = useSettings();
+  const tracking = useTracking();
+  const wipingSequence = useWipingSequence();
+
   const [copied, setCopied] = createSignal(false);
   let copyTimeout: number | undefined;
 
   const encoded = createMemo(() => {
     return encodeShareToken({
-      padKey: settings.padType,
-      printerKey: settings.printer,
-      wipingSequence: wipingSequence(),
+      padKey: settings.padType(),
+      printerKey: settings.printer(),
+      wipingSequence: wipingSequence.wipingSteps(),
     });
   });
 
@@ -89,7 +93,7 @@ export function ShareLinkModal(props: Props) {
   };
 
   const handleCopyLinkClick = () => {
-    track(actionShareLinkCopiedEvent(lastWipingSequenceWrite()));
+    track(actionShareLinkCopiedEvent(tracking.lastWipingSequenceWrite()));
     navigator.clipboard.writeText(buildShareUrl(encoded()));
     showCopied();
   };

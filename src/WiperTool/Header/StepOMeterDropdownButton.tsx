@@ -1,4 +1,4 @@
-import { steps } from 'WiperTool/store';
+import { useAppModel } from 'WiperTool/AppModelProvider';
 import { Button, Dropdown } from 'components';
 import { createSignal } from 'solid-js';
 import { twc } from 'styles';
@@ -14,6 +14,12 @@ const DropdownWrapper = twc(
 );
 
 export function StepOMeterDropdownButton() {
+  const {
+    derived: {
+      steps: { steps },
+    },
+  } = useAppModel();
+
   const [isDropdownOpen, setIsDropdownOpen] = createSignal(false);
   let triggerRef: HTMLButtonElement | undefined;
 

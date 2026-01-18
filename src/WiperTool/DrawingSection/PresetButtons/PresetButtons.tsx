@@ -1,11 +1,11 @@
-import { isCalibrated, isSettingsComplete } from 'WiperTool/store';
+import { useCalibration, useSettings } from 'WiperTool/AppModelProvider';
+import { presetDefinitions } from 'WiperTool/domain/presets';
 import { isClientRuntime } from 'lib/runtime';
 import { createMemo, createSignal, onCleanup, onMount } from 'solid-js';
 import { twc } from 'styles/helpers';
-import { isPadCutOff } from '../helpers';
+import { useDrawingPadBoundsWarning } from '../helpers';
 import { PresetButton } from './PresetButton';
 import { PresetsDropdownButton } from './PresetsDropdownButton';
-import { presetDefinitions } from './presets';
 
 const Container = twc(
   'div',
@@ -76,7 +76,14 @@ const AvailabilityNotice = twc(
 const safetyPadding = 50;
 
 export function PresetButtons() {
-  const isDisabled = createMemo(() => !isCalibrated() || !isSettingsComplete() || isPadCutOff());
+  const calibration = useCalibration();
+  const settings = useSettings();
+
+  const { drawingPadBoundsWarning } = useDrawingPadBoundsWarning();
+
+  const isDisabled = createMemo(
+    () => !calibration.isComplete() || !settings.isComplete() || drawingPadBoundsWarning().kind !== 'none',
+  );
   const totalPresets = presetDefinitions.length;
   const defaultVisibleCount = Math.max(0, totalPresets - 1);
   const [visibleCount, setVisibleCount] = createSignal(defaultVisibleCount);

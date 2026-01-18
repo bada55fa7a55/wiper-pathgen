@@ -1,4 +1,15 @@
+import {
+  useCalibration,
+  useModals,
+  usePads,
+  usePrinters,
+  useSettings,
+  useSteps,
+  useTracking,
+  useWipingSequence,
+} from 'WiperTool/AppModelProvider';
 import { gridStep } from 'WiperTool/configuration';
+import { getWipingStepPoints, makeWipingStepPoint } from 'WiperTool/domain/wipingSequence';
 import {
   actionImportModalOpenedEvent,
   actionShareModalOpenedEvent,
@@ -8,30 +19,14 @@ import {
   track,
 } from 'WiperTool/lib/analytics';
 import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
-import type { Point } from 'WiperTool/store';
-import {
-  calibration,
-  getWipingStepPoints,
-  lastWipingSequenceWrite,
-  ModalKey,
-  makeWipingStepPoint,
-  openModal,
-  pad,
-  padTopRight,
-  printer,
-  StepKey,
-  setLastWipingSequenceWrite,
-  settings,
-  setWipingSequence,
-  steps,
-  wipingSequence,
-} from 'WiperTool/store';
-import { paddings } from 'WiperTool/store/paddings';
+import type { Point } from 'WiperTool/lib/geometry';
+import { ModalKeys } from 'WiperTool/ui/modals';
+import { StepKeys } from 'WiperTool/ui/steps';
 import { WipingSequenceCanvas } from 'WiperTool/WipingSequenceCanvas';
 import { Button } from 'components';
 import { createMemo, createSignal, Show } from 'solid-js';
 import { twc } from 'styles/helpers';
-import { absToRel, relToAbs } from './helpers';
+import { absToRel, relToAbs, useDrawingPadPaddings } from './helpers';
 import { PathControls } from './PathControls';
 import { SimulationCanvas } from './SimulationCanvas';
 import { createNozzleSimulation } from './useSimulation';
@@ -164,13 +159,24 @@ const DrawingHint = twc(
 );
 
 export function DrawingPad() {
+  const calibration = useCalibration();
+  const settings = useSettings();
+  const wipingSequence = useWipingSequence();
+  const { selectedPrinter } = usePrinters();
+  const { selectedPad, selectedPadTopRight } = usePads();
+  const { steps } = useSteps();
+  const tracking = useTracking();
+  const modals = useModals();
+
+  const paddings = useDrawingPadPaddings();
+
   const [cursorMicrons, setCursorMicrons] = createSignal<Point | null>(null);
 
-  const toAbsolute = (relPoint: Point) => relToAbs(relPoint, padTopRight());
-  const toRelative = (absPoint: Point) => absToRel(absPoint, padTopRight());
+  const toAbsolute = (relPoint: Point) => relToAbs(relPoint, selectedPadTopRight());
+  const toRelative = (absPoint: Point) => absToRel(absPoint, selectedPadTopRight());
 
-  const sequencePoints = createMemo(() => getWipingStepPoints(wipingSequence()));
-  const isSimulationDisabled = createMemo(() => sequencePoints().length < 2 || (settings.feedRate ?? 0) <= 0);
+  const sequencePoints = createMemo(() => getWipingStepPoints(wipingSequence.wipingSteps()));
+  const isSimulationDisabled = createMemo(() => sequencePoints().length < 2 || (settings.feedRate() ?? 0) <= 0);
   const lastPoint = createMemo(() => {
     const currentPoints = sequencePoints();
     if (currentPoints.length === 0) return null;
@@ -184,23 +190,23 @@ export function DrawingPad() {
       return;
     }
     simulation.startSimulation();
-    track(simulationStartedEvent(lastWipingSequenceWrite()));
+    track(simulationStartedEvent(tracking.lastWipingSequenceWrite()));
   };
 
   const handleImportClick = () => {
     track(actionImportModalOpenedEvent('drawing'));
-    openModal(ModalKey.ImportWipingSequence);
+    modals.actions.openModal(ModalKeys.ImportWipingSequence);
   };
 
   const handleShareClick = () => {
     track(actionShareModalOpenedEvent('drawing'));
-    openModal(ModalKey.Share);
+    modals.actions.openModal(ModalKeys.Share);
   };
 
   const handleAddPoint = (absPoint: Point) => {
     const relPoint = toRelative(absPoint);
-    setWipingSequence((sequence) => [...sequence, makeWipingStepPoint(relPoint)]);
-    setLastWipingSequenceWrite({ type: 'point' });
+    wipingSequence.actions.addWipingStep(makeWipingStepPoint(relPoint));
+    tracking.actions.setLastWipingSequenceWrite({ type: 'point' });
     track(drawingPointAddedEvent());
   };
 
@@ -218,15 +224,15 @@ export function DrawingPad() {
   };
 
   const printerCenter = createMemo<Point>(() => ({
-    x: printer().maxX / 2,
-    y: printer().maxY / 2,
+    x: selectedPrinter().maxX / 2,
+    y: selectedPrinter().maxY / 2,
   }));
   const absolutePoints = createMemo(() => sequencePoints().map(toAbsolute));
 
   const simulation = createNozzleSimulation({
     getPoints: absolutePoints,
-    getFeedRate: () => settings.feedRate,
-    getParkingCoords: () => printer().parkingCoords,
+    getFeedRate: () => settings.feedRate(),
+    getParkingCoords: () => selectedPrinter().parkingCoords,
     getBedCenter: printerCenter,
   });
 
@@ -254,7 +260,7 @@ export function DrawingPad() {
             label="Share"
             title="Export or share wiping sequence"
             msIcon="share"
-            isDisabled={!steps()[StepKey.Drawing].isComplete}
+            isDisabled={!steps()[StepKeys.Drawing].isComplete}
             withResponsiveLabel
             onClick={handleShareClick}
           />
@@ -288,35 +294,31 @@ export function DrawingPad() {
           }}
         >
           <WipingSequenceCanvas
-            padImageSrc={pad().image}
-            padWidth={pad().width}
-            padHeight={pad().height}
+            padImageSrc={selectedPad().image}
+            padWidth={selectedPad().width}
+            padHeight={selectedPad().height}
             paddingLeft={paddings().left}
             paddingRight={paddings().right}
             paddingTop={paddings().top}
             paddingBottom={paddings().bottom}
-            padTopRight={padTopRight()}
-            parkingCoords={printer().parkingCoords}
+            padTopRight={selectedPadTopRight()}
+            parkingCoords={selectedPrinter().parkingCoords}
             printerCenter={printerCenter()}
             points={absolutePoints()}
-            calibrationPoint={
-              calibration.x !== undefined && calibration.y !== undefined
-                ? { x: calibration.x, y: calibration.y }
-                : undefined
-            }
+            calibrationPoint={calibration.calibrationPoint()}
             showTravelLines
             onAddPoint={handleAddPoint}
             onCursorChange={handleCursorChange}
           />
           <SimulationCanvas
             nozzlePos={simulation.simulationPoint()}
-            padWidth={pad().width}
-            padHeight={pad().height}
+            padWidth={selectedPad().width}
+            padHeight={selectedPad().height}
             paddingLeft={paddings().left}
             paddingRight={paddings().right}
             paddingTop={paddings().top}
             paddingBottom={paddings().bottom}
-            padTopRight={padTopRight()}
+            padTopRight={selectedPadTopRight()}
           />
         </CanvasFrame>
         <Show when={sequencePoints().length === 0}>

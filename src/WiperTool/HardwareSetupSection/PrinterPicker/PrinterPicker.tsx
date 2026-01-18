@@ -1,7 +1,7 @@
-import type { PrinterProperties } from 'WiperTool/configuration';
-import { PrinterKey, printerProperties } from 'WiperTool/configuration';
+import { useSettings } from 'WiperTool/AppModelProvider';
+import type { PrinterKey, PrinterProperties } from 'WiperTool/domain/printers';
+import { PrinterKeys, printerProperties } from 'WiperTool/domain/printers';
 import { settingsValueChangedEvent, track } from 'WiperTool/lib/analytics';
-import { setSettings, settings } from 'WiperTool/store';
 import { For } from 'solid-js';
 import { twc } from 'styles';
 import prusaCoreOneIcon from './assets/COREONE_thumbnail.png?url';
@@ -22,6 +22,8 @@ const Container = twc(
 );
 
 export function PrinterPicker() {
+  const settings = useSettings();
+
   const statusRank: Record<PrinterProperties['status'], number> = {
     supported: 0,
     'in-progress': 1,
@@ -33,15 +35,15 @@ export function PrinterPicker() {
   );
 
   const printerIcons = {
-    [PrinterKey.PrusaCoreOne]: prusaCoreOneIcon,
-    [PrinterKey.PrusaCoreOneL]: prusaCoreOneLIcon,
-    [PrinterKey.PrusaXl]: prusaXlIcon,
-    [PrinterKey.PrusaMk4]: prusaMk4Icon,
+    [PrinterKeys.PrusaCoreOne]: prusaCoreOneIcon,
+    [PrinterKeys.PrusaCoreOneL]: prusaCoreOneLIcon,
+    [PrinterKeys.PrusaXl]: prusaXlIcon,
+    [PrinterKeys.PrusaMk4]: prusaMk4Icon,
   };
 
   const handlePrinterButtonClick = (printerKey: PrinterKey) => () => {
     track(settingsValueChangedEvent('printer', 'hwsetup'));
-    setSettings('printer', printerKey);
+    settings.actions.setSettings('printer', printerKey);
   };
 
   return (
@@ -50,10 +52,10 @@ export function PrinterPicker() {
         {({ key, name, status }) => (
           <PrinterButton
             image={printerIcons[key]}
-            isEnlargedImage={key === PrinterKey.PrusaCoreOneL}
+            isEnlargedImage={key === PrinterKeys.PrusaCoreOneL}
             label={name}
             status={status}
-            isSelected={key === settings.printer}
+            isSelected={key === settings.printer()}
             onClick={handlePrinterButtonClick(key)}
           />
         )}

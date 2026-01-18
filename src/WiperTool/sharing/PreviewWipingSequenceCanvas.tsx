@@ -1,7 +1,8 @@
-import type { PadKey, PrinterKey } from 'WiperTool/configuration';
 import { padProperties, printerProperties } from 'WiperTool/configuration';
-import type { WipingSequence } from 'WiperTool/store';
-import { getWipingStepPoints } from 'WiperTool/store';
+import type { PadKey } from 'WiperTool/domain/pads';
+import type { PrinterKey } from 'WiperTool/domain/printers';
+import type { WipingSequence } from 'WiperTool/domain/wipingSequence';
+import { getWipingStepPoints } from 'WiperTool/domain/wipingSequence';
 import { WipingSequenceCanvas } from 'WiperTool/WipingSequenceCanvas';
 import { createMemo } from 'solid-js';
 import { twc } from 'styles';

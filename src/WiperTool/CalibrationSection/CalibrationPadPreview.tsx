@@ -1,5 +1,5 @@
+import { useCalibration, usePads, usePrinters } from 'WiperTool/AppModelProvider';
 import { ModalPortal } from 'WiperTool/modals';
-import { calibration, pad, padTopRight, printer } from 'WiperTool/store';
 import { createMemo, createSignal, For, Show } from 'solid-js';
 import { twc } from 'styles/helpers';
 
@@ -109,10 +109,14 @@ type SvgRect = {
 const padding = 15000;
 
 function CalibrationPadPreviewImpl() {
-  const hasCalibration = createMemo(() => calibration.x !== undefined && calibration.y !== undefined);
+  const calibration = useCalibration();
+  const { selectedPrinter } = usePrinters();
+  const { selectedPad, selectedPadTopRight } = usePads();
+
+  const hasCalibration = createMemo(() => calibration.x() !== undefined && calibration.y() !== undefined);
 
   const viewSettings = createMemo(() => {
-    const printerData = printer();
+    const printerData = selectedPrinter();
     const width = Math.max(1, printerData.maxX - printerData.minX) + 2 * padding;
     const height = Math.max(1, printerData.maxY - printerData.minY) + 2 * padding;
     return {
@@ -124,7 +128,7 @@ function CalibrationPadPreviewImpl() {
   });
 
   const printerRect = createMemo<SvgRect>(() => {
-    const printerData = printer();
+    const printerData = selectedPrinter();
     const width = Math.max(1, printerData.maxX - printerData.minX);
     const height = Math.max(1, printerData.maxY - printerData.minY);
 
@@ -141,8 +145,8 @@ function CalibrationPadPreviewImpl() {
       return null;
     }
 
-    const padData = pad();
-    const padTopRightPoint = padTopRight();
+    const padData = selectedPad();
+    const padTopRightPoint = selectedPadTopRight();
 
     const left = padTopRightPoint.x - padData.width;
     const top = padTopRightPoint.y;
@@ -195,7 +199,7 @@ function CalibrationPadPreviewImpl() {
             stroke-dasharray="5, 3"
             vector-effect="non-scaling-stroke"
           />
-          <Show when={printer().bedShape}>
+          <Show when={selectedPrinter().bedShape}>
             {(bedShape) => (
               <g transform={`translate(${bedShape().offset[0]}, ${bedShape().offset[1]})`}>
                 <path

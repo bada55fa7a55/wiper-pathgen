@@ -1,14 +1,14 @@
+import {
+  useCalibration,
+  usePads,
+  usePrinters,
+  useSettings,
+  useTracking,
+  useWipingSequence,
+} from 'WiperTool/AppModelProvider';
+import { getWipingStepPoints } from 'WiperTool/domain/wipingSequence';
 import { calibrationValuesUsedEvent, gCodeCopiedEvent, track } from 'WiperTool/lib/analytics';
 import { generateGCodeCommands } from 'WiperTool/lib/gcode';
-import {
-  calibration,
-  getWipingStepPoints,
-  lastWipingSequenceWrite,
-  padTopRight,
-  printer,
-  settings,
-  wipingSequence,
-} from 'WiperTool/store';
 import { Button, CodeTextArea } from 'components';
 import { createMemo, createSignal, onCleanup, Show } from 'solid-js';
 import { twc } from 'styles/helpers';
@@ -58,36 +58,50 @@ const CopyRow = twc(
 );
 
 export function GCode() {
+  const calibration = useCalibration();
+  const settings = useSettings();
+  const wipingSequence = useWipingSequence();
+  const tracking = useTracking();
+  const { selectedPrinter } = usePrinters();
+  const { selectedPadTopRight } = usePads();
+
   const [copied, setCopied] = createSignal(false);
   let copyTimeout: number | undefined;
 
-  const sequencePoints = createMemo(() => getWipingStepPoints(wipingSequence()));
+  const sequencePoints = createMemo(() => getWipingStepPoints(wipingSequence.wipingSteps()));
   const gcode = createMemo(() => {
+    const feedRate = settings.feedRate();
+    const plungeDepth = settings.plungeDepth();
+    const zLift = settings.zLift();
+    const x = calibration.x();
+    const y = calibration.y();
+    const z = calibration.z();
+
     if (
       sequencePoints().length < 2 ||
-      calibration.x === undefined ||
-      calibration.y === undefined ||
-      calibration.z === undefined ||
-      settings.feedRate === undefined ||
-      settings.plungeDepth === undefined ||
-      settings.zLift === undefined
+      x === undefined ||
+      y === undefined ||
+      z === undefined ||
+      feedRate === undefined ||
+      plungeDepth === undefined ||
+      zLift === undefined
     ) {
       return null;
     }
     return (
       generateGCodeCommands({
-        printerName: printer().name,
-        printerOriginalCleaningGcode: printer().originalCleaningGCode,
+        printerName: selectedPrinter().name,
+        printerOriginalCleaningGcode: selectedPrinter().originalCleaningGCode,
         padRef: {
-          x: calibration.x,
-          y: calibration.y,
-          z: calibration.z,
+          x,
+          y,
+          z,
         },
-        wipingSequence: wipingSequence(),
-        padTopRight: { ...padTopRight(), z: calibration.z },
-        feedRate: settings.feedRate,
-        plungeDepth: settings.plungeDepth,
-        zLift: settings.zLift,
+        wipingSequence: wipingSequence.wipingSteps(),
+        padTopRight: { ...selectedPadTopRight(), z },
+        feedRate,
+        plungeDepth,
+        zLift,
       })?.join('\n') || ''
     );
   });
@@ -103,8 +117,10 @@ export function GCode() {
   const handleCopyGCodeClick = () => {
     navigator.clipboard.writeText(gcode() ?? '');
     showCopied();
-    track(gCodeCopiedEvent(lastWipingSequenceWrite()));
-    track(calibrationValuesUsedEvent('gcode', printer().key, calibration.x, calibration.y, calibration.z));
+    track(gCodeCopiedEvent(tracking.lastWipingSequenceWrite()));
+    track(
+      calibrationValuesUsedEvent('gcode', selectedPrinter().key, calibration.x(), calibration.y(), calibration.z()),
+    );
   };
 
   onCleanup(() => {

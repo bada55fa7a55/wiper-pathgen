@@ -1,6 +1,7 @@
-import type { Point, WipingSequence } from 'WiperTool/store';
+import type { WipingSequence } from 'WiperTool/domain/wipingSequence';
 import { umToMm } from './conversion';
 import { formatDateISO, formatMicronsToMmString } from './formatting';
+import type { Point } from './geometry';
 
 export type Point3D = {
   x: number;

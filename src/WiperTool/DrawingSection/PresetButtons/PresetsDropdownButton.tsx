@@ -1,11 +1,12 @@
+import { usePads, useTracking, useWipingSequence } from 'WiperTool/AppModelProvider';
 import { WipingSequencePreviewSvg } from 'WiperTool/DrawingSection/PresetButtons/WipingSequencePreviewSvg';
+import type { PadProperties } from 'WiperTool/domain/pads';
+import type { PresetKey } from 'WiperTool/domain/presets';
+import { generatePresetSequence, presetDefinitions } from 'WiperTool/domain/presets';
 import { drawingPresetAppliedEvent, track } from 'WiperTool/lib/analytics';
-import { pad, setLastWipingSequenceWrite, setWipingSequence } from 'WiperTool/store';
 import { Button, Dropdown } from 'components';
 import { createMemo, createSignal } from 'solid-js';
 import { twc } from 'styles';
-import type { PresetKey } from './presets';
-import { generatePresetSequence, presetDefinitions } from './presets';
 
 const DropdownWrapper = twc(
   'div',
@@ -48,9 +49,14 @@ const PresetButtonLabel = twc(
   `,
 );
 
-const PresetPreview = (props: { presetKey: PresetKey }) => {
-  const sequence = createMemo(() => generatePresetSequence(props.presetKey, pad()));
-  const padAspect = createMemo(() => pad().width / pad().height);
+type PresetPreviewProps = {
+  presetKey: PresetKey;
+  pad: PadProperties;
+};
+
+const PresetPreview = (props: PresetPreviewProps) => {
+  const sequence = createMemo(() => generatePresetSequence(props.presetKey, props.pad));
+  const padAspect = createMemo(() => props.pad.width / props.pad.height);
 
   return (
     <PresetPreviewFrame>
@@ -69,6 +75,10 @@ type Props = {
 };
 
 export function PresetsDropdownButton(props: Props) {
+  const wipingSequence = useWipingSequence();
+  const { selectedPad } = usePads();
+  const tracking = useTracking();
+
   const [isDropdownOpen, setIsDropdownOpen] = createSignal(false);
   let triggerRef: HTMLButtonElement | undefined;
 
@@ -81,8 +91,8 @@ export function PresetsDropdownButton(props: Props) {
   };
 
   const handlePresetClick = (presetKey: PresetKey) => {
-    setWipingSequence(generatePresetSequence(presetKey, pad()));
-    setLastWipingSequenceWrite({ type: 'preset', preset: presetKey });
+    wipingSequence.actions.setWipingSequence(generatePresetSequence(presetKey, selectedPad()));
+    tracking.actions.setLastWipingSequenceWrite({ type: 'preset', preset: presetKey });
     track(drawingPresetAppliedEvent(presetKey));
     handleCloseDropdown();
   };
@@ -121,7 +131,10 @@ export function PresetsDropdownButton(props: Props) {
               type="button"
               content={
                 <PresetButtonContent>
-                  <PresetPreview presetKey={preset.key} />
+                  <PresetPreview
+                    presetKey={preset.key}
+                    pad={selectedPad()}
+                  />
                   <PresetButtonLabel>{preset.label}</PresetButtonLabel>
                 </PresetButtonContent>
               }

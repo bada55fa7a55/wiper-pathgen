@@ -1,13 +1,5 @@
-import type { ModalKey } from 'WiperTool/store';
-import {
-  clearModals,
-  closeModal,
-  getActiveModal,
-  isModalOpen,
-  isSubModal,
-  openModal,
-  openSubModal,
-} from 'WiperTool/store';
+import { useAppModel, useModals } from 'WiperTool/AppModelProvider';
+import type { ModalKey } from 'WiperTool/ui/modals';
 import type { JSX } from 'solid-js';
 import { Show } from 'solid-js';
 import { Backdrop } from './Backdrop';
@@ -28,29 +20,31 @@ type Props = {
 };
 
 export function ManagedModals(props: Props) {
-  const isOpen = () => getActiveModal() !== null;
+  const appModel = useAppModel();
+  const modals = useModals();
+  const isOpen = () => modals.activeModal() !== null;
 
   useModalHistory({
     isOpen,
-    onEscape: closeModal,
-    onPopState: clearModals,
+    onEscape: modals.actions.closeModal,
+    onPopState: appModel.actions.clearModals,
   });
 
   const handleBackdropClick = () => {
-    clearModals();
+    appModel.actions.clearModals();
   };
 
   return (
     <Show when={isOpen()}>
       <Backdrop onClick={handleBackdropClick}>
         {props.children({
-          isModalOpen,
-          isSubModal,
-          activeModal: getActiveModal,
-          openModal,
-          openSubModal,
-          closeModal,
-          clearModals,
+          isModalOpen: modals.isModalOpen,
+          isSubModal: modals.isSubModalActive,
+          activeModal: modals.activeModal,
+          openModal: modals.actions.openModal,
+          openSubModal: modals.actions.openSubModal,
+          closeModal: modals.actions.closeModal,
+          clearModals: appModel.actions.clearModals,
         })}
       </Backdrop>
     </Show>

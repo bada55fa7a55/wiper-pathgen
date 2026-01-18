@@ -1,5 +1,5 @@
 import { gridStep } from 'WiperTool/configuration';
-import type { Point } from 'WiperTool/store';
+import type { Point } from 'WiperTool/lib/geometry';
 import { isClientRuntime } from 'lib/runtime';
 import { createEffect, createMemo, createRenderEffect, createSignal } from 'solid-js';
 import { twc } from 'styles/helpers';
