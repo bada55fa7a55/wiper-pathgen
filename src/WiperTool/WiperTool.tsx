@@ -8,17 +8,17 @@ import { ModalKeys } from 'WiperTool/ui/modals';
 import type { ParentProps } from 'solid-js';
 import { Toaster } from 'solid-toast';
 import { twc } from 'styles/helpers';
-import { ClaibrationSection } from './CalibrationSection';
-import { DrawingSection } from './DrawingSection';
 import { Footer } from './Footer';
 import { ImportSharedWipingSequenceModal } from './features/sharing/ImportSharedWipingSequenceModal';
 import { ImportWipingSequenceModal } from './features/sharing/ImportWipingSequenceModal';
-import { HardwareSetupSection } from './HardwareSetupSection';
 import { Header } from './Header';
-import { InstallationSection } from './InstallationSection';
-import { IntroSection } from './IntroSection';
-import { SettingsSection } from './SettingsSection';
-import { TestingSection } from './TestingSection';
+import { ClaibrationSection } from './sections/CalibrationSection';
+import { DrawingSection } from './sections/DrawingSection';
+import { HardwareSetupSection } from './sections/HardwareSetupSection';
+import { InstallationSection } from './sections/InstallationSection';
+import { IntroSection } from './sections/IntroSection';
+import { SettingsSection } from './sections/SettingsSection';
+import { TestingSection } from './sections/TestingSection';
 
 const ShellContainer = twc(
   'div',
