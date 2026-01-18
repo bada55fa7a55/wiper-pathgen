@@ -1,7 +1,7 @@
-import { useCalibration, usePads, usePrinters } from 'WiperTool/providers/AppModelProvider';
-import { ModalPortal } from 'WiperTool/ui/modals';
 import { createMemo, createSignal, For, Show } from 'solid-js';
-import { twc } from 'styles/helpers';
+import { twc } from '@/styles/helpers';
+import { useCalibration, usePads, usePrinters } from '@/WiperTool/providers/AppModelProvider';
+import { ModalPortal } from '@/WiperTool/ui/modals';
 
 const Container = twc(
   'div',

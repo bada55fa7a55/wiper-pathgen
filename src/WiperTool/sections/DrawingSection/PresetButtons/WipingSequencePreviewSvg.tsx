@@ -1,6 +1,6 @@
-import type { WipingSequence } from 'WiperTool/domain/wipingSequence';
-import { getWipingStepPoints } from 'WiperTool/domain/wipingSequence';
 import { createMemo } from 'solid-js';
+import type { WipingSequence } from '@/WiperTool/domain/wipingSequence';
+import { getWipingStepPoints } from '@/WiperTool/domain/wipingSequence';
 
 type Props = {
   sequence: WipingSequence;
@@ -61,7 +61,7 @@ export function WipingSequencePreviewSvg(props: Props) {
         return { width: '100%', height: '100%' };
       case 'width':
         return { width: '100%', height: 'auto', 'aspect-ratio': `${aspect()}` };
-      case 'height':
+      // case 'height':
       default:
         return { width: 'auto', height: '100%', 'aspect-ratio': `${aspect()}` };
     }

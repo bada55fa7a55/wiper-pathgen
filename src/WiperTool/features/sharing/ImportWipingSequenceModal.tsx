@@ -1,9 +1,9 @@
-import { FailureTypes, isImportableWipingSequenceFile } from 'WiperTool/domain/imports';
-import { useImports } from 'WiperTool/providers/AppModelProvider';
-import { Button, ErrorMessage, Modal } from 'components';
 import { Match, Show, Switch } from 'solid-js';
 import { useFileDialog } from 'solidjs-use';
-import { twc } from 'styles';
+import { Button, ErrorMessage, Modal } from '@/components';
+import { twc } from '@/styles';
+import { FailureTypes, isImportableWipingSequenceFile } from '@/WiperTool/domain/imports';
+import { useImports } from '@/WiperTool/providers/AppModelProvider';
 import { ImportConfirmationScene } from './ImportConfirmationScene';
 import { isDroppingFile } from './useGlobalFileDrop';
 

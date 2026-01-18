@@ -1,7 +1,7 @@
-import { useAppModel, useModals } from 'WiperTool/providers/AppModelProvider';
-import type { ModalKey } from 'WiperTool/ui/modals';
 import type { JSX } from 'solid-js';
 import { Show } from 'solid-js';
+import { useAppModel, useModals } from '@/WiperTool/providers/AppModelProvider';
+import type { ModalKey } from '@/WiperTool/ui/modals';
 import { Backdrop } from './Backdrop';
 import { useModalHistory } from './useModalHistory';
 

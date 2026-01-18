@@ -1,4 +1,4 @@
-import { twc } from 'styles/helpers';
+import { twc } from '@/styles/helpers';
 import logo from './assets/logo-small.svg?url';
 import { DropdownMenuButton } from './DropdownMenuButton';
 import { StepOMeter } from './StepOMeter';

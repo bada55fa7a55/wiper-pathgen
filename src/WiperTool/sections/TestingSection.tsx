@@ -1,16 +1,4 @@
-import { calibrationValuesUsedEvent, testGCodeDownloadedEvent, track } from 'WiperTool/lib/analytics';
-import { formatPercent, formatPercentString } from 'WiperTool/lib/formatting';
-import { generateTestGCodeCommands } from 'WiperTool/lib/gcode';
-import {
-  useCalibration,
-  usePads,
-  usePrinters,
-  useSettings,
-  useSteps,
-  useTracking,
-  useWipingSequence,
-} from 'WiperTool/providers/AppModelProvider';
-import { StepKeys } from 'WiperTool/ui/steps';
+import { createMemo, createSignal, Show } from 'solid-js';
 import {
   Button,
   ErrorMessage,
@@ -24,9 +12,21 @@ import {
   Step,
   StepBody,
   StepTitle,
-} from 'components';
-import { createMemo, createSignal, Show } from 'solid-js';
-import { twc } from 'styles/helpers';
+} from '@/components';
+import { twc } from '@/styles/helpers';
+import { calibrationValuesUsedEvent, testGCodeDownloadedEvent, track } from '@/WiperTool/lib/analytics';
+import { formatPercent, formatPercentString } from '@/WiperTool/lib/formatting';
+import { generateTestGCodeCommands } from '@/WiperTool/lib/gcode';
+import {
+  useCalibration,
+  usePads,
+  usePrinters,
+  useSettings,
+  useSteps,
+  useTracking,
+  useWipingSequence,
+} from '@/WiperTool/providers/AppModelProvider';
+import { StepKeys } from '@/WiperTool/ui/steps';
 
 const ButtonWrapper = twc(
   'div',

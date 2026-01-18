@@ -1,7 +1,7 @@
-import { invariant } from 'lib/invariant';
-import { isClientRuntime } from 'lib/runtime';
 import { createEffect, onCleanup } from 'solid-js';
 import { onKeyStroke } from 'solidjs-use';
+import { invariant } from '@/lib/invariant';
+import { isClientRuntime } from '@/lib/runtime';
 
 type ModalHistoryOptions = {
   isOpen: () => boolean;

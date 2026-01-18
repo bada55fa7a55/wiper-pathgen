@@ -1,9 +1,9 @@
-import { defaultPrinterKey } from 'WiperTool/configuration';
-import type { PadKey } from 'WiperTool/domain/pads';
-import { PadKeys } from 'WiperTool/domain/pads';
-import type { PrinterKey } from 'WiperTool/domain/printers';
-import { createLocalStorageStore } from 'WiperTool/lib/createLocalStorageStore';
 import { createMemo } from 'solid-js';
+import { defaultPrinterKey } from '@/WiperTool/configuration';
+import type { PadKey } from '@/WiperTool/domain/pads';
+import { PadKeys } from '@/WiperTool/domain/pads';
+import type { PrinterKey } from '@/WiperTool/domain/printers';
+import { createLocalStorageStore } from '@/WiperTool/lib/createLocalStorageStore';
 
 const SETTINGS_VERSION = 'v1';
 

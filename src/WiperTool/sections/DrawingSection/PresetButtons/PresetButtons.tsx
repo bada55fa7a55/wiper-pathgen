@@ -1,8 +1,8 @@
-import { presetDefinitions } from 'WiperTool/domain/presets';
-import { useCalibration, useSettings } from 'WiperTool/providers/AppModelProvider';
-import { isClientRuntime } from 'lib/runtime';
 import { createMemo, createSignal, onCleanup, onMount } from 'solid-js';
-import { twc } from 'styles/helpers';
+import { isClientRuntime } from '@/lib/runtime';
+import { twc } from '@/styles/helpers';
+import { presetDefinitions } from '@/WiperTool/domain/presets';
+import { useCalibration, useSettings } from '@/WiperTool/providers/AppModelProvider';
 import { useDrawingPadBoundsWarning } from '../helpers';
 import { PresetButton } from './PresetButton';
 import { PresetsDropdownButton } from './PresetsDropdownButton';

@@ -1,8 +1,8 @@
-import { wiperArmv2Link } from 'WiperTool/configuration';
-import { analyticsHeaderPrintablesWA2 } from 'WiperTool/lib/analytics';
-import { Link } from 'components';
 import { styled } from 'solid-styled-components';
-import { twc } from 'styles/helpers';
+import { Link } from '@/components';
+import { twc } from '@/styles/helpers';
+import { wiperArmv2Link } from '@/WiperTool/configuration';
+import { analyticsHeaderPrintablesWA2 } from '@/WiperTool/lib/analytics';
 import logo from './assets/logo.svg?url';
 import { DropdownMenuButton } from './DropdownMenuButton';
 

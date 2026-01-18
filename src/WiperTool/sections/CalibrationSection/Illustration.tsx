@@ -1,6 +1,6 @@
-import { ModalPortal } from 'WiperTool/ui/modals';
 import { createSignal } from 'solid-js';
-import { twc } from 'styles/helpers';
+import { twc } from '@/styles/helpers';
+import { ModalPortal } from '@/WiperTool/ui/modals';
 
 const Container = twc(
   'div',

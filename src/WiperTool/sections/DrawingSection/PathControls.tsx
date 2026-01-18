@@ -1,8 +1,8 @@
-import { drawingPathClearedEvent, drawingPathUndoEvent, track } from 'WiperTool/lib/analytics';
-import { useCalibration, useSettings, useWipingSequence } from 'WiperTool/providers/AppModelProvider';
-import { Button } from 'components';
 import { createMemo } from 'solid-js';
-import { twc } from 'styles/helpers';
+import { Button } from '@/components';
+import { twc } from '@/styles/helpers';
+import { drawingPathClearedEvent, drawingPathUndoEvent, track } from '@/WiperTool/lib/analytics';
+import { useCalibration, useSettings, useWipingSequence } from '@/WiperTool/providers/AppModelProvider';
 
 const Container = twc(
   'div',

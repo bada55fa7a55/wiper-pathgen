@@ -1,6 +1,6 @@
-import type { PrinterProperties } from 'WiperTool/domain/printers';
-import { MaterialSymbol } from 'components';
-import { twc } from 'styles';
+import { MaterialSymbol } from '@/components';
+import { twc } from '@/styles';
+import type { PrinterProperties } from '@/WiperTool/domain/printers';
 
 const StyledButton = twc(
   'button',

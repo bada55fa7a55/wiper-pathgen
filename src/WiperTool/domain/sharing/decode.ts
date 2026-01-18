@@ -1,10 +1,10 @@
-import type { PadKey } from 'WiperTool/domain/pads';
-import { isPadKey } from 'WiperTool/domain/pads';
-import type { PrinterKey } from 'WiperTool/domain/printers';
-import { isPrinterKey } from 'WiperTool/domain/printers';
-import type { WipingSequence, WipingStep } from 'WiperTool/domain/wipingSequence';
-import { base64UrlDecode } from 'WiperTool/lib/base64';
-import { createError } from 'lib/errors';
+import { createError } from '@/lib/errors';
+import type { PadKey } from '@/WiperTool/domain/pads';
+import { isPadKey } from '@/WiperTool/domain/pads';
+import type { PrinterKey } from '@/WiperTool/domain/printers';
+import { isPrinterKey } from '@/WiperTool/domain/printers';
+import type { WipingSequence, WipingStep } from '@/WiperTool/domain/wipingSequence';
+import { base64UrlDecode } from '@/WiperTool/lib/base64';
 import type { EncodedSharePayload } from './common';
 import { SHARE_VERSION } from './common';
 

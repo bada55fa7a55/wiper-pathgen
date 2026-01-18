@@ -1,8 +1,8 @@
-import type { PadKey } from 'WiperTool/domain/pads';
-import type { PrinterKey } from 'WiperTool/domain/printers';
-import type { WipingSequence, WipingStep } from 'WiperTool/domain/wipingSequence';
-import { base64UrlEncode } from 'WiperTool/lib/base64';
-import { createError } from 'lib/errors';
+import { createError } from '@/lib/errors';
+import type { PadKey } from '@/WiperTool/domain/pads';
+import type { PrinterKey } from '@/WiperTool/domain/printers';
+import type { WipingSequence, WipingStep } from '@/WiperTool/domain/wipingSequence';
+import { base64UrlEncode } from '@/WiperTool/lib/base64';
 import type { EncodedSharePayload } from './common';
 import { SHARE_FILE_EXTENSION, SHARE_FILE_PREFIX, SHARE_VERSION } from './common';
 

@@ -1,11 +1,11 @@
-import { wiperArmv2Link } from 'WiperTool/configuration';
-import { analyticsWarningPrintablesWA2 } from 'WiperTool/lib/analytics';
-import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
-import { usePrinters, useSteps } from 'WiperTool/providers/AppModelProvider';
-import { StepKeys } from 'WiperTool/ui/steps';
-import { ErrorMessage, Link, Section, SectionIntro, SectionTitle, WarningMessage } from 'components';
 import { createMemo, Show } from 'solid-js';
-import { twc } from 'styles/helpers';
+import { ErrorMessage, Link, Section, SectionIntro, SectionTitle, WarningMessage } from '@/components';
+import { twc } from '@/styles/helpers';
+import { wiperArmv2Link } from '@/WiperTool/configuration';
+import { analyticsWarningPrintablesWA2 } from '@/WiperTool/lib/analytics';
+import { formatMicronsToMmString } from '@/WiperTool/lib/formatting';
+import { usePrinters, useSteps } from '@/WiperTool/providers/AppModelProvider';
+import { StepKeys } from '@/WiperTool/ui/steps';
 import { DrawingPad } from './DrawingPad';
 import { GCode } from './GCode';
 import { useDrawingPadBoundsWarning } from './helpers';

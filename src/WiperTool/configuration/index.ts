@@ -1,4 +1,4 @@
-import { PrinterKeys } from 'WiperTool/domain/printers';
+import { PrinterKeys } from '@/WiperTool/domain/printers';
 
 export const gridStep = 5000;
 

@@ -1,7 +1,7 @@
-import { isClientRuntime } from 'lib/runtime';
 import { createEffect, onCleanup } from 'solid-js';
 import type { SetStoreFunction, Store } from 'solid-js/store';
 import { createStore, reconcile } from 'solid-js/store';
+import { isClientRuntime } from '@/lib/runtime';
 
 /**
  * Create store that syncs with localStorage

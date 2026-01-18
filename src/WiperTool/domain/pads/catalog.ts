@@ -1,4 +1,4 @@
-import bblA1PadSvg from 'WiperTool/assets/bbl-a1-pad.svg';
+import bblA1PadSvg from '@/WiperTool/assets/bbl-a1-pad.svg';
 import type { PadKey, PadProperties } from './model';
 import { PadKeys } from './model';
 

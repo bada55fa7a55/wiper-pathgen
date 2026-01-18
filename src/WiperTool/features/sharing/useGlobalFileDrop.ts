@@ -1,8 +1,8 @@
-import { FailureTypes, isImportableWipingSequenceFile } from 'WiperTool/domain/imports';
-import { actionFileDroppedEvent, actionImportModalOpenedEvent, track } from 'WiperTool/lib/analytics';
-import { useImports, useModals } from 'WiperTool/providers/AppModelProvider';
-import { ModalKeys } from 'WiperTool/ui/modals';
 import { createSignal, onCleanup, onMount } from 'solid-js';
+import { FailureTypes, isImportableWipingSequenceFile } from '@/WiperTool/domain/imports';
+import { actionFileDroppedEvent, actionImportModalOpenedEvent, track } from '@/WiperTool/lib/analytics';
+import { useImports, useModals } from '@/WiperTool/providers/AppModelProvider';
+import { ModalKeys } from '@/WiperTool/ui/modals';
 
 const [isDroppingFile, setIsDroppingFile] = createSignal(false);
 export { isDroppingFile };

@@ -1,6 +1,6 @@
-import { useScrollLock } from 'components';
 import type { JSX, ParentProps } from 'solid-js';
-import { twc } from 'styles';
+import { useScrollLock } from '@/components';
+import { twc } from '@/styles';
 
 const Container = twc(
   'div',

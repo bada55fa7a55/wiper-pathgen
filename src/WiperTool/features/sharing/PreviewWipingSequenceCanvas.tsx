@@ -1,12 +1,12 @@
-import type { PadKey } from 'WiperTool/domain/pads';
-import { padProperties } from 'WiperTool/domain/pads';
-import type { PrinterKey } from 'WiperTool/domain/printers';
-import { printerProperties } from 'WiperTool/domain/printers';
-import type { WipingSequence } from 'WiperTool/domain/wipingSequence';
-import { getWipingStepPoints } from 'WiperTool/domain/wipingSequence';
-import { WipingSequenceCanvas } from 'WiperTool/features/WipingSequenceCanvas';
 import { createMemo } from 'solid-js';
-import { twc } from 'styles';
+import { twc } from '@/styles';
+import type { PadKey } from '@/WiperTool/domain/pads';
+import { padProperties } from '@/WiperTool/domain/pads';
+import type { PrinterKey } from '@/WiperTool/domain/printers';
+import { printerProperties } from '@/WiperTool/domain/printers';
+import type { WipingSequence } from '@/WiperTool/domain/wipingSequence';
+import { getWipingStepPoints } from '@/WiperTool/domain/wipingSequence';
+import { WipingSequenceCanvas } from '@/WiperTool/features/WipingSequenceCanvas';
 
 const Frame = twc(
   'div',

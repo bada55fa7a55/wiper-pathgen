@@ -1,10 +1,10 @@
-import { createShareFile, SHARE_FILE_EXTENSION } from 'WiperTool/domain/sharing';
-import { actionShareLinkModalOpenedEvent, actionWipingSequenceExportedEvent, track } from 'WiperTool/lib/analytics';
-import { useSettings, useTracking, useWipingSequence } from 'WiperTool/providers/AppModelProvider';
-import { Button, Link, MaterialSymbol, Modal } from 'components';
 import { createSignal } from 'solid-js';
 import toast from 'solid-toast';
-import { twc } from 'styles';
+import { Button, Link, MaterialSymbol, Modal } from '@/components';
+import { twc } from '@/styles';
+import { createShareFile, SHARE_FILE_EXTENSION } from '@/WiperTool/domain/sharing';
+import { actionShareLinkModalOpenedEvent, actionWipingSequenceExportedEvent, track } from '@/WiperTool/lib/analytics';
+import { useSettings, useTracking, useWipingSequence } from '@/WiperTool/providers/AppModelProvider';
 import { useSaveFile } from './useSaveFile';
 
 const Content = twc(

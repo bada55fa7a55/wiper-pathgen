@@ -1,5 +1,5 @@
-import type { PresetKey } from 'WiperTool/domain/presets/model';
 import { createStore } from 'solid-js/store';
+import type { PresetKey } from '@/WiperTool/domain/presets/model';
 
 type PointWsWriteAction = {
   type: 'point';

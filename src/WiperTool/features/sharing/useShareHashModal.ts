@@ -1,9 +1,9 @@
-import { getShareTokenFromUrl } from 'WiperTool/domain/sharing';
-import { sharedLinkModalOpenedEvent, track } from 'WiperTool/lib/analytics';
-import { useModals } from 'WiperTool/providers/AppModelProvider';
-import { ModalKeys } from 'WiperTool/ui/modals';
-import { isClientRuntime } from 'lib/runtime';
 import { onCleanup, onMount } from 'solid-js';
+import { isClientRuntime } from '@/lib/runtime';
+import { getShareTokenFromUrl } from '@/WiperTool/domain/sharing';
+import { sharedLinkModalOpenedEvent, track } from '@/WiperTool/lib/analytics';
+import { useModals } from '@/WiperTool/providers/AppModelProvider';
+import { ModalKeys } from '@/WiperTool/ui/modals';
 
 export function useShareHashModal() {
   const modals = useModals();

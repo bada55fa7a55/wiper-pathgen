@@ -1,6 +1,6 @@
-import { wiperArmV1Link, wiperArmv2Link } from 'WiperTool/configuration';
-import { analyticsIntroPrintablesWA1, analyticsIntroPrintablesWA2 } from 'WiperTool/lib/analytics';
-import { Link, Section, SectionColumn, SectionColumns, SectionTitle } from 'components';
+import { Link, Section, SectionColumn, SectionColumns, SectionTitle } from '@/components';
+import { wiperArmV1Link, wiperArmv2Link } from '@/WiperTool/configuration';
+import { analyticsIntroPrintablesWA1, analyticsIntroPrintablesWA2 } from '@/WiperTool/lib/analytics';
 
 export function IntroSection() {
   return (

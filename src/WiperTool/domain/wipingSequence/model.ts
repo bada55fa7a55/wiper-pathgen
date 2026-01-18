@@ -1,4 +1,4 @@
-import type { Point } from 'WiperTool/lib/geometry';
+import type { Point } from '@/WiperTool/lib/geometry';
 
 export type WipingStepPoint = Point & {
   type: 'point';

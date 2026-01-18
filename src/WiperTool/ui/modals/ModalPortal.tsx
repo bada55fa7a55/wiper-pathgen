@@ -1,7 +1,7 @@
-import { isClientRuntime } from 'lib/runtime';
 import type { ParentProps } from 'solid-js';
 import { Show } from 'solid-js';
 import { Portal } from 'solid-js/web';
+import { isClientRuntime } from '@/lib/runtime';
 import { Backdrop } from './Backdrop';
 import { useModalHistory } from './useModalHistory';
 

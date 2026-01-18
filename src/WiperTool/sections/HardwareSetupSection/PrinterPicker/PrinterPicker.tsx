@@ -1,9 +1,9 @@
-import type { PrinterKey, PrinterProperties } from 'WiperTool/domain/printers';
-import { PrinterKeys, printerProperties } from 'WiperTool/domain/printers';
-import { settingsValueChangedEvent, track } from 'WiperTool/lib/analytics';
-import { useSettings } from 'WiperTool/providers/AppModelProvider';
 import { For } from 'solid-js';
-import { twc } from 'styles';
+import { twc } from '@/styles';
+import type { PrinterKey, PrinterProperties } from '@/WiperTool/domain/printers';
+import { PrinterKeys, printerProperties } from '@/WiperTool/domain/printers';
+import { settingsValueChangedEvent, track } from '@/WiperTool/lib/analytics';
+import { useSettings } from '@/WiperTool/providers/AppModelProvider';
 import prusaCoreOneIcon from './assets/COREONE_thumbnail.png?url';
 import prusaCoreOneLIcon from './assets/COREONEL_thumbnail.png?url';
 import prusaMk4Icon from './assets/MK4_thumbnail.png?url';

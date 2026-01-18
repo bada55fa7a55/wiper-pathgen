@@ -1,5 +1,3 @@
-import { usePrinters, useSteps } from 'WiperTool/providers/AppModelProvider';
-import { StepKeys } from 'WiperTool/ui/steps';
 import {
   InlineCode,
   Link,
@@ -12,7 +10,9 @@ import {
   Step,
   StepBody,
   StepTitle,
-} from 'components';
+} from '@/components';
+import { usePrinters, useSteps } from '@/WiperTool/providers/AppModelProvider';
+import { StepKeys } from '@/WiperTool/ui/steps';
 
 export function InstallationSection() {
   const { selectedPrinter } = usePrinters();

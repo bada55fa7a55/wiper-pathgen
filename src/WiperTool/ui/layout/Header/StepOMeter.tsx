@@ -1,7 +1,7 @@
-import { useSteps } from 'WiperTool/providers/AppModelProvider';
-import { Link, MaterialSymbol } from 'components';
 import { Show } from 'solid-js';
-import { twc } from 'styles';
+import { Link, MaterialSymbol } from '@/components';
+import { twc } from '@/styles';
+import { useSteps } from '@/WiperTool/providers/AppModelProvider';
 
 const Container = twc(
   'div',

@@ -1,4 +1,4 @@
-import { MenuBreadcrumb, SectionColumn, SectionColumns, Step, StepBody, StepTitle } from 'components';
+import { MenuBreadcrumb, SectionColumn, SectionColumns, Step, StepBody, StepTitle } from '@/components';
 import calibrationNozzlePosition1Asset from './assets/coreone/calibration-nozzle-position-1.png';
 import calibrationNozzlePosition2Asset from './assets/coreone/calibration-nozzle-position-2.png';
 import { CalibrationInputStepBody } from './CalibrationInputStepBody';

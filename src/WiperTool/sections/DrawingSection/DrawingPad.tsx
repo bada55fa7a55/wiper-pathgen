@@ -1,6 +1,9 @@
-import { gridStep } from 'WiperTool/configuration';
-import { getWipingStepPoints, makeWipingStepPoint } from 'WiperTool/domain/wipingSequence';
-import { WipingSequenceCanvas } from 'WiperTool/features/WipingSequenceCanvas';
+import { createMemo, createSignal, Show } from 'solid-js';
+import { Button } from '@/components';
+import { twc } from '@/styles/helpers';
+import { gridStep } from '@/WiperTool/configuration';
+import { getWipingStepPoints, makeWipingStepPoint } from '@/WiperTool/domain/wipingSequence';
+import { WipingSequenceCanvas } from '@/WiperTool/features/WipingSequenceCanvas';
 import {
   actionImportModalOpenedEvent,
   actionShareModalOpenedEvent,
@@ -8,9 +11,9 @@ import {
   simulationStartedEvent,
   simulationStoppedEvent,
   track,
-} from 'WiperTool/lib/analytics';
-import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
-import type { Point } from 'WiperTool/lib/geometry';
+} from '@/WiperTool/lib/analytics';
+import { formatMicronsToMmString } from '@/WiperTool/lib/formatting';
+import type { Point } from '@/WiperTool/lib/geometry';
 import {
   useCalibration,
   useModals,
@@ -20,12 +23,9 @@ import {
   useSteps,
   useTracking,
   useWipingSequence,
-} from 'WiperTool/providers/AppModelProvider';
-import { ModalKeys } from 'WiperTool/ui/modals';
-import { StepKeys } from 'WiperTool/ui/steps';
-import { Button } from 'components';
-import { createMemo, createSignal, Show } from 'solid-js';
-import { twc } from 'styles/helpers';
+} from '@/WiperTool/providers/AppModelProvider';
+import { ModalKeys } from '@/WiperTool/ui/modals';
+import { StepKeys } from '@/WiperTool/ui/steps';
 import { absToRel, relToAbs, useDrawingPadPaddings } from './helpers';
 import { PathControls } from './PathControls';
 import { SimulationCanvas } from './SimulationCanvas';

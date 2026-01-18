@@ -1,3 +1,8 @@
+import { Icon, Link } from '@/components';
+import x6d6178Icon from '@/icons/6d6178.svg?raw';
+import githubIcon from '@/icons/github.svg?raw';
+import printablesIcon from '@/icons/printables.svg?raw';
+import { twc } from '@/styles/helpers';
 import {
   analyticsFooterAgpl,
   analyticsFooterGitHash,
@@ -6,13 +11,8 @@ import {
   analyticsFooterGitHubPullRequests,
   analyticsFooterHome,
   analyticsFooterPrintablesProfile,
-} from 'WiperTool/lib/analytics';
-import { formatDateISO } from 'WiperTool/lib/formatting';
-import { Icon, Link } from 'components';
-import x6d6178Icon from 'icons/6d6178.svg?raw';
-import githubIcon from 'icons/github.svg?raw';
-import printablesIcon from 'icons/printables.svg?raw';
-import { twc } from 'styles/helpers';
+} from '@/WiperTool/lib/analytics';
+import { formatDateISO } from '@/WiperTool/lib/formatting';
 
 const Container = twc(
   'footer',

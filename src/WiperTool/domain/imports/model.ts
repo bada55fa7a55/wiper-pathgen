@@ -1,6 +1,6 @@
-import type { PadKey } from 'WiperTool/domain/pads';
-import type { PrinterKey } from 'WiperTool/domain/printers';
-import type { WipingSequence } from 'WiperTool/domain/wipingSequence';
+import type { PadKey } from '@/WiperTool/domain/pads';
+import type { PrinterKey } from '@/WiperTool/domain/printers';
+import type { WipingSequence } from '@/WiperTool/domain/wipingSequence';
 
 export const FailureTypes = {
   Decode: 'decode',

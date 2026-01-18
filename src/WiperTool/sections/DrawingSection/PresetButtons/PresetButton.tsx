@@ -1,12 +1,12 @@
-import type { PadProperties } from 'WiperTool/domain/pads';
-import type { PresetKey } from 'WiperTool/domain/presets';
-import { generatePresetSequence } from 'WiperTool/domain/presets';
-import { drawingPresetAppliedEvent, track } from 'WiperTool/lib/analytics';
-import { usePads, useTracking, useWipingSequence } from 'WiperTool/providers/AppModelProvider';
-import { WipingSequencePreviewSvg } from 'WiperTool/sections/DrawingSection/PresetButtons/WipingSequencePreviewSvg';
-import { Button, Tooltip } from 'components';
 import { createMemo } from 'solid-js';
-import { twc } from 'styles';
+import { Button, Tooltip } from '@/components';
+import { twc } from '@/styles';
+import type { PadProperties } from '@/WiperTool/domain/pads';
+import type { PresetKey } from '@/WiperTool/domain/presets';
+import { generatePresetSequence } from '@/WiperTool/domain/presets';
+import { drawingPresetAppliedEvent, track } from '@/WiperTool/lib/analytics';
+import { usePads, useTracking, useWipingSequence } from '@/WiperTool/providers/AppModelProvider';
+import { WipingSequencePreviewSvg } from '@/WiperTool/sections/DrawingSection/PresetButtons/WipingSequencePreviewSvg';
 import { useDrawingPadBoundsWarning } from '../helpers';
 
 const PresetPreviewFrame = twc(

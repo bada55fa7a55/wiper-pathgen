@@ -1,11 +1,5 @@
-import type { PadKey } from 'WiperTool/domain/pads';
-import type { PrinterKey } from 'WiperTool/domain/printers';
-import { settingsValueChangedEvent, track } from 'WiperTool/lib/analytics';
-import { mmToUm } from 'WiperTool/lib/conversion';
-import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
-import { validatePositiveDecimal, validatePositiveInteger } from 'WiperTool/lib/validation';
-import { useSettings, useSteps } from 'WiperTool/providers/AppModelProvider';
-import { StepKeys } from 'WiperTool/ui/steps';
+import { createMemo, Show } from 'solid-js';
+import { createStore } from 'solid-js/store';
 import {
   ErrorMessage,
   FormInput,
@@ -19,9 +13,15 @@ import {
   Step,
   StepBody,
   StepTitle,
-} from 'components';
-import { createMemo, Show } from 'solid-js';
-import { createStore } from 'solid-js/store';
+} from '@/components';
+import type { PadKey } from '@/WiperTool/domain/pads';
+import type { PrinterKey } from '@/WiperTool/domain/printers';
+import { settingsValueChangedEvent, track } from '@/WiperTool/lib/analytics';
+import { mmToUm } from '@/WiperTool/lib/conversion';
+import { formatMicronsToMmString } from '@/WiperTool/lib/formatting';
+import { validatePositiveDecimal, validatePositiveInteger } from '@/WiperTool/lib/validation';
+import { useSettings, useSteps } from '@/WiperTool/providers/AppModelProvider';
+import { StepKeys } from '@/WiperTool/ui/steps';
 
 export function SettingsSection() {
   const settings = useSettings();

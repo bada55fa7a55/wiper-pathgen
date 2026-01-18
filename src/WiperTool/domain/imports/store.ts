@@ -1,5 +1,5 @@
-import { decodeShareFile } from 'WiperTool/domain/sharing';
 import { createStore } from 'solid-js/store';
+import { decodeShareFile } from '@/WiperTool/domain/sharing';
 import type { FailureType, WipingSequenceImport } from './model';
 import { FailureTypes } from './model';
 

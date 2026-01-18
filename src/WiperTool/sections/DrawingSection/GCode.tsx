@@ -1,6 +1,9 @@
-import { getWipingStepPoints } from 'WiperTool/domain/wipingSequence';
-import { calibrationValuesUsedEvent, gCodeCopiedEvent, track } from 'WiperTool/lib/analytics';
-import { generateGCodeCommands } from 'WiperTool/lib/gcode';
+import { createMemo, createSignal, onCleanup, Show } from 'solid-js';
+import { Button, CodeTextArea } from '@/components';
+import { twc } from '@/styles/helpers';
+import { getWipingStepPoints } from '@/WiperTool/domain/wipingSequence';
+import { calibrationValuesUsedEvent, gCodeCopiedEvent, track } from '@/WiperTool/lib/analytics';
+import { generateGCodeCommands } from '@/WiperTool/lib/gcode';
 import {
   useCalibration,
   usePads,
@@ -8,10 +11,7 @@ import {
   useSettings,
   useTracking,
   useWipingSequence,
-} from 'WiperTool/providers/AppModelProvider';
-import { Button, CodeTextArea } from 'components';
-import { createMemo, createSignal, onCleanup, Show } from 'solid-js';
-import { twc } from 'styles/helpers';
+} from '@/WiperTool/providers/AppModelProvider';
 
 const Container = twc(
   'div',

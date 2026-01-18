@@ -1,8 +1,8 @@
-import type { PadProperties } from 'WiperTool/domain/pads';
-import type { PrinterProperties } from 'WiperTool/domain/printers';
-import type { Point } from 'WiperTool/lib/geometry';
-import { useCalibration, usePads, usePrinters } from 'WiperTool/providers/AppModelProvider';
 import { createMemo } from 'solid-js';
+import type { PadProperties } from '@/WiperTool/domain/pads';
+import type { PrinterProperties } from '@/WiperTool/domain/printers';
+import type { Point } from '@/WiperTool/lib/geometry';
+import { useCalibration, usePads, usePrinters } from '@/WiperTool/providers/AppModelProvider';
 
 type MaybePoint = {
   x: number | undefined;

@@ -1,4 +1,4 @@
-import type { Point } from 'WiperTool/lib/geometry';
+import type { Point } from '@/WiperTool/lib/geometry';
 
 export const PrinterKeys = {
   PrusaCoreOne: 'prusa-core-one',

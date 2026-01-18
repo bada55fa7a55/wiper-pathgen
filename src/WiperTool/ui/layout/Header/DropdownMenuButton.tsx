@@ -1,10 +1,10 @@
-import { actionImportModalOpenedEvent, actionShareModalOpenedEvent, track } from 'WiperTool/lib/analytics';
-import { useModals, useSteps } from 'WiperTool/providers/AppModelProvider';
-import { ModalKeys } from 'WiperTool/ui/modals';
-import { StepKeys } from 'WiperTool/ui/steps';
-import { Button, Dropdown } from 'components';
 import { createSignal } from 'solid-js';
-import { twc } from 'styles';
+import { Button, Dropdown } from '@/components';
+import { twc } from '@/styles';
+import { actionImportModalOpenedEvent, actionShareModalOpenedEvent, track } from '@/WiperTool/lib/analytics';
+import { useModals, useSteps } from '@/WiperTool/providers/AppModelProvider';
+import { ModalKeys } from '@/WiperTool/ui/modals';
+import { StepKeys } from '@/WiperTool/ui/steps';
 
 const DropdownWrapper = twc(
   'div',

@@ -1,5 +1,5 @@
-import { useSteps } from 'WiperTool/providers/AppModelProvider';
-import type { StepKey } from 'WiperTool/ui/steps';
+import { useSteps } from '@/WiperTool/providers/AppModelProvider';
+import type { StepKey } from '@/WiperTool/ui/steps';
 
 export function useScrollToStep() {
   const { steps } = useSteps();

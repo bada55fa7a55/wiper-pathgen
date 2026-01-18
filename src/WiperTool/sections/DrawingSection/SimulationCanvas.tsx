@@ -1,6 +1,6 @@
-import type { Point } from 'WiperTool/lib/geometry';
 import { createEffect } from 'solid-js';
-import { twc } from 'styles/helpers';
+import { twc } from '@/styles/helpers';
+import type { Point } from '@/WiperTool/lib/geometry';
 import { absToRel } from './helpers';
 
 const scale = 0.025; // pixels per micron (25 px/mm)

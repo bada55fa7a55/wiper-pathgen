@@ -1,14 +1,14 @@
-import { createCalibrationStore } from 'WiperTool/domain/calibration/store';
-import { createImportsStore } from 'WiperTool/domain/imports/store';
-import { computePadTopRight, padProperties } from 'WiperTool/domain/pads';
-import { printerProperties } from 'WiperTool/domain/printers';
-import { createSettingsStore } from 'WiperTool/domain/settings/store';
-import { createWipingSequenceStore } from 'WiperTool/domain/wipingSequence/store';
-import { createModalsStore } from 'WiperTool/ui/modals/store';
-import { createSteps } from 'WiperTool/ui/steps/readModel';
-import { createTrackingStore } from 'WiperTool/ui/tracking/store';
 import type { ParentProps } from 'solid-js';
 import { createContext, createMemo, useContext } from 'solid-js';
+import { createCalibrationStore } from '@/WiperTool/domain/calibration/store';
+import { createImportsStore } from '@/WiperTool/domain/imports/store';
+import { computePadTopRight, padProperties } from '@/WiperTool/domain/pads';
+import { printerProperties } from '@/WiperTool/domain/printers';
+import { createSettingsStore } from '@/WiperTool/domain/settings/store';
+import { createWipingSequenceStore } from '@/WiperTool/domain/wipingSequence/store';
+import { createModalsStore } from '@/WiperTool/ui/modals/store';
+import { createSteps } from '@/WiperTool/ui/steps/readModel';
+import { createTrackingStore } from '@/WiperTool/ui/tracking/store';
 
 type Accessors<T extends object, K extends readonly (keyof T)[]> = {
   [P in K[number]]: () => T[P];

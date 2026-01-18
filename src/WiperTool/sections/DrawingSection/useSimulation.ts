@@ -1,5 +1,5 @@
-import type { Point } from 'WiperTool/lib/geometry';
 import { createEffect, createSignal, onCleanup } from 'solid-js';
+import type { Point } from '@/WiperTool/lib/geometry';
 
 const distanceBetweenPoints = (a: Point, b: Point) => Math.hypot(b.x - a.x, b.y - a.y);
 

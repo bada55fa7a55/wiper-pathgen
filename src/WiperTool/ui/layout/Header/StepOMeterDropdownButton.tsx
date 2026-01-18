@@ -1,7 +1,7 @@
-import { useAppModel } from 'WiperTool/providers/AppModelProvider';
-import { Button, Dropdown } from 'components';
 import { createSignal } from 'solid-js';
-import { twc } from 'styles';
+import { Button, Dropdown } from '@/components';
+import { twc } from '@/styles';
+import { useAppModel } from '@/WiperTool/providers/AppModelProvider';
 
 const DropdownWrapper = twc(
   'div',

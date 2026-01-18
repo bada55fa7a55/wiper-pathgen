@@ -1,6 +1,6 @@
-import { createLocalStorageStore } from 'WiperTool/lib/createLocalStorageStore';
-import type { Point, Point3D } from 'WiperTool/lib/geometry';
 import { createMemo } from 'solid-js';
+import { createLocalStorageStore } from '@/WiperTool/lib/createLocalStorageStore';
+import type { Point, Point3D } from '@/WiperTool/lib/geometry';
 
 const CALIBRATION_VERSION = 'v1';
 

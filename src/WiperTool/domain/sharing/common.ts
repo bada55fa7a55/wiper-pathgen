@@ -1,5 +1,5 @@
-import type { PadKey } from 'WiperTool/domain/pads';
-import type { PrinterKey } from 'WiperTool/domain/printers';
+import type { PadKey } from '@/WiperTool/domain/pads';
+import type { PrinterKey } from '@/WiperTool/domain/printers';
 
 export const SHARE_PARAM = 'share';
 export const SHARE_VERSION = 1;
