@@ -1,5 +1,6 @@
 import type { PadKey } from 'WiperTool/domain/pads';
 import type { PrinterKey } from 'WiperTool/domain/printers';
+import { clearShareTokenFromUrl, decodeShareToken, getShareTokenFromUrl } from 'WiperTool/domain/sharing';
 import type { WipingSequence } from 'WiperTool/domain/wipingSequence';
 import { Button, ErrorMessage, Modal } from 'components';
 import { isAppError } from 'lib/errors';
@@ -7,7 +8,6 @@ import { isClientRuntime } from 'lib/runtime';
 import { createSignal, Match, onCleanup, onMount, Switch } from 'solid-js';
 import { twc } from 'styles';
 import { ImportConfirmationScene } from './ImportConfirmationScene';
-import { clearShareTokenFromUrl, decodeShareToken, getShareTokenFromUrl } from './sharing';
 
 const FailureType = {
   Decode: 'decode',

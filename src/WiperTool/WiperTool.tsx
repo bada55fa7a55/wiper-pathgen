@@ -1,9 +1,9 @@
-import { AppModelProvider } from 'WiperTool/AppModelProvider';
+import { ShareLinkModal } from 'WiperTool/features/sharing/ShareLinkModal';
+import { ShareModal } from 'WiperTool/features/sharing/ShareModal';
+import { useGlobalFileDrop } from 'WiperTool/features/sharing/useGlobalFileDrop';
+import { useShareHashModal } from 'WiperTool/features/sharing/useShareHashModal';
 import { ManagedModals } from 'WiperTool/modals';
-import { ShareLinkModal } from 'WiperTool/sharing/ShareLinkModal';
-import { ShareModal } from 'WiperTool/sharing/ShareModal';
-import { useGlobalFileDrop } from 'WiperTool/sharing/useGlobalFileDrop';
-import { useShareHashModal } from 'WiperTool/sharing/useShareHashModal';
+import { AppModelProvider } from 'WiperTool/providers/AppModelProvider';
 import { ModalKeys } from 'WiperTool/ui/modals';
 import type { ParentProps } from 'solid-js';
 import { Toaster } from 'solid-toast';
@@ -11,13 +11,13 @@ import { twc } from 'styles/helpers';
 import { ClaibrationSection } from './CalibrationSection';
 import { DrawingSection } from './DrawingSection';
 import { Footer } from './Footer';
+import { ImportSharedWipingSequenceModal } from './features/sharing/ImportSharedWipingSequenceModal';
+import { ImportWipingSequenceModal } from './features/sharing/ImportWipingSequenceModal';
 import { HardwareSetupSection } from './HardwareSetupSection';
 import { Header } from './Header';
 import { InstallationSection } from './InstallationSection';
 import { IntroSection } from './IntroSection';
 import { SettingsSection } from './SettingsSection';
-import { ImportSharedWipingSequenceModal } from './sharing/ImportSharedWipingSequenceModal';
-import { ImportWipingSequenceModal } from './sharing/ImportWipingSequenceModal';
 import { TestingSection } from './TestingSection';
 
 const ShellContainer = twc(

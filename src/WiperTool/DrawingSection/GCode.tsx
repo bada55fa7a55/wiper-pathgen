@@ -1,3 +1,6 @@
+import { getWipingStepPoints } from 'WiperTool/domain/wipingSequence';
+import { calibrationValuesUsedEvent, gCodeCopiedEvent, track } from 'WiperTool/lib/analytics';
+import { generateGCodeCommands } from 'WiperTool/lib/gcode';
 import {
   useCalibration,
   usePads,
@@ -5,10 +8,7 @@ import {
   useSettings,
   useTracking,
   useWipingSequence,
-} from 'WiperTool/AppModelProvider';
-import { getWipingStepPoints } from 'WiperTool/domain/wipingSequence';
-import { calibrationValuesUsedEvent, gCodeCopiedEvent, track } from 'WiperTool/lib/analytics';
-import { generateGCodeCommands } from 'WiperTool/lib/gcode';
+} from 'WiperTool/providers/AppModelProvider';
 import { Button, CodeTextArea } from 'components';
 import { createMemo, createSignal, onCleanup, Show } from 'solid-js';
 import { twc } from 'styles/helpers';

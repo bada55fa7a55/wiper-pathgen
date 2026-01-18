@@ -1,7 +1,7 @@
-import { usePrinters, useSteps } from 'WiperTool/AppModelProvider';
 import { wiperArmv2Link } from 'WiperTool/configuration';
 import { analyticsWarningPrintablesWA2 } from 'WiperTool/lib/analytics';
 import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
+import { usePrinters, useSteps } from 'WiperTool/providers/AppModelProvider';
 import { StepKeys } from 'WiperTool/ui/steps';
 import { ErrorMessage, Link, Section, SectionIntro, SectionTitle, WarningMessage } from 'components';
 import { Show } from 'solid-js';

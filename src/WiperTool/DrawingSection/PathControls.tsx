@@ -1,5 +1,5 @@
-import { useCalibration, useSettings, useWipingSequence } from 'WiperTool/AppModelProvider';
 import { drawingPathClearedEvent, drawingPathUndoEvent, track } from 'WiperTool/lib/analytics';
+import { useCalibration, useSettings, useWipingSequence } from 'WiperTool/providers/AppModelProvider';
 import { Button } from 'components';
 import { createMemo } from 'solid-js';
 import { twc } from 'styles/helpers';

@@ -1,3 +1,6 @@
+import { calibrationValuesUsedEvent, testGCodeDownloadedEvent, track } from 'WiperTool/lib/analytics';
+import { formatPercent, formatPercentString } from 'WiperTool/lib/formatting';
+import { generateTestGCodeCommands } from 'WiperTool/lib/gcode';
 import {
   useCalibration,
   usePads,
@@ -6,10 +9,7 @@ import {
   useSteps,
   useTracking,
   useWipingSequence,
-} from 'WiperTool/AppModelProvider';
-import { calibrationValuesUsedEvent, testGCodeDownloadedEvent, track } from 'WiperTool/lib/analytics';
-import { formatPercent, formatPercentString } from 'WiperTool/lib/formatting';
-import { generateTestGCodeCommands } from 'WiperTool/lib/gcode';
+} from 'WiperTool/providers/AppModelProvider';
 import { StepKeys } from 'WiperTool/ui/steps';
 import {
   Button,

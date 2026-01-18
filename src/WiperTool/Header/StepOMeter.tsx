@@ -1,4 +1,4 @@
-import { useSteps } from 'WiperTool/AppModelProvider';
+import { useSteps } from 'WiperTool/providers/AppModelProvider';
 import { Link, MaterialSymbol } from 'components';
 import { Show } from 'solid-js';
 import { twc } from 'styles';

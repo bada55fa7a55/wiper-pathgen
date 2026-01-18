@@ -1,6 +1,6 @@
-import { useImports, useModals } from 'WiperTool/AppModelProvider';
 import { FailureTypes, isImportableWipingSequenceFile } from 'WiperTool/domain/imports';
 import { actionFileDroppedEvent, actionImportModalOpenedEvent, track } from 'WiperTool/lib/analytics';
+import { useImports, useModals } from 'WiperTool/providers/AppModelProvider';
 import { ModalKeys } from 'WiperTool/ui/modals';
 import { createSignal, onCleanup, onMount } from 'solid-js';
 

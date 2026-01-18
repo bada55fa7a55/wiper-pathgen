@@ -1,4 +1,4 @@
-import { usePrinters, useSteps } from 'WiperTool/AppModelProvider';
+import { usePrinters, useSteps } from 'WiperTool/providers/AppModelProvider';
 import { StepKeys } from 'WiperTool/ui/steps';
 import {
   InlineCode,

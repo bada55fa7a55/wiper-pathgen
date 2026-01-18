@@ -1,4 +1,4 @@
-import { useAppModel } from 'WiperTool/AppModelProvider';
+import { useAppModel } from 'WiperTool/providers/AppModelProvider';
 import { Button, Dropdown } from 'components';
 import { createSignal } from 'solid-js';
 import { twc } from 'styles';

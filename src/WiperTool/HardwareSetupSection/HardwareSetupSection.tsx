@@ -1,5 +1,5 @@
-import { useSteps } from 'WiperTool/AppModelProvider';
 import { analyticsHwSetupGitHubIssues, analyticsHwSetupGitHubPullRequests } from 'WiperTool/lib/analytics';
+import { useSteps } from 'WiperTool/providers/AppModelProvider';
 import { StepKeys } from 'WiperTool/ui/steps';
 import { Link, Section, SectionColumn, SectionColumns, SectionIntro, SectionTitle } from 'components';
 import { twc } from 'styles';

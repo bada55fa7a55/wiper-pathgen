@@ -1,5 +1,5 @@
-import { useSettings, useSteps } from 'WiperTool/AppModelProvider';
 import { PrinterKeys } from 'WiperTool/domain/printers';
+import { useSettings, useSteps } from 'WiperTool/providers/AppModelProvider';
 import { StepKeys } from 'WiperTool/ui/steps';
 import { Section, SectionIntro, SectionTitle } from 'components';
 import { CoreOneInstructions } from './CoreOneInstructions';

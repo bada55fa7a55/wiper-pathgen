@@ -1,14 +1,14 @@
-import { useSteps, useTracking, useWipingSequence } from 'WiperTool/AppModelProvider';
 import type { PadKey } from 'WiperTool/domain/pads';
 import type { PrinterKey } from 'WiperTool/domain/printers';
+import { clearShareTokenFromUrl } from 'WiperTool/domain/sharing';
 import type { WipingSequence } from 'WiperTool/domain/wipingSequence';
 import { actionWipingSequenceImportedEvent, track } from 'WiperTool/lib/analytics';
+import { useSteps, useTracking, useWipingSequence } from 'WiperTool/providers/AppModelProvider';
 import { StepKeys } from 'WiperTool/ui/steps';
 import { Button, WarningMessage } from 'components';
 import { createSignal } from 'solid-js';
 import { twc } from 'styles';
 import { PreviewWipingSequenceCanvas } from './PreviewWipingSequenceCanvas';
-import { clearShareTokenFromUrl } from './sharing';
 import { useScrollToStep } from './useScrollToStep';
 
 const Content = twc(

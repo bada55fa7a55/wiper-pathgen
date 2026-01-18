@@ -1,5 +1,5 @@
-import { useImports } from 'WiperTool/AppModelProvider';
 import { FailureTypes, isImportableWipingSequenceFile } from 'WiperTool/domain/imports';
+import { useImports } from 'WiperTool/providers/AppModelProvider';
 import { Button, ErrorMessage, Modal } from 'components';
 import { Match, Show, Switch } from 'solid-js';
 import { useFileDialog } from 'solidjs-use';

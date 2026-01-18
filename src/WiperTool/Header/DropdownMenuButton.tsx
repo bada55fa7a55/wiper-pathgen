@@ -1,5 +1,5 @@
-import { useModals, useSteps } from 'WiperTool/AppModelProvider';
 import { actionImportModalOpenedEvent, actionShareModalOpenedEvent, track } from 'WiperTool/lib/analytics';
+import { useModals, useSteps } from 'WiperTool/providers/AppModelProvider';
 import { ModalKeys } from 'WiperTool/ui/modals';
 import { StepKeys } from 'WiperTool/ui/steps';
 import { Button, Dropdown } from 'components';

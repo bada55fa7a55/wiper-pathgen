@@ -1,9 +1,9 @@
-import { useSettings, useTracking, useWipingSequence } from 'WiperTool/AppModelProvider';
+import { buildShareUrl, encodeShareToken } from 'WiperTool/domain/sharing';
 import { actionShareLinkCopiedEvent, track } from 'WiperTool/lib/analytics';
+import { useSettings, useTracking, useWipingSequence } from 'WiperTool/providers/AppModelProvider';
 import { Button, CodeTextArea, Modal } from 'components';
 import { createMemo, createSignal } from 'solid-js';
 import { twc } from 'styles';
-import { buildShareUrl, encodeShareToken } from './sharing';
 
 const Content = twc(
   'div',

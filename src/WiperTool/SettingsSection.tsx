@@ -1,10 +1,10 @@
-import { useSettings, useSteps } from 'WiperTool/AppModelProvider';
 import type { PadKey } from 'WiperTool/domain/pads';
 import type { PrinterKey } from 'WiperTool/domain/printers';
 import { settingsValueChangedEvent, track } from 'WiperTool/lib/analytics';
 import { mmToUm } from 'WiperTool/lib/conversion';
 import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
 import { validatePositiveDecimal, validatePositiveInteger } from 'WiperTool/lib/validation';
+import { useSettings, useSteps } from 'WiperTool/providers/AppModelProvider';
 import { StepKeys } from 'WiperTool/ui/steps';
 import {
   ErrorMessage,

@@ -1,13 +1,3 @@
-import {
-  useCalibration,
-  useModals,
-  usePads,
-  usePrinters,
-  useSettings,
-  useSteps,
-  useTracking,
-  useWipingSequence,
-} from 'WiperTool/AppModelProvider';
 import { gridStep } from 'WiperTool/configuration';
 import { getWipingStepPoints, makeWipingStepPoint } from 'WiperTool/domain/wipingSequence';
 import {
@@ -20,6 +10,16 @@ import {
 } from 'WiperTool/lib/analytics';
 import { formatMicronsToMmString } from 'WiperTool/lib/formatting';
 import type { Point } from 'WiperTool/lib/geometry';
+import {
+  useCalibration,
+  useModals,
+  usePads,
+  usePrinters,
+  useSettings,
+  useSteps,
+  useTracking,
+  useWipingSequence,
+} from 'WiperTool/providers/AppModelProvider';
 import { ModalKeys } from 'WiperTool/ui/modals';
 import { StepKeys } from 'WiperTool/ui/steps';
 import { WipingSequenceCanvas } from 'WiperTool/WipingSequenceCanvas';

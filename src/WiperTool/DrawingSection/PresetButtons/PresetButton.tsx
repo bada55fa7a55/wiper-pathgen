@@ -1,9 +1,9 @@
-import { usePads, useTracking, useWipingSequence } from 'WiperTool/AppModelProvider';
 import { WipingSequencePreviewSvg } from 'WiperTool/DrawingSection/PresetButtons/WipingSequencePreviewSvg';
 import type { PadProperties } from 'WiperTool/domain/pads';
 import type { PresetKey } from 'WiperTool/domain/presets';
 import { generatePresetSequence } from 'WiperTool/domain/presets';
 import { drawingPresetAppliedEvent, track } from 'WiperTool/lib/analytics';
+import { usePads, useTracking, useWipingSequence } from 'WiperTool/providers/AppModelProvider';
 import { Button, Tooltip } from 'components';
 import { createMemo } from 'solid-js';
 import { twc } from 'styles';
