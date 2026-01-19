@@ -56,7 +56,7 @@ export const printerProperties: Record<string, PrinterProperties> = {
       x: 352000,
       y: -9000,
     },
-    status: 'in-progress',
+    status: 'supported',
   },
   [PrinterKeys.PrusaMk4]: {
     // Dummy data, not correct
