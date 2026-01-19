@@ -8,6 +8,7 @@ type Inputs = {
   isCalibrated: Accessor<boolean>;
   isSettingsComplete: Accessor<boolean>;
   isWipingSequenceComplete: Accessor<boolean>;
+  isWipingSequenceTested: Accessor<boolean>;
 };
 
 export function createSteps(inputs: Inputs) {
@@ -40,7 +41,7 @@ export function createSteps(inputs: Inputs) {
       key: StepKeys.Testing,
       label: 'Testing',
       anchor: 'testing',
-      isComplete: false,
+      isComplete: inputs.isWipingSequenceTested(),
     },
   }));
 

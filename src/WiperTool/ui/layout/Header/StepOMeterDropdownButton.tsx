@@ -1,4 +1,4 @@
-import { createSignal } from 'solid-js';
+import { createMemo, createSignal } from 'solid-js';
 import { Button, Dropdown } from '@/components';
 import { twc } from '@/styles';
 import { useAppModel } from '@/WiperTool/providers/AppModelProvider';
@@ -23,6 +23,8 @@ export function StepOMeterDropdownButton() {
   const [isDropdownOpen, setIsDropdownOpen] = createSignal(false);
   let triggerRef: HTMLButtonElement | undefined;
 
+  const areAllStepsCompleted = createMemo(() => Object.values(steps()).every((step) => step.isComplete));
+
   const getStepIcon = (stepIndex: number, isComplete: boolean) => {
     if (isComplete) {
       return 'check_circle';
@@ -43,7 +45,7 @@ export function StepOMeterDropdownButton() {
     <DropdownWrapper>
       <Button
         renderAs="button"
-        layout="ghost"
+        layout={areAllStepsCompleted() ? 'ghost-success' : 'ghost'}
         msIcon="checklist_rtl"
         label="Steps"
         title="Steps checklist"
