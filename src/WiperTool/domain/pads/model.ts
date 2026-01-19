@@ -14,10 +14,7 @@ export type PadProperties = {
   refPointOffset: Point;
 };
 
-export const computePadTopRight = (
-  pad: PadProperties,
-  calibration: MaybePoint,
-): Point => ({
+export const computePadTopRight = (pad: PadProperties, calibration: MaybePoint): Point => ({
   x: (calibration.x ?? 0) - pad.refPointOffset.x,
   y: (calibration.y ?? 0) - pad.refPointOffset.y,
 });
