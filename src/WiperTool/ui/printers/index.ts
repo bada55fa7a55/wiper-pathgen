@@ -1,0 +1,1 @@
+export { printerThumbnails } from './images';
