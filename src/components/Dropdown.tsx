@@ -4,7 +4,7 @@ import { createSignal } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import { keyframes, styled } from 'solid-styled-components';
 import { onKeyStroke } from 'solidjs-use';
-import { twc } from 'styles';
+import { twc } from '@/styles';
 import { useFloatingPosition } from './useFloatingPosition';
 import { useSafeClickOutside } from './useSafeClickOutside';
 import { useScrollLock } from './useScrollLock';

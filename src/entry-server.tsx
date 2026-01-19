@@ -1,6 +1,6 @@
-import { WiperTool } from 'WiperTool';
 import { renderToString } from 'solid-js/web';
 import { extractCss } from 'solid-styled-components';
+import { WiperTool } from '@/WiperTool';
 import './index.css';
 
 export function render() {

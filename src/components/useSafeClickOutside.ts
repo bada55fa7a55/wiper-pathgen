@@ -29,7 +29,9 @@ export function useSafeClickOutside(
     stop?.();
     stop = undefined;
 
-    if (!shouldEnable()) return;
+    if (!shouldEnable()) {
+      return;
+    }
 
     stop = onClickOutside(
       target,

@@ -1,6 +1,6 @@
 import type { JSX, ParentProps } from 'solid-js';
 import { Show } from 'solid-js';
-import { twc } from 'styles';
+import { twc } from '@/styles';
 import { Button } from './Button';
 
 const Container = twc(

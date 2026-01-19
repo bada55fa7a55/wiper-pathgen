@@ -1,8 +1,8 @@
 import type { MaybeElement, MaybeElementAccessor } from '@solidjs-use/shared';
-import { invariant } from 'lib/invariant';
-import { isClientRuntime } from 'lib/runtime';
 import type { JSX } from 'solid-js';
 import { createEffect, createSignal, onCleanup, onMount } from 'solid-js';
+import { invariant } from '@/lib/invariant';
+import { isClientRuntime } from '@/lib/runtime';
 
 type Position = 'left' | 'right' | 'top' | 'bottom';
 type Align = 'start' | 'center' | 'end';

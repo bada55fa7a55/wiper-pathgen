@@ -1,9 +1,15 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.3.8/schema.json",
   "assist": {
+    "enabled": true,
     "actions": {
       "source": {
-        "organizeImports": "on"
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [":NODE:", ":PACKAGE:", ":ALIAS:", ":RELATIVE:"]
+          }
+        }
       }
     }
   },
@@ -40,6 +46,7 @@
         "noUselessElse": "off",
         "noNonNullAssertion": "off",
         "useNodejsImportProtocol": "off",
+        "useBlockStatements": "error",
         "useImportType": {
           "level": "error",
           "options": {

@@ -1,6 +1,6 @@
 import type { JSX } from 'solid-js';
 import { Show } from 'solid-js';
-import { twc } from 'styles/helpers';
+import { twc } from '@/styles/helpers';
 
 const FormField = twc(
   'div',

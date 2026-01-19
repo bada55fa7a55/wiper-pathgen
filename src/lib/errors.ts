@@ -31,7 +31,9 @@ export function createError({ name, message, component, cause }: CreateErrorOpti
 
   error[APP_ERROR] = true;
 
-  if ('captureStackTrace' in Error) (Error as any).captureStackTrace(error, createError);
+  if ('captureStackTrace' in Error) {
+    (Error as any).captureStackTrace(error, createError);
+  }
 
   return error;
 }

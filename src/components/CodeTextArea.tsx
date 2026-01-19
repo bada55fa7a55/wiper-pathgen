@@ -1,4 +1,4 @@
-import { twc } from 'styles';
+import { twc } from '@/styles';
 
 export const CodeTextArea = twc(
   'textarea',

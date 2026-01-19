@@ -1,4 +1,4 @@
-import { twc } from 'styles/helpers';
+import { twc } from '@/styles/helpers';
 
 export const Link = twc(
   'a',
