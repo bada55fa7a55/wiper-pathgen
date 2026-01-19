@@ -11,7 +11,6 @@ export type PadProperties = {
   name: string;
   width: number;
   height: number;
-  image: string;
   refPointOffset: Point;
 };
 

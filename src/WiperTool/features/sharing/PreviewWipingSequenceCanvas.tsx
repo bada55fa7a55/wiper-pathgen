@@ -7,6 +7,7 @@ import { printerProperties } from '@/WiperTool/domain/printers';
 import type { WipingSequence } from '@/WiperTool/domain/wipingSequence';
 import { getWipingStepPoints } from '@/WiperTool/domain/wipingSequence';
 import { WipingSequenceCanvas } from '@/WiperTool/features/WipingSequenceCanvas';
+import { padImages } from '@/WiperTool/ui/pads';
 
 const Frame = twc(
   'div',
@@ -100,7 +101,7 @@ export function PreviewWipingSequenceCanvas(props: Props) {
     <Container>
       <Frame>
         <WipingSequenceCanvas
-          padImageSrc={importedPad().image}
+          padImageSrc={padImages[importedPad().key]}
           padWidth={importedPad().width}
           padHeight={importedPad().height}
           paddingLeft={previewPadding().left}

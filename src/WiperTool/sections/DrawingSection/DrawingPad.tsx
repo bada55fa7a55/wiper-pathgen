@@ -25,6 +25,7 @@ import {
   useWipingSequence,
 } from '@/WiperTool/providers/AppModelProvider';
 import { ModalKeys } from '@/WiperTool/ui/modals';
+import { padImages } from '@/WiperTool/ui/pads';
 import { StepKeys } from '@/WiperTool/ui/steps';
 import { absToRel, relToAbs, useDrawingPadPaddings } from './helpers';
 import { PathControls } from './PathControls';
@@ -296,7 +297,7 @@ export function DrawingPad() {
           }}
         >
           <WipingSequenceCanvas
-            padImageSrc={selectedPad().image}
+            padImageSrc={padImages[selectedPad().key]}
             padWidth={selectedPad().width}
             padHeight={selectedPad().height}
             paddingLeft={paddings().left}
