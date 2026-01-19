@@ -1,6 +1,7 @@
 import { createMemo, createSignal, Show } from 'solid-js';
 import {
   Button,
+  CodeTextArea,
   ErrorMessage,
   FormSelect,
   Link,
@@ -13,10 +14,11 @@ import {
   StepBody,
   StepTitle,
 } from '@/components';
+import { isDevRuntime } from '@/lib/runtime';
 import { twc } from '@/styles/helpers';
+import { generateTestGCode, serializeGCode } from '@/WiperTool/domain/gcode';
 import { calibrationValuesUsedEvent, testGCodeDownloadedEvent, track } from '@/WiperTool/lib/analytics';
 import { formatPercent, formatPercentString } from '@/WiperTool/lib/formatting';
-import { generateTestGCodeCommands } from '@/WiperTool/lib/gcode';
 import {
   useCalibration,
   usePads,
@@ -115,32 +117,36 @@ export function TestingSection() {
       return null;
     }
 
-    return (
-      generateTestGCodeCommands({
-        printerName: selectedPrinter().name,
-        printerOriginalCleaningGcode: selectedPrinter().originalCleaningGCode,
-        printerId: selectedPrinter().printerId,
-        printerMaxCoords: {
-          x: selectedPrinter().maxX,
-          y: selectedPrinter().maxY,
-        },
-        printerParkingCoords: {
-          x: selectedPrinter().parkingCoords.x,
-          y: selectedPrinter().parkingCoords.y,
-          z: selectedPrinter().parkingZHeight,
-        },
-        padRef: {
-          x,
-          y,
-          z,
-        },
-        wipingSequence: wipingSequence.wipingSteps(),
-        padTopRight: { ...selectedPadTopRight(), z },
-        feedRate: feedRate * feedRateMultiplierValue(),
-        plungeDepth,
-        zLift,
-      })?.join('\n') || ''
-    );
+    const testGCode = generateTestGCode({
+      printerName: selectedPrinter().name,
+      printerOriginalCleaningGcode: selectedPrinter().originalCleaningGCode,
+      printerId: selectedPrinter().printerId,
+      printerMaxCoords: {
+        x: selectedPrinter().maxX,
+        y: selectedPrinter().maxY,
+      },
+      printerParkingCoords: {
+        x: selectedPrinter().parkingCoords.x,
+        y: selectedPrinter().parkingCoords.y,
+        z: selectedPrinter().parkingZHeight,
+      },
+      padRef: {
+        x,
+        y,
+        z,
+      },
+      wipingSequence: wipingSequence.wipingSteps(),
+      padTopRight: { ...selectedPadTopRight(), z },
+      feedRate: feedRate * feedRateMultiplierValue(),
+      plungeDepth,
+      zLift,
+    });
+
+    if (!testGCode) {
+      return null;
+    }
+
+    return serializeGCode(testGCode).join('\n');
   });
 
   const isReadyToPrint = () => areStepsCompleteUpTo(StepKeys.Testing);
@@ -301,7 +307,11 @@ export function TestingSection() {
               </Content>
             </StepBody>
           </Step>
-          <pre>{testGCode()}</pre>
+          {isDevRuntime && (
+            <div class="flex flex-col items-stretch h-200">
+              <CodeTextArea value={testGCode() || ''} />
+            </div>
+          )}
         </SectionColumn>
       </SectionColumns>
     </Section>

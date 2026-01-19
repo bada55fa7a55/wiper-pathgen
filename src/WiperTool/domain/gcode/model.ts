@@ -1,13 +1,8 @@
 import type { WipingSequence } from '@/WiperTool/domain/wipingSequence';
-import { umToMm } from './conversion';
-import { formatDateISO, formatMicronsToMmString } from './formatting';
-import type { Point } from './geometry';
-
-export type Point3D = {
-  x: number;
-  y: number;
-  z: number;
-};
+import { formatDateISO, formatMicronsToMmString } from '@/WiperTool/lib/formatting';
+import type { Point, Point3D } from '@/WiperTool/lib/geometry';
+import type { GCodeProgram } from './commands';
+import { gCodeCommands } from './commands';
 
 function relativeToAbsolute(microns: Point, referencePoint: Point): Point {
   return {
@@ -15,97 +10,6 @@ function relativeToAbsolute(microns: Point, referencePoint: Point): Point {
     y: referencePoint.y + microns.y,
   };
 }
-
-function formatAxisXY(value: number) {
-  const rounded = Math.round(value * 1000) / 1000;
-  return rounded.toFixed(3);
-}
-
-function formatAxisZ(value: number) {
-  const rounded = Math.round(value * 100) / 100;
-  return rounded.toFixed(2);
-}
-
-function formatAxisE(value: number) {
-  const rounded = Math.round(value * 100000) / 100000;
-  return rounded.toFixed(5);
-}
-
-function quotedParam(value: string, { leadingSpace = false }: { leadingSpace?: boolean } = {}): string {
-  return `${leadingSpace ? ' ' : ''}"${value}"`;
-}
-
-type GCodeParamValue = string | number | null | undefined;
-
-function formGCodeCommand(command: string, params: Record<string, GCodeParamValue> | null, comment?: string) {
-  const commandParts = [command];
-
-  if (params) {
-    for (const [param, value] of Object.entries(params)) {
-      if (value === undefined || value === null || value === '') {
-        commandParts.push(param);
-      } else {
-        commandParts.push(`${param}${value}`);
-      }
-    }
-  }
-
-  if (comment) {
-    commandParts.push(`; ${comment}`);
-  }
-
-  return commandParts.join(' ');
-}
-
-const gCodeCommands = {
-  comment(text: string) {
-    return `; ${text}`;
-  },
-
-  linearMove(coords: Partial<Point3D & { e: number }>, feedRate?: number, comment?: string) {
-    const params: Record<string, string> = {
-      ...(coords.x !== undefined ? { X: formatAxisXY(umToMm(coords.x)) } : {}),
-      ...(coords.y !== undefined ? { Y: formatAxisXY(umToMm(coords.y)) } : {}),
-      ...(coords.z !== undefined ? { Z: formatAxisZ(umToMm(coords.z)) } : {}),
-      // Note: Extrusion is in millimeter, not microns
-      ...(coords.e !== undefined ? { E: formatAxisE(coords.e) } : {}),
-      ...(feedRate !== undefined ? { F: String(feedRate) } : {}),
-    };
-
-    if (coords.e !== undefined) {
-      return formGCodeCommand('G1', params, comment);
-    }
-    return formGCodeCommand('G0', params, comment);
-  },
-
-  enableSteppers() {
-    return formGCodeCommand('M17', null, 'enable steppers');
-  },
-
-  disableSteppers() {
-    return formGCodeCommand('M84', { X: null, Y: null, E: null }, 'disable motors');
-  },
-
-  absolutePositioning() {
-    return formGCodeCommand('G90', null, 'use absolute positioning');
-  },
-
-  autoHome() {
-    return formGCodeCommand('G28', null, 'home all without mesh bed level');
-  },
-
-  // https://reprap.org/wiki/G-code#M862.3:_Model_name
-  // https://github.com/prusa3d/Prusa-Firmware-Buddy/blob/v6.4.0/src/marlin_stubs/M862_2_3.cpp
-  gCodeCompatibilityCheck(printerId: string) {
-    return formGCodeCommand('M862.3', { P: quotedParam(printerId, { leadingSpace: true }) }, 'printer model check');
-  },
-
-  // https://reprap.org/wiki/G-code#M862.6:_Firmware_features
-  // https://github.com/prusa3d/Prusa-Firmware-Buddy/blob/v6.4.0/src/marlin_stubs/M862_6.cpp
-  firmwareFeatureCheck(feature: string) {
-    return formGCodeCommand('M862.6', { P: quotedParam(feature) }, 'FW feature check');
-  },
-} satisfies Record<string, (...args: any[]) => string>;
 
 type GenerateWipingSequenceGCodeOptions = {
   wipingSequence: WipingSequence;
@@ -156,7 +60,7 @@ function generateWipingSequenceGCodeCommands({
   }
 
   const zHeight = padTopRight.z - plungeDepth;
-  const gCode: string[] = [];
+  const gCode: GCodeProgram = [];
 
   points.forEach((pt) => {
     const coords = relativeToAbsolute(pt, padTopRight);
@@ -171,7 +75,7 @@ function generateWipingSequenceGCodeCommands({
   return gCode;
 }
 
-export function generateGCodeCommands({
+export function generateWipingSequenceGCode({
   printerName,
   printerOriginalCleaningGcode,
   padRef,
@@ -208,7 +112,7 @@ type GenerateTestGCodeOptions = {
   printerMaxCoords: Point;
 };
 
-export function generateTestGCodeCommands({
+export function generateTestGCode({
   printerName,
   printerId,
   printerOriginalCleaningGcode,

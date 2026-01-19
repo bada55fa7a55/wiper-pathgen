@@ -1,9 +1,9 @@
 import { createMemo, createSignal, onCleanup, Show } from 'solid-js';
 import { Button, CodeTextArea } from '@/components';
 import { twc } from '@/styles/helpers';
+import { generateWipingSequenceGCode, serializeGCode } from '@/WiperTool/domain/gcode';
 import { getWipingStepPoints } from '@/WiperTool/domain/wipingSequence';
 import { calibrationValuesUsedEvent, gCodeCopiedEvent, track } from '@/WiperTool/lib/analytics';
-import { generateGCodeCommands } from '@/WiperTool/lib/gcode';
 import {
   useCalibration,
   usePads,
@@ -88,22 +88,27 @@ export function GCode() {
     ) {
       return null;
     }
-    return (
-      generateGCodeCommands({
-        printerName: selectedPrinter().name,
-        printerOriginalCleaningGcode: selectedPrinter().originalCleaningGCode,
-        padRef: {
-          x,
-          y,
-          z,
-        },
-        wipingSequence: wipingSequence.wipingSteps(),
-        padTopRight: { ...selectedPadTopRight(), z },
-        feedRate,
-        plungeDepth,
-        zLift,
-      })?.join('\n') || ''
-    );
+
+    const gCode = generateWipingSequenceGCode({
+      printerName: selectedPrinter().name,
+      printerOriginalCleaningGcode: selectedPrinter().originalCleaningGCode,
+      padRef: {
+        x,
+        y,
+        z,
+      },
+      wipingSequence: wipingSequence.wipingSteps(),
+      padTopRight: { ...selectedPadTopRight(), z },
+      feedRate,
+      plungeDepth,
+      zLift,
+    });
+
+    if (!gCode) {
+      return null;
+    }
+
+    return serializeGCode(gCode).join('\n');
   });
 
   const showCopied = () => {
