@@ -43,18 +43,24 @@ export function twc<
   const intrinsicPropCache = new Map<string, Set<string>>();
   const getIntrinsicPropSet = (tag: string): Set<string> => {
     const cached = intrinsicPropCache.get(tag);
-    if (cached) return cached;
+    if (cached) {
+      return cached;
+    }
     const el = typeof document !== 'undefined' ? document.createElement(tag) : null;
     const props = new Set<string>();
     if (el) {
-      for (const key in el) props.add(key);
+      for (const key in el) {
+        props.add(key);
+      }
     }
     intrinsicPropCache.set(tag, props);
     return props;
   };
 
   const shouldForwardVariant = (key: string): boolean => {
-    if (typeof element !== 'string') return false;
+    if (typeof element !== 'string') {
+      return false;
+    }
     return getIntrinsicPropSet(element).has(key);
   };
 

@@ -1,5 +1,5 @@
 import type { JSX } from 'solid-js';
-import { twc } from 'styles/helpers';
+import { twc } from '@/styles/helpers';
 import { MaterialSymbol } from './MaterialSymbol';
 
 const containerStyles = `

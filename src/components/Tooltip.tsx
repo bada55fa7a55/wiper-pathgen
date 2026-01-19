@@ -2,7 +2,7 @@ import type { MaybeElement, MaybeElementAccessor } from '@solidjs-use/shared';
 import type { ParentProps } from 'solid-js';
 import { createEffect, createMemo, createSignal, onCleanup, Show } from 'solid-js';
 import { Portal } from 'solid-js/web';
-import { twc } from 'styles';
+import { twc } from '@/styles';
 import { useFloatingPosition } from './useFloatingPosition';
 
 const Container = twc(
