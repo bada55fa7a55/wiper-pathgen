@@ -174,6 +174,7 @@ export function TestingSection() {
     link.click();
     URL.revokeObjectURL(url);
 
+    tracking.actions.setLastTestedWipingSequenceRevision(wipingSequence.revision());
     track(testGCodeDownloadedEvent(tracking.lastWipingSequenceWrite()));
     track(
       calibrationValuesUsedEvent('testing', selectedPrinter().key, calibration.x(), calibration.y(), calibration.z()),

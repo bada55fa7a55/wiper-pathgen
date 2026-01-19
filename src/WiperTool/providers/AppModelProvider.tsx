@@ -39,6 +39,11 @@ function createAppModel() {
       isCalibrated: calibration.derived.isComplete,
       isSettingsComplete: settings.derived.isComplete,
       isWipingSequenceComplete: wipingSequence.derived.isComplete,
+      isWipingSequenceTested: createMemo(
+        () =>
+          wipingSequence.state.revision !== 0 &&
+          wipingSequence.state.revision === tracking.state.lastTestedWipingSequenceRevision,
+      ),
     }),
 
     selectedPrinter: createMemo(() => printerProperties[settings.state.printer]),
@@ -122,6 +127,7 @@ export function useWipingSequence() {
 
   return {
     wipingSteps: () => wipingSequence.state.wipingSequence,
+    revision: () => wipingSequence.state.revision,
     ...wipingSequence.derived,
     actions: wipingSequence.actions,
   } as const;
