@@ -10,7 +10,9 @@ function updateBodyOverflow() {
   }
 
   const { body, documentElement: html } = document;
-  if (!body || !html) return;
+  if (!body || !html) {
+    return;
+  }
 
   if (scrollLockCount > 0) {
     if (savedScrollY === null) {

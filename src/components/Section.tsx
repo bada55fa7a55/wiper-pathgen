@@ -1,5 +1,5 @@
 import type { ParentProps } from 'solid-js';
-import { twc } from 'styles/helpers';
+import { twc } from '@/styles/helpers';
 
 const Container = twc(
   'div',

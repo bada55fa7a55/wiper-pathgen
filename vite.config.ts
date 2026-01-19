@@ -1,5 +1,4 @@
 import { execSync } from 'node:child_process';
-import path from 'node:path';
 import { fileURLToPath, URL } from 'node:url';
 import tailwindcss from '@tailwindcss/vite';
 import type { HtmlTagDescriptor, Plugin } from 'vite';
@@ -84,8 +83,7 @@ export default defineConfig(({ mode }) => {
     resolve: {
       //dedupe: ['solid-js', 'solid-js/web', 'solid-js/store'],
       alias: {
-        'solid-js': path.resolve(projectRoot, 'node_modules/solid-js'),
-        src: fileURLToPath(new URL('./src', import.meta.url)),
+        "@": fileURLToPath(new URL("./src", import.meta.url)),
       },
     },
     optimizeDeps: {
