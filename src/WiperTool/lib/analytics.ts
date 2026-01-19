@@ -1,6 +1,6 @@
-import type { PrinterKey } from 'WiperTool/configuration';
-import type { WsWriteAction } from 'WiperTool/store/tracking';
-import { isClientRuntime, isDevRuntime } from 'lib/runtime';
+import { isClientRuntime, isDevRuntime } from '@/lib/runtime';
+import type { PrinterKey } from '@/WiperTool/domain/printers';
+import type { WsWriteAction } from '@/WiperTool/ui/tracking';
 
 type AnalyticsTrigger =
   | 'global_drop'

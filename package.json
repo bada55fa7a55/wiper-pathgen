@@ -11,7 +11,7 @@
     "prerender": "node ./prerender.mjs",
     "preview": "vite preview",
     "lint": "biome lint src",
-    "format": "biome format --write src"
+    "format": "biome check --write src"
   },
   "dependencies": {
     "@fontsource-variable/material-symbols-rounded": "^5.2.30",

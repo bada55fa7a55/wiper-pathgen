@@ -18,7 +18,7 @@
     "jsxImportSource": "solid-js",
     "baseUrl": ".",
     "paths": {
-      "*": ["./src/*", "./node_modules/*"]
+      "@/*": ["src/*"]
     },
 
     /* Linting */
