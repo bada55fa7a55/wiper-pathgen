@@ -3,6 +3,11 @@ export type Point = {
   y: number;
 };
 
+export type MaybePoint = {
+  x: number | undefined;
+  y: number | undefined;
+};
+
 export type Point3D = Point & {
   z: number;
 };

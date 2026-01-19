@@ -1,3 +1,5 @@
+import type { MaybePoint, Point } from '@/WiperTool/lib/geometry';
+
 export const PadKeys = {
   BambuLabA1: 'bbl-a1',
 };
@@ -10,20 +12,13 @@ export type PadProperties = {
   width: number;
   height: number;
   image: string;
-  refPointOffsetX: number;
-  refPointOffsetY: number;
+  refPointOffset: Point;
 };
 
 export const computePadTopRight = (
-  pad: {
-    refPointOffsetX: number;
-    refPointOffsetY: number;
-  },
-  calibration: {
-    x: number | undefined;
-    y: number | undefined;
-  },
-) => ({
-  x: (calibration.x ?? 0) - pad.refPointOffsetX,
-  y: (calibration.y ?? 0) - pad.refPointOffsetY,
+  pad: PadProperties,
+  calibration: MaybePoint,
+): Point => ({
+  x: (calibration.x ?? 0) - pad.refPointOffset.x,
+  y: (calibration.y ?? 0) - pad.refPointOffset.y,
 });

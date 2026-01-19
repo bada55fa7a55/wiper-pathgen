@@ -9,9 +9,11 @@ export const padProperties: Record<PadKey, PadProperties> = {
     width: 37000,
     height: 8000,
     image: bblA1PadSvg,
-    /** Reference point offset from right edge of pad */
-    refPointOffsetX: -1675,
-    /** Reference point offset from top edge of pad */
-    refPointOffsetY: -1675,
+    refPointOffset: {
+      /** Reference point offset from right edge of pad */
+      x: -1675,
+      /** Reference point offset from top edge of pad */
+      y: -1675,
+    },
   },
 };
