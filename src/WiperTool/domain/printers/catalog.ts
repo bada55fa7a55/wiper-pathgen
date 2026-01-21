@@ -35,7 +35,7 @@ export const printerProperties: Record<string, PrinterProperties> = {
       x: 292000,
       y: -5000,
     },
-    status: 'in-progress',
+    status: 'supported',
   },
   [PrinterKeys.PrusaXl]: {
     key: PrinterKeys.PrusaXl,
