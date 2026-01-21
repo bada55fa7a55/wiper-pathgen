@@ -6,6 +6,7 @@ import { computePadTopRight, padProperties } from '@/WiperTool/domain/pads';
 import { printerProperties } from '@/WiperTool/domain/printers';
 import { createSettingsStore } from '@/WiperTool/domain/settings/store';
 import { createWipingSequenceStore } from '@/WiperTool/domain/wipingSequence/store';
+import { CartesianRect } from '@/WiperTool/lib/rect';
 import { createModalsStore } from '@/WiperTool/ui/modals/store';
 import { createSteps } from '@/WiperTool/ui/steps/readModel';
 import { createTrackingStore } from '@/WiperTool/ui/tracking/store';
@@ -49,6 +50,17 @@ function createAppModel() {
     selectedPrinter: createMemo(() => printerProperties[settings.state.printer]),
     selectedPad: createMemo(() => padProperties[settings.state.padType]),
     selectedPadTopRight: createMemo(() => computePadTopRight(padProperties[settings.state.padType], calibration.state)),
+    calibratedPadRect: createMemo(() => {
+      if (calibration.state.x === undefined || calibration.state.y === undefined) {
+        return null;
+      }
+      const padData = padProperties[settings.state.padType];
+      const padTopRight = computePadTopRight(padProperties[settings.state.padType], calibration.state);
+
+      const left = padTopRight.x - padData.width;
+      const top = padTopRight.y;
+      return new CartesianRect(left, top - padData.height, padData.width, padData.height);
+    }),
   };
 
   const actions = {
@@ -93,6 +105,7 @@ export function usePads() {
   return {
     selectedPad: derived.selectedPad,
     selectedPadTopRight: derived.selectedPadTopRight,
+    calibratedPadRect: derived.calibratedPadRect,
   };
 }
 

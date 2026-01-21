@@ -122,8 +122,8 @@ export function TestingSection() {
       printerOriginalCleaningGcode: selectedPrinter().originalCleaningGCode,
       printerId: selectedPrinter().printerId,
       printerMaxCoords: {
-        x: selectedPrinter().maxX,
-        y: selectedPrinter().maxY,
+        x: selectedPrinter().bounds.right,
+        y: selectedPrinter().bounds.top,
       },
       printerParkingCoords: {
         x: selectedPrinter().parkingCoords.x,

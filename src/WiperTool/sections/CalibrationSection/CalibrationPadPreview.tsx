@@ -1,6 +1,6 @@
 import { createMemo, createSignal, For, Show } from 'solid-js';
 import { twc } from '@/styles/helpers';
-import { useCalibration, usePads, usePrinters } from '@/WiperTool/providers/AppModelProvider';
+import { usePads, usePrinters } from '@/WiperTool/providers/AppModelProvider';
 import { ModalPortal } from '@/WiperTool/ui/modals';
 
 const Container = twc(
@@ -109,65 +109,41 @@ type SvgRect = {
 const padding = 15000;
 
 function CalibrationPadPreviewImpl() {
-  const calibration = useCalibration();
   const { selectedPrinter } = usePrinters();
-  const { selectedPad, selectedPadTopRight } = usePads();
-
-  const hasCalibration = createMemo(() => calibration.x() !== undefined && calibration.y() !== undefined);
+  const { calibratedPadRect } = usePads();
 
   const viewSettings = createMemo(() => {
     const printerData = selectedPrinter();
-    const width = Math.max(1, printerData.maxX - printerData.minX) + 2 * padding;
-    const height = Math.max(1, printerData.maxY - printerData.minY) + 2 * padding;
-    return {
-      width,
-      height,
-      minX: printerData.minX - padding,
-      minY: printerData.minY - padding,
-    };
+
+    const viewRect = printerData.bounds.clone();
+    viewRect.x -= padding;
+    viewRect.y -= padding;
+    viewRect.width += 2 * padding;
+    viewRect.height += 2 * padding;
+    return viewRect;
   });
 
-  const printerRect = createMemo<SvgRect>(() => {
-    const printerData = selectedPrinter();
-    const width = Math.max(1, printerData.maxX - printerData.minX);
-    const height = Math.max(1, printerData.maxY - printerData.minY);
-
-    return {
-      x: printerData.minX,
-      y: printerData.minY,
-      width,
-      height,
-    };
+  const boundsRect = createMemo<SvgRect>(() => {
+    return selectedPrinter().bounds.toJSON();
   });
 
   const padRect = createMemo<SvgRect | null>(() => {
-    if (!hasCalibration()) {
+    const rect = calibratedPadRect();
+    if (!rect) {
       return null;
     }
-
-    const padData = selectedPad();
-    const padTopRightPoint = selectedPadTopRight();
-
-    const left = padTopRightPoint.x - padData.width;
-    const top = padTopRightPoint.y;
-
-    return {
-      x: left,
-      y: top - padData.height,
-      width: Math.max(1, padData.width),
-      height: Math.max(1, padData.height),
-    };
+    return rect.toJSON();
   });
 
   const flipTransform = createMemo(() => {
-    const { minY, height } = viewSettings();
-    return `translate(0 ${minY * 2 + height + 10000}) scale(1 -1)`;
+    const { y, height } = viewSettings();
+    return `translate(0 ${y * 2 + height + 10000}) scale(1 -1)`;
   });
 
   return (
     <SvgFrame>
       <Svg
-        viewBox={`${viewSettings().minX} ${viewSettings().minY} ${viewSettings().width} ${viewSettings().height}`}
+        viewBox={`${viewSettings().x} ${viewSettings().y} ${viewSettings().width} ${viewSettings().height}`}
         preserveAspectRatio="xMidYMid meet"
         style={{
           'aspect-ratio': `${viewSettings().width} / ${viewSettings().height}`,
@@ -178,8 +154,8 @@ function CalibrationPadPreviewImpl() {
       >
         <g transform={flipTransform()}>
           <rect
-            x={viewSettings().minX}
-            y={viewSettings().minY}
+            x={viewSettings().x}
+            y={viewSettings().y}
             width={viewSettings().width}
             height={viewSettings().height}
             rx="10"
@@ -189,10 +165,10 @@ function CalibrationPadPreviewImpl() {
           />
           <rect
             class="stroke-orange-400"
-            x={printerRect().x}
-            y={printerRect().y}
-            width={printerRect().width}
-            height={printerRect().height}
+            x={boundsRect().x}
+            y={boundsRect().y}
+            width={boundsRect().width}
+            height={boundsRect().height}
             rx="2000"
             fill="none"
             stroke-width="1"

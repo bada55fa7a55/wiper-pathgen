@@ -227,8 +227,8 @@ export function DrawingPad() {
   };
 
   const printerCenter = createMemo<Point>(() => ({
-    x: selectedPrinter().maxX / 2,
-    y: selectedPrinter().maxY / 2,
+    x: selectedPrinter().bounds.right / 2,
+    y: selectedPrinter().bounds.top / 2,
   }));
   const absolutePoints = createMemo(() => sequencePoints().map(toAbsolute));
 
