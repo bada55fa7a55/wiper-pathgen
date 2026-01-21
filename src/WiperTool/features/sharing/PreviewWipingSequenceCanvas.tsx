@@ -99,6 +99,7 @@ export function PreviewWipingSequenceCanvas(props: Props) {
           padWidth={importedPad().width}
           padHeight={importedPad().height}
           drawingAreaRect={drawingAreaRect()}
+          padTopRight={{ x: 0, y: 0 }}
           points={sequencePoints()}
           calibrationPoint={printerCenter()}
           isInteractive={false}

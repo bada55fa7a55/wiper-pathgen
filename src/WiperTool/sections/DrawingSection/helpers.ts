@@ -43,6 +43,28 @@ export function absToRel(absolutePoint: Point, padTopRight: Point): Point {
   };
 }
 
+export function usePadCoordinateTransform() {
+  const { selectedPadTopRight } = usePads();
+
+  const relToAbsFromPad = (relativePoint: Point): Point => {
+    const padTopRight = selectedPadTopRight();
+    return {
+      x: padTopRight.x + relativePoint.x,
+      y: padTopRight.y + relativePoint.y,
+    };
+  };
+
+  const absToRel = (absolutePoint: Point): Point => {
+    const padTopRight = selectedPadTopRight();
+    return {
+      x: absolutePoint.x - padTopRight.x,
+      y: absolutePoint.y - padTopRight.y,
+    };
+  };
+
+  return { relToAbs: relToAbsFromPad, absToRel };
+}
+
 export type BoundsWarning =
   | { kind: 'none' }
   | { kind: 'full' }
