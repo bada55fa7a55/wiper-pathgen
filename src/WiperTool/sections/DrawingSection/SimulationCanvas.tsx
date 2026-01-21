@@ -28,12 +28,18 @@ export function SimulationCanvas(props: SimulationCanvasProps) {
   let canvasRef: HTMLCanvasElement | undefined;
 
   const derived = () => {
-    const drawingArea = props.drawingAreaRect;
+    const drawingAreaAbs = props.drawingAreaRect;
+    const drawingAreaRel = new CartesianRect(
+      drawingAreaAbs.x - props.padTopRight.x,
+      drawingAreaAbs.y - props.padTopRight.y,
+      drawingAreaAbs.width,
+      drawingAreaAbs.height,
+    );
     const drawingAreaPx = new CartesianRect(
-      drawingArea.x * scale,
-      drawingArea.y * scale,
-      drawingArea.width * scale,
-      drawingArea.height * scale,
+      drawingAreaRel.x * scale,
+      drawingAreaRel.y * scale,
+      drawingAreaRel.width * scale,
+      drawingAreaRel.height * scale,
     );
     const refPixelX = -drawingAreaPx.left;
     const refPixelY = drawingAreaPx.top;

@@ -3,8 +3,8 @@ import { isClientRuntime } from '@/lib/runtime';
 import { twc } from '@/styles/helpers';
 import { gridStep } from '@/WiperTool/configuration';
 import type { Point } from '@/WiperTool/lib/geometry';
-import { CartesianRect } from '@/WiperTool/lib/rect';
-import { relToAbs } from '../sections/DrawingSection/helpers';
+import type { CartesianRect } from '@/WiperTool/lib/rect';
+import { relToAbs } from '@/WiperTool/sections/DrawingSection/helpers';
 
 const scale = 0.025; // pixels per micron (25 px/mm)
 const defaultPadTopRight: Point = { x: 0, y: 0 };
@@ -67,13 +67,13 @@ export function WipingSequenceCanvas(props: Props) {
   });
 
   const derived = createMemo(() => {
-    const drawingArea = props.drawingAreaRect;
-    const drawingAreaPx = new CartesianRect(
-      drawingArea.x * scale,
-      drawingArea.y * scale,
-      drawingArea.width * scale,
-      drawingArea.height * scale,
-    );
+    const padTopRightCoords = padTopRight();
+    const drawingAreaRel = props.drawingAreaRect.clone().shift({
+      x: -padTopRightCoords.x,
+      y: -padTopRightCoords.y,
+    });
+    const drawingAreaPx = drawingAreaRel.clone().scale(scale);
+
     const refPixelX = -drawingAreaPx.left;
     const refPixelY = drawingAreaPx.top;
     const padWidthPx = props.padWidth * scale;
@@ -81,10 +81,9 @@ export function WipingSequenceCanvas(props: Props) {
     const padStartXPx = refPixelX - padWidthPx;
     const padStartYPx = refPixelY;
     const gridStepPx = gridStep * scale;
-    const relLeft = drawingArea.left;
-    const relBottom = drawingArea.bottom;
+    const relLeft = drawingAreaRel.left;
+    const relBottom = drawingAreaRel.bottom;
 
-    const padTopRightCoords = padTopRight();
     const firstGridRelX = Math.ceil((padTopRightCoords.x + relLeft) / gridStep) * gridStep - padTopRightCoords.x;
     const firstGridRelY = Math.ceil((padTopRightCoords.y + relBottom) / gridStep) * gridStep - padTopRightCoords.y;
     const gridStartXPx = firstGridRelX * scale + refPixelX;

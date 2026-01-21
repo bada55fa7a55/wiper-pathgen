@@ -108,6 +108,22 @@ export class CartesianRect {
     return new CartesianRect(this.x, this.y, this.width, this.height);
   }
 
+  scale(scale: number) {
+    this.x *= scale;
+    this.y *= scale;
+    this.width *= scale;
+    this.height *= scale;
+
+    return this;
+  }
+
+  shift(shift: Point) {
+    this.x += shift.x;
+    this.y += shift.y;
+
+    return this;
+  }
+
   containsPoint(px: number, py: number): boolean {
     return px >= this.left && px <= this.right && py >= this.bottom && py <= this.top;
   }
