@@ -1,7 +1,7 @@
 import { createEffect } from 'solid-js';
 import { twc } from '@/styles/helpers';
 import type { Point } from '@/WiperTool/lib/geometry';
-import { CartesianRect } from '@/WiperTool/lib/rect';
+import type { CartesianRect } from '@/WiperTool/lib/rect';
 import { absToRel } from './helpers';
 
 const scale = 0.025; // pixels per micron (25 px/mm)
@@ -29,18 +29,11 @@ export function SimulationCanvas(props: SimulationCanvasProps) {
 
   const derived = () => {
     const drawingAreaAbs = props.drawingAreaRect;
-    const drawingAreaRel = new CartesianRect(
-      drawingAreaAbs.x - props.padTopRight.x,
-      drawingAreaAbs.y - props.padTopRight.y,
-      drawingAreaAbs.width,
-      drawingAreaAbs.height,
-    );
-    const drawingAreaPx = new CartesianRect(
-      drawingAreaRel.x * scale,
-      drawingAreaRel.y * scale,
-      drawingAreaRel.width * scale,
-      drawingAreaRel.height * scale,
-    );
+    const drawingAreaRel = drawingAreaAbs.clone().shift({
+      x: -props.padTopRight.x,
+      y: -props.padTopRight.y,
+    });
+    const drawingAreaPx = drawingAreaRel.clone().scale(scale);
     const refPixelX = -drawingAreaPx.left;
     const refPixelY = drawingAreaPx.top;
 

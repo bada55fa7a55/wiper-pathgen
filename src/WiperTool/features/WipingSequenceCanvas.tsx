@@ -3,7 +3,7 @@ import { isClientRuntime } from '@/lib/runtime';
 import { twc } from '@/styles/helpers';
 import { gridStep } from '@/WiperTool/configuration';
 import type { Point } from '@/WiperTool/lib/geometry';
-import type { CartesianRect } from '@/WiperTool/lib/rect';
+import { CartesianRect } from '@/WiperTool/lib/rect';
 import { relToAbs } from '@/WiperTool/sections/DrawingSection/helpers';
 
 const scale = 0.025; // pixels per micron (25 px/mm)
@@ -78,8 +78,7 @@ export function WipingSequenceCanvas(props: Props) {
     const refPixelY = drawingAreaPx.top;
     const padWidthPx = props.padWidth * scale;
     const padHeightPx = props.padHeight * scale;
-    const padStartXPx = refPixelX - padWidthPx;
-    const padStartYPx = refPixelY;
+    const padRectPx = new CartesianRect(refPixelX - padWidthPx, refPixelY, padWidthPx, padHeightPx);
     const gridStepPx = gridStep * scale;
     const relLeft = drawingAreaRel.left;
     const relBottom = drawingAreaRel.bottom;
@@ -91,10 +90,7 @@ export function WipingSequenceCanvas(props: Props) {
 
     return {
       drawingAreaPx,
-      padStartXPx,
-      padStartYPx,
-      padWidthPx,
-      padHeightPx,
+      padRectPx,
       gridStartXPx,
       gridStartYPx,
       gridStepPx,
@@ -181,18 +177,7 @@ export function WipingSequenceCanvas(props: Props) {
       return;
     }
 
-    const {
-      drawingAreaPx,
-      padStartXPx,
-      padStartYPx,
-      padWidthPx,
-      padHeightPx,
-      gridStartXPx,
-      gridStartYPx,
-      gridStepPx,
-      refPixelX,
-      refPixelY,
-    } = canvasState;
+    const { drawingAreaPx, padRectPx, gridStartXPx, gridStartYPx, gridStepPx, refPixelX, refPixelY } = canvasState;
 
     const clear = () => {
       ctx.clearRect(0, 0, drawingAreaPx.width, drawingAreaPx.height);
@@ -207,7 +192,7 @@ export function WipingSequenceCanvas(props: Props) {
 
     const drawSiliconePad = () => {
       if (padImageElement) {
-        ctx.drawImage(padImageElement, padStartXPx, padStartYPx, padWidthPx, padHeightPx);
+        ctx.drawImage(padImageElement, padRectPx.x, padRectPx.y, padRectPx.width, padRectPx.height);
       }
     };
 
