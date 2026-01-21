@@ -79,6 +79,18 @@ export function PreviewWipingSequenceCanvas(props: Props) {
     };
   });
 
+  const drawingAreaRect = createMemo(() => {
+    const padSize = importedPad();
+    const padding = previewPadding();
+
+    return new CartesianRect(
+      -padSize.width - padding.left,
+      -padSize.height - padding.bottom,
+      padSize.width + padding.left + padding.right,
+      padSize.height + padding.top + padding.bottom,
+    );
+  });
+
   return (
     <Container>
       <Frame>
@@ -86,10 +98,7 @@ export function PreviewWipingSequenceCanvas(props: Props) {
           padImageSrc={padImages[importedPad().key]}
           padWidth={importedPad().width}
           padHeight={importedPad().height}
-          paddingLeft={previewPadding().left}
-          paddingRight={previewPadding().right}
-          paddingTop={previewPadding().top}
-          paddingBottom={previewPadding().bottom}
+          drawingAreaRect={drawingAreaRect()}
           points={sequencePoints()}
           calibrationPoint={printerCenter()}
           isInteractive={false}
