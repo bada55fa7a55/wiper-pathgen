@@ -3,6 +3,7 @@ import { isClientRuntime } from '@/lib/runtime';
 import { twc } from '@/styles/helpers';
 import { gridStep } from '@/WiperTool/configuration';
 import type { Point } from '@/WiperTool/lib/geometry';
+import { CartesianRect } from '@/WiperTool/lib/rect';
 import { relToAbs } from '../sections/DrawingSection/helpers';
 
 const scale = 0.025; // pixels per micron (25 px/mm)
@@ -20,10 +21,7 @@ type Props = {
   padImageSrc?: string | null;
   padWidth: number;
   padHeight: number;
-  paddingLeft: number;
-  paddingRight: number;
-  paddingTop: number;
-  paddingBottom: number;
+  drawingAreaRect: CartesianRect;
   padTopRight?: Point;
   parkingCoords?: Point;
   printerCenter?: Point;
@@ -69,20 +67,22 @@ export function WipingSequenceCanvas(props: Props) {
   });
 
   const derived = createMemo(() => {
-    const totalPaddingX = props.paddingLeft + props.paddingRight;
-    const totalPaddingY = props.paddingTop + props.paddingBottom;
-    const widthPx = (props.padWidth + totalPaddingX) * scale;
-    const heightPx = (props.padHeight + totalPaddingY) * scale;
-    const padStartXPx = props.paddingLeft * scale;
-    const padStartYPx = props.paddingTop * scale;
+    const drawingArea = props.drawingAreaRect;
+    const drawingAreaPx = new CartesianRect(
+      drawingArea.x * scale,
+      drawingArea.y * scale,
+      drawingArea.width * scale,
+      drawingArea.height * scale,
+    );
+    const refPixelX = -drawingAreaPx.left;
+    const refPixelY = drawingAreaPx.top;
     const padWidthPx = props.padWidth * scale;
     const padHeightPx = props.padHeight * scale;
+    const padStartXPx = refPixelX - padWidthPx;
+    const padStartYPx = refPixelY;
     const gridStepPx = gridStep * scale;
-    const refPixelX = padStartXPx + props.padWidth * scale;
-    const refPixelY = padStartYPx;
-
-    const relLeft = -refPixelX / scale;
-    const relBottom = (refPixelY - heightPx) / scale;
+    const relLeft = drawingArea.left;
+    const relBottom = drawingArea.bottom;
 
     const padTopRightCoords = padTopRight();
     const firstGridRelX = Math.ceil((padTopRightCoords.x + relLeft) / gridStep) * gridStep - padTopRightCoords.x;
@@ -91,8 +91,7 @@ export function WipingSequenceCanvas(props: Props) {
     const gridStartYPx = refPixelY - firstGridRelY * scale;
 
     return {
-      widthPx,
-      heightPx,
+      drawingAreaPx,
       padStartXPx,
       padStartYPx,
       padWidthPx,
@@ -184,8 +183,7 @@ export function WipingSequenceCanvas(props: Props) {
     }
 
     const {
-      widthPx,
-      heightPx,
+      drawingAreaPx,
       padStartXPx,
       padStartYPx,
       padWidthPx,
@@ -198,13 +196,13 @@ export function WipingSequenceCanvas(props: Props) {
     } = canvasState;
 
     const clear = () => {
-      ctx.clearRect(0, 0, widthPx, heightPx);
+      ctx.clearRect(0, 0, drawingAreaPx.width, drawingAreaPx.height);
     };
 
     const drawTransparentBackground = () => {
       ctx.fillStyle = 'rgba(0, 0, 0, 0)';
       ctx.beginPath();
-      ctx.rect(0, 0, widthPx, heightPx);
+      ctx.rect(0, 0, drawingAreaPx.width, drawingAreaPx.height);
       ctx.fill();
     };
 
@@ -218,21 +216,21 @@ export function WipingSequenceCanvas(props: Props) {
       ctx.strokeStyle = 'rgba(230,231,232,0.3)';
       ctx.lineWidth = 1;
       ctx.beginPath();
-      for (let i = gridStartXPx; i < widthPx; i += gridStepPx) {
+      for (let i = gridStartXPx; i < drawingAreaPx.width; i += gridStepPx) {
         ctx.moveTo(i, 0);
-        ctx.lineTo(i, heightPx);
+        ctx.lineTo(i, drawingAreaPx.height);
       }
       for (let i = gridStartXPx; i > 0; i -= gridStepPx) {
         ctx.moveTo(i, 0);
-        ctx.lineTo(i, heightPx);
+        ctx.lineTo(i, drawingAreaPx.height);
       }
-      for (let i = gridStartYPx; i < heightPx; i += gridStepPx) {
+      for (let i = gridStartYPx; i < drawingAreaPx.height; i += gridStepPx) {
         ctx.moveTo(0, i);
-        ctx.lineTo(widthPx, i);
+        ctx.lineTo(drawingAreaPx.width, i);
       }
       for (let i = gridStartYPx; i > 0; i -= gridStepPx) {
         ctx.moveTo(0, i);
-        ctx.lineTo(widthPx, i);
+        ctx.lineTo(drawingAreaPx.width, i);
       }
       ctx.stroke();
     };
@@ -359,8 +357,8 @@ export function WipingSequenceCanvas(props: Props) {
     const showTravelLines = Boolean(props.showTravelLines);
 
     if (canvasRef) {
-      canvasRef.width = Math.max(1, Math.round(canvasState.widthPx));
-      canvasRef.height = Math.max(1, Math.round(canvasState.heightPx));
+      canvasRef.width = Math.max(1, Math.round(canvasState.drawingAreaPx.width));
+      canvasRef.height = Math.max(1, Math.round(canvasState.drawingAreaPx.height));
     }
 
     draw(

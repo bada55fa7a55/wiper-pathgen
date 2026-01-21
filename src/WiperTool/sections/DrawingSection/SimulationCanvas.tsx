@@ -1,6 +1,7 @@
 import { createEffect } from 'solid-js';
 import { twc } from '@/styles/helpers';
 import type { Point } from '@/WiperTool/lib/geometry';
+import { CartesianRect } from '@/WiperTool/lib/rect';
 import { absToRel } from './helpers';
 
 const scale = 0.025; // pixels per micron (25 px/mm)
@@ -19,10 +20,7 @@ type SimulationCanvasProps = {
   nozzlePos: Point | null;
   padWidth: number;
   padHeight: number;
-  paddingLeft: number;
-  paddingRight: number;
-  paddingTop: number;
-  paddingBottom: number;
+  drawingAreaRect: CartesianRect;
   padTopRight: Point;
 };
 
@@ -30,18 +28,18 @@ export function SimulationCanvas(props: SimulationCanvasProps) {
   let canvasRef: HTMLCanvasElement | undefined;
 
   const derived = () => {
-    const totalPaddingX = props.paddingLeft + props.paddingRight;
-    const totalPaddingY = props.paddingTop + props.paddingBottom;
-    const widthPx = (props.padWidth + totalPaddingX) * scale;
-    const heightPx = (props.padHeight + totalPaddingY) * scale;
-    const padStartXPx = props.paddingLeft * scale;
-    const padStartYPx = props.paddingTop * scale;
-    const refPixelX = padStartXPx + props.padWidth * scale;
-    const refPixelY = padStartYPx;
+    const drawingArea = props.drawingAreaRect;
+    const drawingAreaPx = new CartesianRect(
+      drawingArea.x * scale,
+      drawingArea.y * scale,
+      drawingArea.width * scale,
+      drawingArea.height * scale,
+    );
+    const refPixelX = -drawingAreaPx.left;
+    const refPixelY = drawingAreaPx.top;
 
     return {
-      widthPx,
-      heightPx,
+      drawingAreaPx,
       refPixelX,
       refPixelY,
     };
@@ -56,9 +54,9 @@ export function SimulationCanvas(props: SimulationCanvasProps) {
       return;
     }
 
-    const { widthPx, heightPx, refPixelX, refPixelY } = derived();
+    const { drawingAreaPx, refPixelX, refPixelY } = derived();
     const { nozzlePos } = props;
-    ctx.clearRect(0, 0, widthPx, heightPx);
+    ctx.clearRect(0, 0, drawingAreaPx.width, drawingAreaPx.height);
 
     if (!nozzlePos) {
       return;
@@ -130,8 +128,8 @@ export function SimulationCanvas(props: SimulationCanvasProps) {
       ref={(el) => {
         canvasRef = el;
       }}
-      width={derived().widthPx}
-      height={derived().heightPx}
+      width={derived().drawingAreaPx.width}
+      height={derived().drawingAreaPx.height}
       style={{
         width: '100%',
         height: 'auto',

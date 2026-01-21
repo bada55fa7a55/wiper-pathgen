@@ -27,7 +27,7 @@ import {
 import { ModalKeys } from '@/WiperTool/ui/modals';
 import { padImages } from '@/WiperTool/ui/pads';
 import { StepKeys } from '@/WiperTool/ui/steps';
-import { absToRel, relToAbs, useDrawingPadPaddings } from './helpers';
+import { absToRel, relToAbs, useDrawingPadRect } from './helpers';
 import { PathControls } from './PathControls';
 import { SimulationCanvas } from './SimulationCanvas';
 import { createNozzleSimulation } from './useSimulation';
@@ -169,8 +169,7 @@ export function DrawingPad() {
   const tracking = useTracking();
   const modals = useModals();
 
-  const paddings = useDrawingPadPaddings();
-
+  const drawingPadRect = useDrawingPadRect();
   const [cursorMicrons, setCursorMicrons] = createSignal<Point | null>(null);
 
   const toAbsolute = (relPoint: Point) => relToAbs(relPoint, selectedPadTopRight());
@@ -300,10 +299,7 @@ export function DrawingPad() {
             padImageSrc={padImages[selectedPad().key]}
             padWidth={selectedPad().width}
             padHeight={selectedPad().height}
-            paddingLeft={paddings().left}
-            paddingRight={paddings().right}
-            paddingTop={paddings().top}
-            paddingBottom={paddings().bottom}
+            drawingAreaRect={drawingPadRect()}
             padTopRight={selectedPadTopRight()}
             parkingCoords={selectedPrinter().parkingCoords}
             printerCenter={printerCenter()}
@@ -317,10 +313,7 @@ export function DrawingPad() {
             nozzlePos={simulation.simulationPoint()}
             padWidth={selectedPad().width}
             padHeight={selectedPad().height}
-            paddingLeft={paddings().left}
-            paddingRight={paddings().right}
-            paddingTop={paddings().top}
-            paddingBottom={paddings().bottom}
+            drawingAreaRect={drawingPadRect()}
             padTopRight={selectedPadTopRight()}
           />
         </CanvasFrame>
