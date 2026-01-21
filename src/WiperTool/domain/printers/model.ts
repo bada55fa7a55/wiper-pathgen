@@ -1,4 +1,5 @@
 import type { Point } from '@/WiperTool/lib/geometry';
+import type { CartesianRect } from '@/WiperTool/lib/rect';
 
 export const PrinterKeys = {
   PrusaCoreOne: 'prusa-core-one',
@@ -24,10 +25,7 @@ export type PrinterProperties = {
   key: PrinterKey;
   name: string;
   printerId: string;
-  minX: number;
-  maxX: number;
-  minY: number;
-  maxY: number;
+  bounds: CartesianRect;
   originalCleaningGCode: string;
   parkingZHeight: number;
   parkingCoords: Point;

@@ -1,21 +1,11 @@
 import { createMemo } from 'solid-js';
-import type { PadProperties } from '@/WiperTool/domain/pads';
 import type { PrinterProperties } from '@/WiperTool/domain/printers';
 import type { Point } from '@/WiperTool/lib/geometry';
-import { useCalibration, usePads, usePrinters } from '@/WiperTool/providers/AppModelProvider';
+import type { CartesianRect } from '@/WiperTool/lib/rect';
+import { usePads, usePrinters } from '@/WiperTool/providers/AppModelProvider';
 
-type MaybePoint = {
-  x: number | undefined;
-  y: number | undefined;
-};
-
-function calculateDrawingPadPaddings(
-  calibration: MaybePoint,
-  padTopRight: Point,
-  pad: PadProperties,
-  printer: PrinterProperties,
-) {
-  if (calibration.x === undefined || calibration.y === undefined) {
+function calculateDrawingPadPaddings(padRect: CartesianRect | null, printer: PrinterProperties) {
+  if (!padRect) {
     return {
       top: 0,
       bottom: 0,
@@ -25,11 +15,10 @@ function calculateDrawingPadPaddings(
   }
 
   const maxPadding = 10000;
-  const top = printer.maxY - padTopRight.y;
-  const bottom = padTopRight.y - pad.height - printer.minY;
-
-  const left = padTopRight.x - pad.width - printer.minX;
-  const right = printer.maxX - padTopRight.x;
+  const top = printer.bounds.top - padRect.top;
+  const bottom = padRect.bottom - printer.bounds.bottom;
+  const left = padRect.left - printer.bounds.left;
+  const right = printer.bounds.right - padRect.right;
 
   return {
     top: Math.min(top, maxPadding),
@@ -40,18 +29,14 @@ function calculateDrawingPadPaddings(
 }
 
 export function useDrawingPadPaddings() {
-  const calibration = useCalibration();
   const { selectedPrinter } = usePrinters();
-  const { selectedPad, selectedPadTopRight } = usePads();
+  const { calibratedPadRect } = usePads();
 
   return createMemo(() => {
-    const x = calibration.x();
-    const y = calibration.y();
-    const topRight = selectedPadTopRight();
-    const pad = selectedPad();
+    const padRect = calibratedPadRect();
     const printer = selectedPrinter();
 
-    return calculateDrawingPadPaddings({ x, y }, topRight, pad, printer);
+    return calculateDrawingPadPaddings(padRect, printer);
   });
 }
 
