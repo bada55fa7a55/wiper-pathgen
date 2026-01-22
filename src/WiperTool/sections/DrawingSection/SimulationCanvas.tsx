@@ -2,7 +2,6 @@ import { createEffect } from 'solid-js';
 import { twc } from '@/styles/helpers';
 import type { Point } from '@/WiperTool/lib/geometry';
 import type { CartesianRect } from '@/WiperTool/lib/rect';
-import { absToRel } from './helpers';
 
 const scale = 0.025; // pixels per micron (25 px/mm)
 
@@ -35,7 +34,7 @@ export function SimulationCanvas(props: SimulationCanvasProps) {
     });
     const drawingAreaPx = drawingAreaRel.clone().scale(scale);
     const refPixelX = -drawingAreaPx.left;
-    const refPixelY = drawingAreaPx.top;
+    const refPixelY = -drawingAreaPx.bottom;
 
     return {
       drawingAreaPx,
@@ -43,6 +42,18 @@ export function SimulationCanvas(props: SimulationCanvasProps) {
       refPixelY,
     };
   };
+
+  const absMicronsToRelMicrons = (abs: Point): Point => ({
+    x: abs.x - props.padTopRight.x,
+    y: abs.y - props.padTopRight.y,
+  });
+
+  const relMicronsToRelPx = (rel: Point): Point => ({
+    x: rel.x * scale,
+    y: rel.y * scale,
+  });
+
+  const absMicronsToRelPx = (abs: Point): Point => relMicronsToRelPx(absMicronsToRelMicrons(abs));
 
   const draw = () => {
     if (!canvasRef) {
@@ -55,22 +66,21 @@ export function SimulationCanvas(props: SimulationCanvasProps) {
 
     const { drawingAreaPx, refPixelX, refPixelY } = derived();
     const { nozzlePos } = props;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, drawingAreaPx.width, drawingAreaPx.height);
+    ctx.setTransform(1, 0, 0, -1, refPixelX, drawingAreaPx.height - refPixelY);
 
     if (!nozzlePos) {
       return;
     }
 
-    const relCoords = absToRel(nozzlePos, props.padTopRight);
-    const nozzlePx = {
-      x: relCoords.x * scale + refPixelX,
-      y: refPixelY - relCoords.y * scale,
-    };
+    const nozzlePx = absMicronsToRelPx(nozzlePos);
 
     const drawNozzle = () => {
       ctx.save();
       // Nozzle tip is origin
       ctx.translate(nozzlePx.x, nozzlePx.y);
+      ctx.scale(1, -1);
 
       const bodyWidth = 28;
       const bodyHeight = 18;
