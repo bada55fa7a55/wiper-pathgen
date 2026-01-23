@@ -3,7 +3,7 @@ import { Button, CodeTextArea } from '@/components';
 import { twc } from '@/styles/helpers';
 import { generateWipingSequenceGCode, serializeGCode } from '@/WiperTool/domain/gcode';
 import { getWipingStepPoints } from '@/WiperTool/domain/wipingSequence';
-import { calibrationValuesUsedEvent, gCodeCopiedEvent, track } from '@/WiperTool/lib/analytics';
+import { calibrationValuesUsedEvent, gCodeCopiedEvent, settingsUsedEvent, track } from '@/WiperTool/lib/analytics';
 import {
   useCalibration,
   usePads,
@@ -125,6 +125,9 @@ export function GCode() {
     track(gCodeCopiedEvent(tracking.lastWipingSequenceWrite()));
     track(
       calibrationValuesUsedEvent('gcode', selectedPrinter().key, calibration.x(), calibration.y(), calibration.z()),
+    );
+    track(
+      settingsUsedEvent('gcode', selectedPrinter().key, settings.feedRate(), settings.plungeDepth(), settings.zLift()),
     );
   };
 
