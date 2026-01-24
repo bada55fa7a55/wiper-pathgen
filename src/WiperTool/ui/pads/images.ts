@@ -1,7 +1,7 @@
 import type { PadKey } from '@/WiperTool/domain/pads';
 import { PadKeys } from '@/WiperTool/domain/pads';
-import bblA1PadSvg from './assets/bbl-a1-pad.svg?url';
+import bblP1SPadSvg from './assets/bbl-p1s-pad.svg?url';
 
 export const padImages: Record<PadKey, string> = {
-  [PadKeys.BambuLabA1]: bblA1PadSvg,
+  [PadKeys.BambuLabP1S]: bblP1SPadSvg,
 };

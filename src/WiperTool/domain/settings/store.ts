@@ -21,7 +21,7 @@ export function createSettingsStore() {
     feedRate: 10000,
     zLift: 4000,
     printer: defaultPrinterKey,
-    padType: PadKeys.BambuLabA1,
+    padType: PadKeys.BambuLabP1S,
   };
 
   const [state, set] = createLocalStorageStore<SettingsState>(`app-settings-${SETTINGS_VERSION}`, initialState);
