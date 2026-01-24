@@ -1,6 +1,5 @@
 import { MenuBreadcrumb, SectionColumn, SectionColumns, Step, StepBody, StepTitle } from '@/components';
-import calibrationNozzlePosition1Asset from './assets/coreone/calibration-nozzle-position-1.png';
-import calibrationNozzlePosition2Asset from './assets/coreone/calibration-nozzle-position-2.png';
+import calibrationNozzlePosition1Asset from './assets/coreone/bb1-p1s-pad-instructions.png';
 import { CalibrationInputStepBody } from './CalibrationInputStepBody';
 import { Illustration } from './Illustration';
 
@@ -22,8 +21,7 @@ export function CoreOneInstructions() {
           <StepBody>
             <p>
               Via <MenuBreadcrumb path={['LCD Menu', 'Control', 'Move Axis', 'Move X / Move Y / Move Z']} />, move the
-              nozzle directly above the <strong>center of the top-right square</strong> of the silicone pad. This
-              applies to both right- and left-sided versions of the nozzle wiper arm.
+              nozzle directly above the <strong>top-right corner</strong> of the silicone pad.
             </p>
             <p>Set the Z-axis height so that the nozzle just barely touches the silicone pad.</p>
             <p>
@@ -41,10 +39,6 @@ export function CoreOneInstructions() {
       <SectionColumn>
         <Illustration
           src={calibrationNozzlePosition1Asset}
-          caption="Nozzle position illustration"
-        />
-        <Illustration
-          src={calibrationNozzlePosition2Asset}
           caption="The red dot indicates the pad calibration point"
         />
       </SectionColumn>

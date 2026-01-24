@@ -2,16 +2,16 @@ import type { PadKey, PadProperties } from './model';
 import { PadKeys } from './model';
 
 export const padProperties: Record<PadKey, PadProperties> = {
-  [PadKeys.BambuLabA1]: {
-    key: PadKeys.BambuLabA1,
-    name: 'Bambu Lab A1 Nozzle Wiper',
-    width: 37000,
-    height: 8000,
+  [PadKeys.BambuLabP1S]: {
+    key: PadKeys.BambuLabP1S,
+    name: 'Bambu Lab P1S Nozzle Wiper',
+    width: 14000,
+    height: 6000,
     refPointOffset: {
       /** Reference point offset from right edge of pad */
-      x: -1675,
+      x: 0,
       /** Reference point offset from top edge of pad */
-      y: -1675,
+      y: 0,
     },
   },
 };
