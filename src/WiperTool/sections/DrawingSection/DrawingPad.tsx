@@ -313,7 +313,7 @@ export function DrawingPad() {
             padImageSrc={padImages[selectedPad().key]}
             padWidth={selectedPad().width}
             padHeight={selectedPad().height}
-            drawingAreaRect={drawingPadRectAbs()}
+            drawingArea={drawingPadRectAbs()}
             padTopRight={selectedPadTopRight()}
             parkingCoords={selectedPrinter().parkingCoords}
             printerCenter={printerCenter()}
@@ -325,10 +325,7 @@ export function DrawingPad() {
           />
           <SimulationCanvas
             nozzlePos={simulation.simulationPoint()}
-            padWidth={selectedPad().width}
-            padHeight={selectedPad().height}
-            drawingAreaRect={drawingPadRectAbs()}
-            padTopRight={selectedPadTopRight()}
+            drawingArea={drawingPadRectAbs()}
           />
         </CanvasFrame>
         <Show when={sequencePoints().length === 0}>

@@ -1,12 +1,11 @@
 import { createEffect, createMemo, createRenderEffect, createSignal } from 'solid-js';
 import { isClientRuntime } from '@/lib/runtime';
 import { twc } from '@/styles/helpers';
-import { gridStep } from '@/WiperTool/configuration';
+import { gridStep, targetCanvasWidth } from '@/WiperTool/configuration';
+import { createCartesianMicronCanvasSpace } from '@/WiperTool/lib/cartesianMicronCanvasSpace';
 import type { Point } from '@/WiperTool/lib/geometry';
 import { CartesianRect } from '@/WiperTool/lib/rect';
-import { relToAbs } from '@/WiperTool/sections/DrawingSection/helpers';
 
-const scale = 0.025; // pixels per micron (25 px/mm)
 const defaultPadTopRight: Point = { x: 0, y: 0 };
 
 const StyledCanvas = twc(
@@ -21,7 +20,7 @@ type Props = {
   padImageSrc?: string | null;
   padWidth: number;
   padHeight: number;
-  drawingAreaRect: CartesianRect;
+  drawingArea: CartesianRect;
   padTopRight?: Point;
   parkingCoords?: Point;
   printerCenter?: Point;
@@ -36,9 +35,8 @@ type Props = {
 };
 
 // Coordinate system:
-// - Props are absolute coordinates (cartesian printer coordinates in microns).
-// - Internal coordinate system is cartesian, in pixels relative to the pad's
-//   top right corner
+// - Props and working coordinates are absolute coordinates in microns.
+// - Canvas scaling and transform to screen coordinated is handled by canvas space.
 export function WipingSequenceCanvas(props: Props) {
   let canvasRef: HTMLCanvasElement | undefined;
   const [mousePos, setMousePos] = createSignal<Point | null>(null);
@@ -72,99 +70,50 @@ export function WipingSequenceCanvas(props: Props) {
 
   const derived = createMemo(() => {
     const padTopRightCoords = padTopRight();
-    const drawingAreaRel = props.drawingAreaRect.clone().shift({
-      x: -padTopRightCoords.x,
-      y: -padTopRightCoords.y,
-    });
-    const drawingAreaPx = drawingAreaRel.clone().scale(scale);
-
-    const refPixelX = -drawingAreaPx.left;
-    const refPixelY = -drawingAreaPx.bottom;
-    const padWidthPx = props.padWidth * scale;
-    const padHeightPx = props.padHeight * scale;
-    const padRectPx = new CartesianRect(-padWidthPx, -padHeightPx, padWidthPx, padHeightPx);
-    const gridStepPx = gridStep * scale;
-    const relLeft = drawingAreaRel.left;
-    const relBottom = drawingAreaRel.bottom;
-
-    const firstGridRelX = Math.ceil((padTopRightCoords.x + relLeft) / gridStep) * gridStep - padTopRightCoords.x;
-    const firstGridRelY = Math.ceil((padTopRightCoords.y + relBottom) / gridStep) * gridStep - padTopRightCoords.y;
-    const gridStartPx: Point = {
-      x: firstGridRelX * scale,
-      y: firstGridRelY * scale,
+    const drawingArea = props.drawingArea;
+    const scale = targetCanvasWidth / drawingArea.width;
+    const space = createCartesianMicronCanvasSpace(drawingArea, scale);
+    const padRect = new CartesianRect(
+      padTopRightCoords.x - props.padWidth,
+      padTopRightCoords.y - props.padHeight,
+      props.padWidth,
+      props.padHeight,
+    );
+    const gridStart: Point = {
+      x: Math.ceil(drawingArea.left / gridStep) * gridStep,
+      y: Math.ceil(drawingArea.bottom / gridStep) * gridStep,
     };
 
     return {
-      drawingAreaPx,
-      padRectPx,
-      gridStartPx,
-      gridStepPx,
-      refPixelX,
-      refPixelY,
+      space,
+      padRect,
+      gridStart,
     };
   });
 
-  const eventToCanvasPx = (e: MouseEvent): Point => {
-    const target = e.currentTarget as HTMLCanvasElement;
-    const rect = target.getBoundingClientRect();
-    const scaleX = target.width / rect.width;
-    const scaleY = target.height / rect.height;
-    return {
-      x: (e.clientX - rect.left) * scaleX,
-      y: (e.clientY - rect.top) * scaleY,
-    };
+  const withMicronsMouseEvent = (handler: (microns: Point, event: MouseEvent) => void) => (event: MouseEvent) => {
+    const target = event.currentTarget as HTMLCanvasElement;
+    return derived().space.withMicronsMouseEvent(target, handler)(event);
   };
 
-  const canvasPxToRelPx = (canvasPx: Point, canvasState: ReturnType<typeof derived>): Point => {
-    const cartY = canvasState.drawingAreaPx.height - canvasPx.y;
-    return {
-      x: canvasPx.x - canvasState.refPixelX,
-      y: cartY - canvasState.refPixelY,
-    };
+  const canvasToMicrons = (px: number) => {
+    return derived().space.canvasToMicrons(px);
   };
 
-  const relPxToRelMicrons = (relPx: Point): Point => ({
-    x: Math.round(relPx.x / scale),
-    y: Math.round(relPx.y / scale),
-  });
-
-  const relMicronsToRelPx = (rel: Point): Point => ({
-    x: rel.x * scale,
-    y: rel.y * scale,
-  });
-
-  const absMicronsToRelMicrons = (abs: Point): Point => ({
-    x: abs.x - padTopRight().x,
-    y: abs.y - padTopRight().y,
-  });
-
-  const relMicronsToAbsMicrons = (rel: Point): Point => relToAbs(rel, padTopRight());
-
-  const absMicronsToRelPx = (abs: Point): Point => relMicronsToRelPx(absMicronsToRelMicrons(abs));
-
-  const handleClick = (e: MouseEvent) => {
+  const handleClick = withMicronsMouseEvent((microns) => {
     if (props.isInteractive === false) {
       return;
     }
+    props.onAddPoint?.(microns);
+  });
 
-    const canvasState = derived();
-    const canvasPx = eventToCanvasPx(e);
-    const relPx = canvasPxToRelPx(canvasPx, canvasState);
-    const relMicrons = relPxToRelMicrons(relPx);
-    props.onAddPoint?.(relMicronsToAbsMicrons(relMicrons));
-  };
-
-  const handleMove = (e: MouseEvent) => {
+  const handleMove = withMicronsMouseEvent((microns) => {
     if (props.isInteractive === false) {
       return;
     }
-    const canvasState = derived();
-    const canvasPx = eventToCanvasPx(e);
-    const relPx = canvasPxToRelPx(canvasPx, canvasState);
-    setMousePos(relPx);
-    const relMicrons = relPxToRelMicrons(relPx);
-    props.onCursorChange?.(relMicronsToAbsMicrons(relMicrons));
-  };
+    setMousePos(microns);
+    props.onCursorChange?.(microns);
+  });
 
   const handleMouseLeave = () => {
     if (props.isInteractive === false) {
@@ -193,75 +142,70 @@ export function WipingSequenceCanvas(props: Props) {
       return;
     }
 
-    const { drawingAreaPx, padRectPx, gridStartPx, gridStepPx, refPixelX, refPixelY } = canvasState;
+    const { space, padRect, gridStart } = canvasState;
 
-    const clear = () => {
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.clearRect(0, 0, drawingAreaPx.width, drawingAreaPx.height);
-      ctx.setTransform(1, 0, 0, -1, refPixelX, drawingAreaPx.height - refPixelY);
-    };
-
-    const drawTransparentBackground = () => {
+    /**
+     * Canvas space is flipped to cartesian. Counter-flipping for screen-oriented drawing
+     */
+    const withScreenCounterFlip = (draw: () => void) => {
       ctx.save();
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.fillStyle = 'rgba(0, 0, 0, 0)';
-      ctx.beginPath();
-      ctx.rect(0, 0, drawingAreaPx.width, drawingAreaPx.height);
-      ctx.fill();
+      ctx.scale(1, -1);
+      draw();
       ctx.restore();
     };
 
     const drawSiliconePad = () => {
       if (padImageElement) {
-        ctx.drawImage(padImageElement, padRectPx.x, padRectPx.y, padRectPx.width, padRectPx.height);
+        withScreenCounterFlip(() => {
+          ctx.drawImage(padImageElement, padRect.x, -padRect.y - padRect.height, padRect.width, padRect.height);
+        });
       }
     };
 
     const drawGridLines = () => {
       ctx.strokeStyle = 'rgba(230,231,232,0.3)';
-      ctx.lineWidth = 1;
+      ctx.lineWidth = canvasToMicrons(1);
       ctx.beginPath();
-      for (let i = gridStartPx.x; i < drawingAreaPx.right; i += gridStepPx) {
-        ctx.moveTo(i, drawingAreaPx.bottom);
-        ctx.lineTo(i, drawingAreaPx.top);
+      for (let i = gridStart.x; i < space.viewBox.right; i += gridStep) {
+        ctx.moveTo(i, space.viewBox.bottom);
+        ctx.lineTo(i, space.viewBox.top);
       }
-      for (let i = gridStartPx.x; i > drawingAreaPx.left; i -= gridStepPx) {
-        ctx.moveTo(i, drawingAreaPx.bottom);
-        ctx.lineTo(i, drawingAreaPx.top);
+      for (let i = gridStart.x; i > space.viewBox.left; i -= gridStep) {
+        ctx.moveTo(i, space.viewBox.bottom);
+        ctx.lineTo(i, space.viewBox.top);
       }
-      for (let i = gridStartPx.y; i < drawingAreaPx.top; i += gridStepPx) {
-        ctx.moveTo(drawingAreaPx.left, i);
-        ctx.lineTo(drawingAreaPx.right, i);
+      for (let i = gridStart.y; i < space.viewBox.top; i += gridStep) {
+        ctx.moveTo(space.viewBox.left, i);
+        ctx.lineTo(space.viewBox.right, i);
       }
-      for (let i = gridStartPx.y; i > drawingAreaPx.bottom; i -= gridStepPx) {
-        ctx.moveTo(drawingAreaPx.left, i);
-        ctx.lineTo(drawingAreaPx.right, i);
+      for (let i = gridStart.y; i > space.viewBox.bottom; i -= gridStep) {
+        ctx.moveTo(space.viewBox.left, i);
+        ctx.lineTo(space.viewBox.right, i);
       }
       ctx.stroke();
     };
 
     const drawWipingPath = () => {
       if (points.length > 0) {
-        const startPx = absMicronsToRelPx(points[0]);
+        const start = points[0];
 
         ctx.strokeStyle = '#fd5000';
-        ctx.lineWidth = 4;
+        ctx.lineWidth = canvasToMicrons(4);
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.beginPath();
-        ctx.moveTo(startPx.x, startPx.y);
+        ctx.moveTo(start.x, start.y);
 
         for (let i = 1; i < points.length; i++) {
-          const ptPx = absMicronsToRelPx(points[i]);
-          ctx.lineTo(ptPx.x, ptPx.y);
+          const pt = points[i];
+          ctx.lineTo(pt.x, pt.y);
         }
         ctx.stroke();
 
         ctx.fillStyle = '#fd5000';
-        for (const ptAbs of points) {
-          const ptPx = absMicronsToRelPx(ptAbs);
+        for (const pt of points) {
           ctx.beginPath();
-          ctx.arc(ptPx.x, ptPx.y, 4, 0, Math.PI * 2);
+          ctx.arc(pt.x, pt.y, canvasToMicrons(4), 0, Math.PI * 2);
           ctx.fill();
         }
       }
@@ -273,9 +217,9 @@ export function WipingSequenceCanvas(props: Props) {
       }
 
       ctx.fillStyle = '#ff2222';
-      const ptPx = absMicronsToRelPx(calibrationPoint);
+      const pt = calibrationPoint;
       ctx.beginPath();
-      ctx.arc(ptPx.x, ptPx.y, 10, 0, Math.PI * 2);
+      ctx.arc(pt.x, pt.y, canvasToMicrons(10), 0, Math.PI * 2);
       ctx.fill();
     };
 
@@ -285,29 +229,29 @@ export function WipingSequenceCanvas(props: Props) {
       }
 
       if (points.length > 0 && mousePosition) {
-        const lastPtPx = absMicronsToRelPx(points[points.length - 1]);
+        const lastPt = points[points.length - 1];
 
         ctx.beginPath();
-        ctx.moveTo(lastPtPx.x, lastPtPx.y);
+        ctx.moveTo(lastPt.x, lastPt.y);
         ctx.lineTo(mousePosition.x, mousePosition.y);
         ctx.strokeStyle = 'rgba(253, 80, 0, 0.5)';
-        ctx.setLineDash([10, 10]);
-        ctx.lineWidth = 3;
+        ctx.setLineDash([canvasToMicrons(10), canvasToMicrons(10)]);
+        ctx.lineWidth = canvasToMicrons(3);
         ctx.stroke();
         ctx.setLineDash([]);
       }
     };
 
     const drawDashedLine = (start: Point, end: Point, color: string) => {
-      const startPx = absMicronsToRelPx(start);
-      const endPx = absMicronsToRelPx(end);
+      const startPx = start;
+      const endPx = end;
 
       ctx.beginPath();
       ctx.moveTo(startPx.x, startPx.y);
       ctx.lineTo(endPx.x, endPx.y);
       ctx.strokeStyle = color;
-      ctx.setLineDash([8, 8]);
-      ctx.lineWidth = 3;
+      ctx.setLineDash([canvasToMicrons(8), canvasToMicrons(8)]);
+      ctx.lineWidth = canvasToMicrons(3);
       ctx.stroke();
       ctx.setLineDash([]);
     };
@@ -338,16 +282,15 @@ export function WipingSequenceCanvas(props: Props) {
       drawDashedLine(points[points.length - 1], printerCenter, 'oklch(79.2% 0.209 151.711)');
     };
 
-    clear();
-    drawTransparentBackground();
-    drawSiliconePad();
-    drawGridLines();
-    drawWipingPath();
-    drawParkingToFirstPoint();
-    drawLastPointToCenter();
-    drawCursorSegment();
-
-    drawCalibrationPoint();
+    space.withMicronsContext(ctx, () => {
+      drawSiliconePad();
+      drawGridLines();
+      drawWipingPath();
+      drawParkingToFirstPoint();
+      drawLastPointToCenter();
+      drawCursorSegment();
+      drawCalibrationPoint();
+    });
   };
 
   createRenderEffect(() => {
@@ -362,8 +305,8 @@ export function WipingSequenceCanvas(props: Props) {
     const showTravelLines = Boolean(props.showTravelLines);
 
     if (canvasRef) {
-      canvasRef.width = Math.max(1, Math.round(canvasState.drawingAreaPx.width));
-      canvasRef.height = Math.max(1, Math.round(canvasState.drawingAreaPx.height));
+      canvasRef.width = Math.max(1, Math.round(canvasState.space.canvasWidth));
+      canvasRef.height = Math.max(1, Math.round(canvasState.space.canvasHeight));
     }
 
     draw(
