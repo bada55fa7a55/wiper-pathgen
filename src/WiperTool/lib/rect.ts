@@ -1,3 +1,5 @@
+import type { Point } from './geometry';
+
 export type CartesianRectInit = Partial<{
   x: number;
   y: number;
@@ -133,13 +135,6 @@ export class CartesianRect {
   }
 
   containsRect(other: CartesianRect): boolean {
-    return (
-      other.left >= this.left &&
-      other.right <= this.right &&
-      other.bottom >= this.bottom &&
-      other.top <= this.top
-    );
+    return other.left >= this.left && other.right <= this.right && other.bottom >= this.bottom && other.top <= this.top;
   }
 }
-
-import type { Point } from './geometry';
