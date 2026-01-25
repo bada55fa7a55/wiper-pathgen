@@ -133,12 +133,7 @@ export class CartesianRect {
   }
 
   containsRect(other: CartesianRect): boolean {
-    return (
-      other.left >= this.left &&
-      other.right <= this.right &&
-      other.bottom >= this.bottom &&
-      other.top <= this.top
-    );
+    return other.left >= this.left && other.right <= this.right && other.bottom >= this.bottom && other.top <= this.top;
   }
 }
 
