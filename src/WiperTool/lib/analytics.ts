@@ -279,6 +279,23 @@ export function calibrationValuesUsedEvent(
   };
 }
 
+export function settingsUsedEvent(
+  trigger: AnalyticsTrigger,
+  printer: PrinterKey,
+  feedRate: number | undefined,
+  plungeDepth: number | undefined,
+  zLift: number | undefined,
+): AnalyticsEvent {
+  return {
+    event: 'settings_used',
+    trigger,
+    printer,
+    feedRate,
+    plungeDepth,
+    zLift,
+  };
+}
+
 export function testGCodeDownloadedEvent(wsWriteAction: WsWriteAction | undefined): AnalyticsEvent {
   const [ws_type, ws_source] = marshalWsWriteAction(wsWriteAction);
   return {

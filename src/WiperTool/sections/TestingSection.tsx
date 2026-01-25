@@ -17,7 +17,12 @@ import {
 import { isDevRuntime } from '@/lib/runtime';
 import { twc } from '@/styles/helpers';
 import { generateTestGCode, serializeGCode } from '@/WiperTool/domain/gcode';
-import { calibrationValuesUsedEvent, testGCodeDownloadedEvent, track } from '@/WiperTool/lib/analytics';
+import {
+  calibrationValuesUsedEvent,
+  settingsUsedEvent,
+  testGCodeDownloadedEvent,
+  track,
+} from '@/WiperTool/lib/analytics';
 import { formatPercent, formatPercentString } from '@/WiperTool/lib/formatting';
 import {
   useCalibration,
@@ -178,6 +183,15 @@ export function TestingSection() {
     track(testGCodeDownloadedEvent(tracking.lastWipingSequenceWrite()));
     track(
       calibrationValuesUsedEvent('testing', selectedPrinter().key, calibration.x(), calibration.y(), calibration.z()),
+    );
+    track(
+      settingsUsedEvent(
+        'testing',
+        selectedPrinter().key,
+        settings.feedRate(),
+        settings.plungeDepth(),
+        settings.zLift(),
+      ),
     );
   };
 
