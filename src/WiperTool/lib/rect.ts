@@ -131,6 +131,15 @@ export class CartesianRect {
   intersects(other: CartesianRect): boolean {
     return !(this.right < other.left || this.left > other.right || this.top < other.bottom || this.bottom > other.top);
   }
+
+  containsRect(other: CartesianRect): boolean {
+    return (
+      other.left >= this.left &&
+      other.right <= this.right &&
+      other.bottom >= this.bottom &&
+      other.top <= this.top
+    );
+  }
 }
 
 import type { Point } from './geometry';
