@@ -153,7 +153,7 @@ describe('gcode generation', () => {
     vi.useRealTimers();
 
     expect(gcode).not.toBeNull();
-    const serialized = serializeGCode(gcode ?? []).join('\n') + '\n';
+    const serialized = `${serializeGCode(gcode ?? []).join('\n')}\n`;
     const fixturePath = fileURLToPath(new URL('./__fixtures__/prusa-core-one-ultimate.gcode', import.meta.url));
     const fixture = readFileSync(fixturePath, 'utf8');
 

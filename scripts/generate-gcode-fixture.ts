@@ -46,7 +46,7 @@ if (!gcode) {
   throw new Error('Expected gcode to be generated.');
 }
 
-const content = serializeGCode(gcode).join('\n') + '\n';
+const content = `${serializeGCode(gcode).join('\n')}\n`;
 const fixturePath = join('src', 'WiperTool', 'domain', 'gcode', '__fixtures__', 'prusa-core-one-ultimate.gcode');
 
 await mkdir(dirname(fixturePath), { recursive: true });
