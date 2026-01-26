@@ -4,6 +4,7 @@ import { twc } from '@/styles/helpers';
 import { gridStep } from '@/WiperTool/configuration';
 import { getWipingStepPoints, makeWipingStepPoint } from '@/WiperTool/domain/wipingSequence';
 import { WipingSequenceCanvas } from '@/WiperTool/features/WipingSequenceCanvas';
+import { WipingSequenceSvg } from '@/WiperTool/features/WipingSequenceSvg';
 import {
   actionImportModalOpenedEvent,
   actionShareModalOpenedEvent,
@@ -117,8 +118,9 @@ const CoordinatesLine = twc(
   flex
   justify-center
   w-full
-  mt-2
+  pt-1
   px-1
+  xbg-shark-700
   text-sm
   font-mono
   text-orange-400
@@ -161,6 +163,7 @@ const DrawingHint = twc(
 );
 
 export function DrawingPad() {
+  const useSvgDrawing = true;
   const calibration = useCalibration();
   const settings = useSettings();
   const wipingSequence = useWipingSequence();
@@ -309,20 +312,37 @@ export function DrawingPad() {
             width: '100%',
           }}
         >
-          <WipingSequenceCanvas
-            padImageSrc={padImages[selectedPad().key]}
-            padWidth={selectedPad().width}
-            padHeight={selectedPad().height}
-            drawingArea={drawingPadRectAbs()}
-            padTopRight={selectedPadTopRight()}
-            parkingCoords={selectedPrinter().parkingCoords}
-            printerCenter={printerCenter()}
-            points={absolutePoints()}
-            calibrationPoint={calibration.calibrationPoint()}
-            showTravelLines
-            onAddPoint={handleAddPoint}
-            onCursorChange={handleCursorChange}
-          />
+          {useSvgDrawing ? (
+            <WipingSequenceSvg
+              padImageSrc={padImages[selectedPad().key]}
+              padWidth={selectedPad().width}
+              padHeight={selectedPad().height}
+              drawingArea={drawingPadRectAbs()}
+              padTopRight={selectedPadTopRight()}
+              parkingCoords={selectedPrinter().parkingCoords}
+              printerCenter={printerCenter()}
+              points={absolutePoints()}
+              calibrationPoint={calibration.calibrationPoint()}
+              showTravelLines
+              onAddPoint={handleAddPoint}
+              onCursorChange={handleCursorChange}
+            />
+          ) : (
+            <WipingSequenceCanvas
+              padImageSrc={padImages[selectedPad().key]}
+              padWidth={selectedPad().width}
+              padHeight={selectedPad().height}
+              drawingArea={drawingPadRectAbs()}
+              padTopRight={selectedPadTopRight()}
+              parkingCoords={selectedPrinter().parkingCoords}
+              printerCenter={printerCenter()}
+              points={absolutePoints()}
+              calibrationPoint={calibration.calibrationPoint()}
+              showTravelLines
+              onAddPoint={handleAddPoint}
+              onCursorChange={handleCursorChange}
+            />
+          )}
           <SimulationCanvas
             nozzlePos={simulation.simulationPoint()}
             drawingArea={drawingPadRectAbs()}
