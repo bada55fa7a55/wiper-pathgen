@@ -7,6 +7,7 @@ import { printerProperties } from '@/WiperTool/domain/printers';
 import type { WipingSequence } from '@/WiperTool/domain/wipingSequence';
 import { getWipingStepPoints } from '@/WiperTool/domain/wipingSequence';
 import { WipingSequenceCanvas } from '@/WiperTool/features/WipingSequenceCanvas';
+import { CartesianRect } from '@/WiperTool/lib/rect';
 import { padImages } from '@/WiperTool/ui/pads';
 
 const Frame = twc(
@@ -44,8 +45,8 @@ type Props = {
 export function PreviewWipingSequenceCanvas(props: Props) {
   const importedPad = createMemo(() => padProperties[props.padKey]);
   const printerCenter = createMemo(() => ({
-    x: Math.round(printerProperties[props.printerKey].maxX / 2),
-    y: Math.round(printerProperties[props.printerKey].maxY / 2),
+    x: Math.round(printerProperties[props.printerKey].bounds.right / 2),
+    y: Math.round(printerProperties[props.printerKey].bounds.top / 2),
   }));
   const sequencePoints = createMemo(() => getWipingStepPoints(props.wipingSequence));
 
@@ -63,31 +64,12 @@ export function PreviewWipingSequenceCanvas(props: Props) {
       };
     }
 
-    let minX = points[0].x;
-    let maxX = points[0].x;
-    let minY = points[0].y;
-    let maxY = points[0].y;
+    const sequenceRect = CartesianRect.fromPoints(points);
 
-    for (let i = 1; i < points.length; i += 1) {
-      const { x, y } = points[i];
-      if (x < minX) {
-        minX = x;
-      }
-      if (x > maxX) {
-        maxX = x;
-      }
-      if (y < minY) {
-        minY = y;
-      }
-      if (y > maxY) {
-        maxY = y;
-      }
-    }
-
-    const left = Math.max(extraPadding, -minX - padSize.width + extraPadding);
-    const right = Math.max(extraPadding, maxX + extraPadding);
-    const bottom = Math.max(extraPadding, -minY - padSize.height + extraPadding);
-    const top = Math.max(extraPadding, maxY + extraPadding);
+    const left = Math.max(extraPadding, -sequenceRect.left - padSize.width + extraPadding);
+    const right = Math.max(extraPadding, sequenceRect.right + extraPadding);
+    const bottom = Math.max(extraPadding, -sequenceRect.bottom - padSize.height + extraPadding);
+    const top = Math.max(extraPadding, sequenceRect.top + extraPadding);
 
     return {
       left,
@@ -97,6 +79,18 @@ export function PreviewWipingSequenceCanvas(props: Props) {
     };
   });
 
+  const drawingAreaRect = createMemo(() => {
+    const padSize = importedPad();
+    const padding = previewPadding();
+
+    return new CartesianRect(
+      -padSize.width - padding.left,
+      -padSize.height - padding.bottom,
+      padSize.width + padding.left + padding.right,
+      padSize.height + padding.top + padding.bottom,
+    );
+  });
+
   return (
     <Container>
       <Frame>
@@ -104,10 +98,8 @@ export function PreviewWipingSequenceCanvas(props: Props) {
           padImageSrc={padImages[importedPad().key]}
           padWidth={importedPad().width}
           padHeight={importedPad().height}
-          paddingLeft={previewPadding().left}
-          paddingRight={previewPadding().right}
-          paddingTop={previewPadding().top}
-          paddingBottom={previewPadding().bottom}
+          drawingArea={drawingAreaRect()}
+          padTopRight={{ x: 0, y: 0 }}
           points={sequencePoints()}
           calibrationPoint={printerCenter()}
           isInteractive={false}

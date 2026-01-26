@@ -1,57 +1,31 @@
 import { createMemo } from 'solid-js';
-import type { PadProperties } from '@/WiperTool/domain/pads';
-import type { PrinterProperties } from '@/WiperTool/domain/printers';
 import type { Point } from '@/WiperTool/lib/geometry';
-import { useCalibration, usePads, usePrinters } from '@/WiperTool/providers/AppModelProvider';
+import { CartesianRect } from '@/WiperTool/lib/rect';
+import { usePads, usePrinters } from '@/WiperTool/providers/AppModelProvider';
 
-type MaybePoint = {
-  x: number | undefined;
-  y: number | undefined;
-};
-
-function calculateDrawingPadPaddings(
-  calibration: MaybePoint,
-  padTopRight: Point,
-  pad: PadProperties,
-  printer: PrinterProperties,
-) {
-  if (calibration.x === undefined || calibration.y === undefined) {
-    return {
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-    };
-  }
-
-  const maxPadding = 10000;
-  const top = printer.maxY - padTopRight.y;
-  const bottom = padTopRight.y - pad.height - printer.minY;
-
-  const left = padTopRight.x - pad.width - printer.minX;
-  const right = printer.maxX - padTopRight.x;
-
-  return {
-    top: Math.min(top, maxPadding),
-    bottom: Math.min(bottom, maxPadding),
-    left: Math.min(left, maxPadding),
-    right: Math.min(right, maxPadding),
-  };
-}
-
-export function useDrawingPadPaddings() {
-  const calibration = useCalibration();
+export function useDrawingPadRect() {
   const { selectedPrinter } = usePrinters();
-  const { selectedPad, selectedPadTopRight } = usePads();
+  const { calibratedPadRect, selectedPad } = usePads();
 
   return createMemo(() => {
-    const x = calibration.x();
-    const y = calibration.y();
-    const topRight = selectedPadTopRight();
-    const pad = selectedPad();
-    const printer = selectedPrinter();
+    const padRect = calibratedPadRect();
+    if (!padRect) {
+      return new CartesianRect(-selectedPad().width, -selectedPad().height, selectedPad().width, selectedPad().height);
+    }
 
-    return calculateDrawingPadPaddings({ x, y }, topRight, pad, printer);
+    const printer = selectedPrinter();
+    const maxPadding = 10000;
+    const topPadding = Math.min(printer.bounds.top - padRect.top, maxPadding);
+    const bottomPadding = Math.min(padRect.bottom - printer.bounds.bottom, maxPadding);
+    const leftPadding = Math.min(padRect.left - printer.bounds.left, maxPadding);
+    const rightPadding = Math.min(printer.bounds.right - padRect.right, maxPadding);
+
+    return new CartesianRect(
+      -padRect.width - leftPadding,
+      -padRect.height - bottomPadding,
+      padRect.width + leftPadding + rightPadding,
+      padRect.height + topPadding + bottomPadding,
+    );
   });
 }
 
@@ -69,39 +43,61 @@ export function absToRel(absolutePoint: Point, padTopRight: Point): Point {
   };
 }
 
+export function usePadCoordinateTransform() {
+  const { selectedPadTopRight } = usePads();
+
+  const relToAbsFromPad = (relativePoint: Point): Point => {
+    const padTopRight = selectedPadTopRight();
+    return {
+      x: padTopRight.x + relativePoint.x,
+      y: padTopRight.y + relativePoint.y,
+    };
+  };
+
+  const absToRel = (absolutePoint: Point): Point => {
+    const padTopRight = selectedPadTopRight();
+    return {
+      x: absolutePoint.x - padTopRight.x,
+      y: absolutePoint.y - padTopRight.y,
+    };
+  };
+
+  return { relToAbs: relToAbsFromPad, absToRel };
+}
+
 export type BoundsWarning =
   | { kind: 'none' }
   | { kind: 'full' }
   | { kind: 'partial'; side: 'top' | 'bottom' | 'left' | 'right' };
 
 export function useDrawingPadBoundsWarning() {
-  const drawingPadPaddings = useDrawingPadPaddings();
-  const { selectedPad } = usePads();
+  const drawingPadRect = useDrawingPadRect();
+  const { calibratedPadRect, selectedPadTopRight } = usePads();
 
   const drawingPadBoundsWarning = createMemo<BoundsWarning>(() => {
-    const { width: padWidth, height: padHeight } = selectedPad();
-    const paddings = drawingPadPaddings();
+    const rect = drawingPadRect();
+    const padRect = calibratedPadRect();
+    if (!rect || !padRect) {
+      return { kind: 'none' };
+    }
 
-    const isOutOfBounds =
-      paddings.top <= -padHeight ||
-      paddings.bottom <= -padHeight ||
-      paddings.left <= -padWidth ||
-      paddings.right <= -padWidth;
+    const padTopRight = selectedPadTopRight();
+    const drawingRectAbs = new CartesianRect(rect.x + padTopRight.x, rect.y + padTopRight.y, rect.width, rect.height);
 
-    if (isOutOfBounds) {
+    if (!drawingRectAbs.intersects(padRect)) {
       return { kind: 'full' };
     }
 
-    if (paddings.top < 0) {
+    if (padRect.top > drawingRectAbs.top) {
       return { kind: 'partial', side: 'top' };
     }
-    if (paddings.bottom < 0) {
+    if (padRect.bottom < drawingRectAbs.bottom) {
       return { kind: 'partial', side: 'bottom' };
     }
-    if (paddings.left < 0) {
+    if (padRect.left < drawingRectAbs.left) {
       return { kind: 'partial', side: 'left' };
     }
-    if (paddings.right < 0) {
+    if (padRect.right > drawingRectAbs.right) {
       return { kind: 'partial', side: 'right' };
     }
 

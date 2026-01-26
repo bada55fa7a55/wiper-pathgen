@@ -1,4 +1,4 @@
-import { createMemo, createSignal, Show } from 'solid-js';
+import { createEffect, createMemo, createSignal, Show } from 'solid-js';
 import { Button } from '@/components';
 import { twc } from '@/styles/helpers';
 import { gridStep } from '@/WiperTool/configuration';
@@ -14,6 +14,7 @@ import {
 } from '@/WiperTool/lib/analytics';
 import { formatMicronsToMmString } from '@/WiperTool/lib/formatting';
 import type { Point } from '@/WiperTool/lib/geometry';
+import { CartesianRect } from '@/WiperTool/lib/rect';
 import {
   useCalibration,
   useModals,
@@ -27,7 +28,7 @@ import {
 import { ModalKeys } from '@/WiperTool/ui/modals';
 import { padImages } from '@/WiperTool/ui/pads';
 import { StepKeys } from '@/WiperTool/ui/steps';
-import { absToRel, relToAbs, useDrawingPadPaddings } from './helpers';
+import { useDrawingPadRect, usePadCoordinateTransform } from './helpers';
 import { PathControls } from './PathControls';
 import { SimulationCanvas } from './SimulationCanvas';
 import { createNozzleSimulation } from './useSimulation';
@@ -169,12 +170,26 @@ export function DrawingPad() {
   const tracking = useTracking();
   const modals = useModals();
 
-  const paddings = useDrawingPadPaddings();
+  const drawingPadRect = useDrawingPadRect();
+  const drawingPadRectAbs = createMemo(() => {
+    const rect = drawingPadRect();
+    const padTopRight = selectedPadTopRight();
+    const pad = selectedPad();
 
+    if (rect) {
+      return new CartesianRect(rect.x + padTopRight.x, rect.y + padTopRight.y, rect.width, rect.height);
+    }
+
+    return new CartesianRect(padTopRight.x - pad.width, padTopRight.y - pad.height, pad.width, pad.height);
+  });
   const [cursorMicrons, setCursorMicrons] = createSignal<Point | null>(null);
 
-  const toAbsolute = (relPoint: Point) => relToAbs(relPoint, selectedPadTopRight());
-  const toRelative = (absPoint: Point) => absToRel(absPoint, selectedPadTopRight());
+  createEffect(() => {
+    const dpr = drawingPadRect();
+    console.log(dpr);
+  });
+
+  const { relToAbs, absToRel } = usePadCoordinateTransform();
 
   const sequencePoints = createMemo(() => getWipingStepPoints(wipingSequence.wipingSteps()));
   const isSimulationDisabled = createMemo(() => sequencePoints().length < 2 || (settings.feedRate() ?? 0) <= 0);
@@ -207,16 +222,14 @@ export function DrawingPad() {
   };
 
   const handleAddPoint = (absPoint: Point) => {
-    const relPoint = toRelative(absPoint);
+    const relPoint = absToRel(absPoint);
     wipingSequence.actions.addWipingStep(makeWipingStepPoint(relPoint));
     tracking.actions.setLastWipingSequenceWrite({ type: 'point' });
     track(drawingPointAddedEvent());
   };
 
   const handleCursorChange = (absPoint: Point | null) => {
-    if (absPoint !== null) {
-      setCursorMicrons(absPoint ? toRelative(absPoint) : null);
-    }
+    setCursorMicrons(absPoint !== null ? absToRel(absPoint) : null);
   };
 
   const getFormattedCoords = (coords: Point) => {
@@ -227,10 +240,10 @@ export function DrawingPad() {
   };
 
   const printerCenter = createMemo<Point>(() => ({
-    x: selectedPrinter().maxX / 2,
-    y: selectedPrinter().maxY / 2,
+    x: selectedPrinter().bounds.right / 2,
+    y: selectedPrinter().bounds.top / 2,
   }));
-  const absolutePoints = createMemo(() => sequencePoints().map(toAbsolute));
+  const absolutePoints = createMemo(() => sequencePoints().map(relToAbs));
 
   const simulation = createNozzleSimulation({
     getPoints: absolutePoints,
@@ -300,10 +313,7 @@ export function DrawingPad() {
             padImageSrc={padImages[selectedPad().key]}
             padWidth={selectedPad().width}
             padHeight={selectedPad().height}
-            paddingLeft={paddings().left}
-            paddingRight={paddings().right}
-            paddingTop={paddings().top}
-            paddingBottom={paddings().bottom}
+            drawingArea={drawingPadRectAbs()}
             padTopRight={selectedPadTopRight()}
             parkingCoords={selectedPrinter().parkingCoords}
             printerCenter={printerCenter()}
@@ -315,13 +325,7 @@ export function DrawingPad() {
           />
           <SimulationCanvas
             nozzlePos={simulation.simulationPoint()}
-            padWidth={selectedPad().width}
-            padHeight={selectedPad().height}
-            paddingLeft={paddings().left}
-            paddingRight={paddings().right}
-            paddingTop={paddings().top}
-            paddingBottom={paddings().bottom}
-            padTopRight={selectedPadTopRight()}
+            drawingArea={drawingPadRectAbs()}
           />
         </CanvasFrame>
         <Show when={sequencePoints().length === 0}>
@@ -336,7 +340,7 @@ export function DrawingPad() {
               return <CoordinatesLine>&nbsp;</CoordinatesLine>;
             }
 
-            const formattedPoint = getFormattedCoords(toAbsolute(point));
+            const formattedPoint = getFormattedCoords(relToAbs(point));
 
             return (
               <CoordinatesLine>
@@ -346,7 +350,7 @@ export function DrawingPad() {
           })()}
         >
           {(cursor) => {
-            const formattedCursor = getFormattedCoords(toAbsolute(cursor));
+            const formattedCursor = getFormattedCoords(relToAbs(cursor));
 
             return (
               <CoordinatesLine>
