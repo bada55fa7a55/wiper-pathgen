@@ -58,7 +58,7 @@ export function WipingSequenceSvg(props: Props) {
     };
   });
 
-  const eventToMicrons = (event: MouseEvent) => {
+  const eventToMicrons = (event: MouseEvent): Point => {
     const target = event.currentTarget as SVGSVGElement;
     const rect = target.getBoundingClientRect();
     const { drawingArea } = derived();
@@ -204,9 +204,28 @@ export function WipingSequenceSvg(props: Props) {
     return derived().drawingArea.width / Math.max(1, size.width);
   });
 
+  const strokeWidth = createMemo(() => {
+    const size = svgSize();
+    if (!size) {
+      return 2;
+    }
+
+    if (size.width < 400) {
+      return 1;
+    }
+    if (size.width < 480) {
+      return 1.5;
+    }
+    if (size.width < 720) {
+      return 2;
+    }
+    return 2.5;
+  });
+
   const pointRadiusMicrons = createMemo(() => {
     const mpp = micronsPerPx();
-    return mpp ? mpp * 2.5 : 0;
+    const stroke = strokeWidth();
+    return mpp ? 0.75 * mpp * stroke : 0;
   });
 
   const calibrationRadiusMicrons = createMemo(() => {
@@ -261,7 +280,7 @@ export function WipingSequenceSvg(props: Props) {
             <polyline
               points={wipingSequencePoints()}
               fill="none"
-              stroke-width="2"
+              stroke-width={strokeWidth()}
               stroke-linecap="round"
               stroke-linejoin="round"
               vector-effect="non-scaling-stroke"
@@ -285,11 +304,11 @@ export function WipingSequenceSvg(props: Props) {
             y1={parkingLine()!.y1}
             x2={parkingLine()!.x2}
             y2={parkingLine()!.y2}
-            stroke-width="2"
+            stroke-width={strokeWidth()}
             stroke-dasharray="8 8"
             stroke-linecap="round"
             vector-effect="non-scaling-stroke"
-            class="stroke-sky-500"
+            class="stroke-sky-400"
           />
         ) : null}
         {exitLine() ? (
@@ -298,11 +317,11 @@ export function WipingSequenceSvg(props: Props) {
             y1={exitLine()!.y1}
             x2={exitLine()!.x2}
             y2={exitLine()!.y2}
-            stroke-width="2"
-            stroke-dasharray="8 8"
+            stroke-width={strokeWidth()}
+            stroke-dasharray="6 6"
             stroke-linecap="round"
             vector-effect="non-scaling-stroke"
-            class="stroke-green-500"
+            class="stroke-green-400"
           />
         ) : null}
         {cursorSegment() ? (
@@ -311,7 +330,7 @@ export function WipingSequenceSvg(props: Props) {
             y1={cursorSegment()!.y1}
             x2={cursorSegment()!.x2}
             y2={cursorSegment()!.y2}
-            stroke-width="2"
+            stroke-width={strokeWidth()}
             stroke-dasharray="10 10"
             stroke-linecap="round"
             vector-effect="non-scaling-stroke"
@@ -323,8 +342,8 @@ export function WipingSequenceSvg(props: Props) {
             cx={calibrationPoint()!.cx}
             cy={calibrationPoint()!.cy}
             r={calibrationRadiusMicrons()}
-            fill="#ff2222"
             vector-effect="non-scaling-stroke"
+            class="fill-red-500"
           />
         ) : null}
       </g>
