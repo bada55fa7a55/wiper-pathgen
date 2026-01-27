@@ -1,8 +1,9 @@
-import { createEffect, createMemo, createSignal } from 'solid-js';
+import { createEffect, createMemo, createSignal, For, Show } from 'solid-js';
 import { twc } from '@/styles/helpers';
 import { gridStep } from '@/WiperTool/configuration';
 import type { Point } from '@/WiperTool/lib/geometry';
 import { CartesianRect } from '@/WiperTool/lib/rect';
+import { usePrinters } from '@/WiperTool/providers/AppModelProvider';
 
 const defaultPadTopRight: Point = { x: 0, y: 0 };
 
@@ -36,6 +37,7 @@ export function WipingSequenceSvg(props: Props) {
   const [mousePos, setMousePos] = createSignal<Point | null>(null);
   const [svgSize, setSvgSize] = createSignal<{ width: number; height: number } | null>(null);
   const padTopRight = () => props.padTopRight ?? defaultPadTopRight;
+  const { selectedPrinter } = usePrinters();
 
   const derived = createMemo(() => {
     const padTopRightCoords = padTopRight();
@@ -263,6 +265,30 @@ export function WipingSequenceSvg(props: Props) {
         />
       ) : null}
       <g transform={flipTransform()}>
+        <Show when={selectedPrinter().bedShape}>
+          {(bedShape) => (
+            <g transform={`translate(${bedShape().offset[0]}, ${bedShape().offset[1]})`}>
+              <path
+                class="fill-shark-400/30 stroke-shark-300/30"
+                stroke-width={1}
+                vector-effect="non-scaling-stroke"
+                d={`M ${bedShape()
+                  .path.map(([x, y]) => `${x} ${y}`)
+                  .join(' L ')}`}
+              />
+              <For each={bedShape().negativeVolumes}>
+                {(negativeVolume) => (
+                  <circle
+                    cx={negativeVolume.x}
+                    cy={negativeVolume.y}
+                    r={negativeVolume.radius}
+                    class="fill-neutral-800"
+                  />
+                )}
+              </For>
+            </g>
+          )}
+        </Show>
         <g class="stroke-neutral-600/40">
           {gridLines().map((line) => (
             <line
