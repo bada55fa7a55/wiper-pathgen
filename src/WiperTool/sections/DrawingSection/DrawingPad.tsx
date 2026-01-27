@@ -144,7 +144,7 @@ const LegendRow = twc(
   `
   flex
   gap-2
-  items-center
+  items-start
   text-sm
   text-shark-300
   `,
@@ -156,6 +156,8 @@ const LegendIcon = twc(
     w-3
     h-3
     rounded-xs
+    shrink-0
+    mt-1
   `,
   {
     variants: {
@@ -425,11 +427,11 @@ export function DrawingPad() {
         </LegendRow>
         <LegendRow class="text-sky-400">
           <LegendIcon layout="dashed" />
-          <div>Blue dashed line: Travel move from the parking position to the wiping start.</div>
+          <div>Travel move from the parking position to the wiping start</div>
         </LegendRow>
         <LegendRow class="text-green-400">
           <LegendIcon layout="dashed" />
-          <div>Green dashed line: Travel move to the probing area after wiping.</div>
+          <div>Travel move to the probing area after wiping</div>
         </LegendRow>
         <LegendRow class="text-orange-400">
           <LegendIcon layout="dashed" />
