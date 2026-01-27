@@ -139,6 +139,45 @@ const Legend = twc(
   `,
 );
 
+const LegendRow = twc(
+  'div',
+  `
+  flex
+  gap-2
+  items-center
+  text-sm
+  text-shark-300
+  `,
+);
+
+const LegendIcon = twc(
+  'div',
+  `
+    w-3
+    h-3
+    rounded-xs
+  `,
+  {
+    variants: {
+      layout: {
+        solid: `
+        border
+        border-currrent
+        border-solid
+        `,
+        dashed: `
+        border
+        border-currrent
+        border-dashed
+        `,
+        fill: `
+        bg-current
+        `,
+      },
+    },
+  },
+);
+
 const DrawingHint = twc(
   'div',
   `
@@ -376,9 +415,26 @@ export function DrawingPad() {
         </Show>
       </CanvasWrapper>
       <Legend>
-        <div class="text-shark-200">Grid: {formatMicronsToMmString(gridStep)}mm</div>
-        <div class="text-sky-400">Blue dashed line: Travel move from the parking position to the wiping start.</div>
-        <div class="text-green-400">Green dashed line: Travel move to the probing area after wiping.</div>
+        <LegendRow class="text-neutral-400">
+          <LegendIcon layout="solid" />
+          <div>Grid: {formatMicronsToMmString(gridStep)}mm</div>
+        </LegendRow>
+        <LegendRow class="text-shark-400">
+          <LegendIcon layout="fill" />
+          <div>Bed</div>
+        </LegendRow>
+        <LegendRow class="text-sky-400">
+          <LegendIcon layout="dashed" />
+          <div>Blue dashed line: Travel move from the parking position to the wiping start.</div>
+        </LegendRow>
+        <LegendRow class="text-green-400">
+          <LegendIcon layout="dashed" />
+          <div>Green dashed line: Travel move to the probing area after wiping.</div>
+        </LegendRow>
+        <LegendRow class="text-orange-400">
+          <LegendIcon layout="dashed" />
+          <div>Printer bounds</div>
+        </LegendRow>
       </Legend>
     </Container>
   );
