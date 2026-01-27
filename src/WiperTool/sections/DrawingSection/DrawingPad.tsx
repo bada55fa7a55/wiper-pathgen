@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal, Show } from 'solid-js';
+import { createMemo, createSignal, Show } from 'solid-js';
 import { Button } from '@/components';
 import { twc } from '@/styles/helpers';
 import { gridStep } from '@/WiperTool/configuration';
