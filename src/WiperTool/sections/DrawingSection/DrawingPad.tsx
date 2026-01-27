@@ -187,11 +187,6 @@ export function DrawingPad() {
   });
   const [cursorMicrons, setCursorMicrons] = createSignal<Point | null>(null);
 
-  createEffect(() => {
-    const dpr = drawingPadRect();
-    console.log(dpr);
-  });
-
   const { relToAbs, absToRel } = usePadCoordinateTransform();
 
   const sequencePoints = createMemo(() => getWipingStepPoints(wipingSequence.wipingSteps()));
