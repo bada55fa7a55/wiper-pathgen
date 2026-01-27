@@ -360,7 +360,7 @@ export function WipingSequenceSvg(props: Props) {
             stroke-dasharray="10 10"
             stroke-linecap="round"
             vector-effect="non-scaling-stroke"
-            class="stroke-porange-500"
+            class="stroke-porange-500/50"
           />
         ) : null}
         {calibrationPoint() ? (
