@@ -257,16 +257,6 @@ export function WipingSequenceSvg(props: Props) {
       onMouseMove={props.isInteractive === false ? undefined : handleMove}
       onMouseLeave={props.isInteractive === false ? undefined : handleMouseLeave}
     >
-      {props.padImageSrc ? (
-        <image
-          href={props.padImageSrc}
-          x={padImageRect().x}
-          y={padImageRect().y}
-          width={padImageRect().width}
-          height={padImageRect().height}
-          preserveAspectRatio="none"
-        />
-      ) : null}
       <g transform={flipTransform()}>
         <Show when={selectedPrinter().bedShape}>
           {(bedShape) => (
