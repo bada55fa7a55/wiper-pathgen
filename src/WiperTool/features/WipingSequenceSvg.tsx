@@ -95,6 +95,10 @@ export function WipingSequenceSvg(props: Props) {
     props.onCursorChange?.(null);
   };
 
+  const boundsRect = createMemo(() => {
+    return selectedPrinter().bounds.toJSON();
+  });
+
   const gridLines = createMemo(() => {
     const { drawingArea, gridStart } = derived();
     const lines: { x1: number; y1: number; x2: number; y2: number }[] = [];
@@ -116,12 +120,11 @@ export function WipingSequenceSvg(props: Props) {
   });
 
   const padImageRect = createMemo(() => {
-    const { padRect, drawingArea } = derived();
-    const y = drawingArea.top + drawingArea.bottom - padRect.top;
+    const { padRect } = derived();
 
     return {
       x: padRect.left,
-      y,
+      y: padRect.bottom,
       width: padRect.width,
       height: padRect.height,
     };
@@ -289,6 +292,29 @@ export function WipingSequenceSvg(props: Props) {
             </g>
           )}
         </Show>
+        {props.padImageSrc ? (
+          <image
+            href={props.padImageSrc}
+            x={padImageRect().x}
+            y={-(padImageRect().y + padImageRect().height)}
+            width={padImageRect().width}
+            height={padImageRect().height}
+            preserveAspectRatio="none"
+            transform="scale(1 -1)"
+          />
+        ) : null}
+        <rect
+          class="stroke-orange-400"
+          x={boundsRect().x}
+          y={boundsRect().y}
+          width={boundsRect().width}
+          height={boundsRect().height}
+          rx="2000"
+          fill="none"
+          stroke-width={strokeWidth()}
+          stroke-dasharray="5, 3"
+          vector-effect="non-scaling-stroke"
+        />
         <g class="stroke-neutral-600/40">
           {gridLines().map((line) => (
             <line
