@@ -354,11 +354,13 @@ export function DrawingPad() {
               padWidth={selectedPad().width}
               padHeight={selectedPad().height}
               drawingArea={drawingPadRectAbs()}
+              printerBounds={selectedPrinter().bounds}
               padTopRight={selectedPadTopRight()}
               parkingCoords={selectedPrinter().parkingCoords}
               printerCenter={printerCenter()}
               points={absolutePoints()}
               calibrationPoint={calibration.calibrationPoint()}
+              bedShape={selectedPrinter().bedShape}
               showTravelLines
               onAddPoint={handleAddPoint}
               onCursorChange={handleCursorChange}
@@ -435,7 +437,7 @@ export function DrawingPad() {
         </LegendRow>
         <LegendRow class="text-orange-400">
           <LegendIcon layout="dashed" />
-          <div>Printer bounds</div>
+          <div>Nozzle travel limits</div>
         </LegendRow>
       </Legend>
     </Container>

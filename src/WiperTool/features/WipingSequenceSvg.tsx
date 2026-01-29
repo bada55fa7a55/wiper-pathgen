@@ -1,9 +1,9 @@
 import { createEffect, createMemo, createSignal, For, Show } from 'solid-js';
 import { twc } from '@/styles/helpers';
 import { gridStep } from '@/WiperTool/configuration';
+import type { PrinterBedShape } from '@/WiperTool/domain/printers/model';
 import type { Point } from '@/WiperTool/lib/geometry';
 import { CartesianRect } from '@/WiperTool/lib/rect';
-import { usePrinters } from '@/WiperTool/providers/AppModelProvider';
 
 const defaultPadTopRight: Point = { x: 0, y: 0 };
 
@@ -20,6 +20,7 @@ type Props = {
   padWidth: number;
   padHeight: number;
   drawingArea: CartesianRect;
+  printerBounds?: CartesianRect;
   padTopRight?: Point;
   parkingCoords?: Point;
   printerCenter?: Point;
@@ -27,6 +28,7 @@ type Props = {
   showTravelLines?: boolean;
   calibrationPoint?: Point;
   showCalibrationPoint?: boolean;
+  bedShape?: PrinterBedShape;
   isInteractive?: boolean;
   onAddPoint?: (point: Point) => void;
   onCursorChange?: (point: Point | null) => void;
@@ -37,7 +39,6 @@ export function WipingSequenceSvg(props: Props) {
   const [mousePos, setMousePos] = createSignal<Point | null>(null);
   const [svgSize, setSvgSize] = createSignal<{ width: number; height: number } | null>(null);
   const padTopRight = () => props.padTopRight ?? defaultPadTopRight;
-  const { selectedPrinter } = usePrinters();
 
   const derived = createMemo(() => {
     const padTopRightCoords = padTopRight();
@@ -95,10 +96,6 @@ export function WipingSequenceSvg(props: Props) {
     props.onCursorChange?.(null);
   };
 
-  const boundsRect = createMemo(() => {
-    return selectedPrinter().bounds.toJSON();
-  });
-
   const gridLines = createMemo(() => {
     const { drawingArea, gridStart } = derived();
     const lines: { x1: number; y1: number; x2: number; y2: number }[] = [];
@@ -106,13 +103,13 @@ export function WipingSequenceSvg(props: Props) {
     for (let i = gridStart.x; i < drawingArea.right; i += gridStep) {
       lines.push({ x1: i, y1: drawingArea.bottom, x2: i, y2: drawingArea.top });
     }
-    for (let i = gridStart.x; i > drawingArea.left; i -= gridStep) {
+    for (let i = gridStart.x - gridStep; i > drawingArea.left; i -= gridStep) {
       lines.push({ x1: i, y1: drawingArea.bottom, x2: i, y2: drawingArea.top });
     }
     for (let i = gridStart.y; i < drawingArea.top; i += gridStep) {
       lines.push({ x1: drawingArea.left, y1: i, x2: drawingArea.right, y2: i });
     }
-    for (let i = gridStart.y; i > drawingArea.bottom; i -= gridStep) {
+    for (let i = gridStart.y - gridStep; i > drawingArea.bottom; i -= gridStep) {
       lines.push({ x1: drawingArea.left, y1: i, x2: drawingArea.right, y2: i });
     }
 
@@ -175,10 +172,6 @@ export function WipingSequenceSvg(props: Props) {
     }
 
     return { cx: props.calibrationPoint.x, cy: props.calibrationPoint.y };
-  });
-
-  const pointCircles = createMemo(() => {
-    return props.points;
   });
 
   createEffect(() => {
@@ -258,18 +251,18 @@ export function WipingSequenceSvg(props: Props) {
       onMouseLeave={props.isInteractive === false ? undefined : handleMouseLeave}
     >
       <g transform={flipTransform()}>
-        <Show when={selectedPrinter().bedShape}>
-          {(bedShape) => (
-            <g transform={`translate(${bedShape().offset[0]}, ${bedShape().offset[1]})`}>
+        <Show when={props.bedShape}>
+          {(shape) => (
+            <g transform={`translate(${shape().offset[0]}, ${shape().offset[1]})`}>
               <path
                 class="fill-shark-400/30 stroke-shark-300/30"
                 stroke-width={1}
                 vector-effect="non-scaling-stroke"
-                d={`M ${bedShape()
+                d={`M ${shape()
                   .path.map(([x, y]) => `${x} ${y}`)
                   .join(' L ')}`}
               />
-              <For each={bedShape().negativeVolumes}>
+              <For each={shape().negativeVolumes}>
                 {(negativeVolume) => (
                   <circle
                     cx={negativeVolume.x}
@@ -282,29 +275,35 @@ export function WipingSequenceSvg(props: Props) {
             </g>
           )}
         </Show>
-        {props.padImageSrc ? (
-          <image
-            href={props.padImageSrc}
-            x={padImageRect().x}
-            y={-(padImageRect().y + padImageRect().height)}
-            width={padImageRect().width}
-            height={padImageRect().height}
-            preserveAspectRatio="none"
-            transform="scale(1 -1)"
-          />
-        ) : null}
-        <rect
-          class="stroke-orange-400"
-          x={boundsRect().x}
-          y={boundsRect().y}
-          width={boundsRect().width}
-          height={boundsRect().height}
-          rx="2000"
-          fill="none"
-          stroke-width={strokeWidth()}
-          stroke-dasharray="5, 3"
-          vector-effect="non-scaling-stroke"
-        />
+        <Show when={props.padImageSrc}>
+          {(imageSrc) => (
+            <image
+              href={imageSrc()}
+              x={padImageRect().x}
+              y={-(padImageRect().y + padImageRect().height)}
+              width={padImageRect().width}
+              height={padImageRect().height}
+              preserveAspectRatio="none"
+              transform="scale(1 -1)"
+            />
+          )}
+        </Show>
+        <Show when={props.printerBounds?.toJSON()}>
+          {(bounds) => (
+            <rect
+              class="stroke-orange-400"
+              x={bounds().x}
+              y={bounds().y}
+              width={bounds().width}
+              height={bounds().height}
+              rx="2000"
+              fill="none"
+              stroke-width={strokeWidth()}
+              stroke-dasharray="5, 3"
+              vector-effect="non-scaling-stroke"
+            />
+          )}
+        </Show>
         <g class="stroke-neutral-600/40">
           {gridLines().map((line) => (
             <line
@@ -329,7 +328,7 @@ export function WipingSequenceSvg(props: Props) {
               class="stroke-porange-500"
             />
             <g class="fill-porange-500">
-              {pointCircles().map((point) => (
+              {props.points.map((point) => (
                 <circle
                   cx={point.x}
                   cy={point.y}
@@ -340,54 +339,62 @@ export function WipingSequenceSvg(props: Props) {
             </g>
           </>
         ) : null}
-        {parkingLine() ? (
-          <line
-            x1={parkingLine()!.x1}
-            y1={parkingLine()!.y1}
-            x2={parkingLine()!.x2}
-            y2={parkingLine()!.y2}
-            stroke-width={strokeWidth()}
-            stroke-dasharray="8 8"
-            stroke-linecap="round"
-            vector-effect="non-scaling-stroke"
-            class="stroke-sky-400"
-          />
-        ) : null}
-        {exitLine() ? (
-          <line
-            x1={exitLine()!.x1}
-            y1={exitLine()!.y1}
-            x2={exitLine()!.x2}
-            y2={exitLine()!.y2}
-            stroke-width={strokeWidth()}
-            stroke-dasharray="6 6"
-            stroke-linecap="round"
-            vector-effect="non-scaling-stroke"
-            class="stroke-green-400"
-          />
-        ) : null}
-        {cursorSegment() ? (
-          <line
-            x1={cursorSegment()!.x1}
-            y1={cursorSegment()!.y1}
-            x2={cursorSegment()!.x2}
-            y2={cursorSegment()!.y2}
-            stroke-width={strokeWidth()}
-            stroke-dasharray="10 10"
-            stroke-linecap="round"
-            vector-effect="non-scaling-stroke"
-            class="stroke-porange-500/50"
-          />
-        ) : null}
-        {calibrationPoint() ? (
-          <circle
-            cx={calibrationPoint()!.cx}
-            cy={calibrationPoint()!.cy}
-            r={calibrationRadiusMicrons()}
-            vector-effect="non-scaling-stroke"
-            class="fill-red-500"
-          />
-        ) : null}
+        <Show when={parkingLine()}>
+          {(line) => (
+            <line
+              x1={line().x1}
+              y1={line().y1}
+              x2={line().x2}
+              y2={line().y2}
+              stroke-width={strokeWidth()}
+              stroke-dasharray="8 8"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+              class="stroke-sky-400"
+            />
+          )}
+        </Show>
+        <Show when={exitLine()}>
+          {(line) => (
+            <line
+              x1={line().x1}
+              y1={line().y1}
+              x2={line().x2}
+              y2={line().y2}
+              stroke-width={strokeWidth()}
+              stroke-dasharray="6 6"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+              class="stroke-green-400"
+            />
+          )}
+        </Show>
+        <Show when={cursorSegment()}>
+          {(line) => (
+            <line
+              x1={line().x1}
+              y1={line().y1}
+              x2={line().x2}
+              y2={line().y2}
+              stroke-width={strokeWidth()}
+              stroke-dasharray="10 10"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+              class="stroke-porange-500/50"
+            />
+          )}
+        </Show>
+        <Show when={calibrationPoint()}>
+          {(point) => (
+            <circle
+              cx={point().cx}
+              cy={point().cy}
+              r={calibrationRadiusMicrons()}
+              vector-effect="non-scaling-stroke"
+              class="fill-red-500"
+            />
+          )}
+        </Show>
       </g>
     </StyledSvg>
   );
