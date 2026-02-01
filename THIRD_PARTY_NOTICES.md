@@ -4,7 +4,7 @@ This project includes assets, code, and/or software derived from the following t
 
 ## PrusaSlicer
 
-- Source: https://github.com/prusa3d/PrusaSlicer
+ - Source: https://github.com/prusa3d/PrusaSlicer
  - Copyright: Prusa Research a.s.
  - License: [GNU Affero General Public License v3.0 (AGPL-3.0)](https://www.gnu.org/licenses/agpl-3.0.html.)
 
@@ -17,3 +17,15 @@ This project includes assets, code, and/or software derived from the following t
  - COREONEL_thumbnail.png
  - XL5_thumbnail.png
  - MK4_thumbnail.png
+
+
+## MK52 Magnetic HeatBed
+
+ - Source: https://github.com/prusa3d/Heatbed_MK52_magnetic/tree/master/24V_05d
+ - License: [Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/deed.en)
+
+### Usage
+
+#### Silkscreen Illustration
+
+Derived silkscreen from KiCAD file for bed illustration SVG used in preview and drawing pad
