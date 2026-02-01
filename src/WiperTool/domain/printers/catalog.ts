@@ -1,5 +1,4 @@
 import { CartesianRect } from '@/WiperTool/lib/rect';
-import { mk52BedShape } from './bedShapes/mk52BedShape';
 import type { PrinterProperties } from './model';
 import { PrinterKeys } from './model';
 
@@ -15,7 +14,11 @@ export const printerProperties: Record<string, PrinterProperties> = {
       x: 242000,
       y: -9000,
     },
-    bedShape: mk52BedShape,
+    buildVolume: {
+      x: 250000,
+      y: 220000,
+      z: 270000,
+    },
     status: 'supported',
   },
   [PrinterKeys.PrusaCoreOneL]: {
@@ -29,6 +32,11 @@ export const printerProperties: Record<string, PrinterProperties> = {
     parkingCoords: {
       x: 292000,
       y: -5000,
+    },
+    buildVolume: {
+      x: 300000,
+      y: 300000,
+      z: 330000,
     },
     status: 'in-progress',
   },
@@ -48,6 +56,11 @@ export const printerProperties: Record<string, PrinterProperties> = {
       x: 352000,
       y: -9000,
     },
+    buildVolume: {
+      x: 360000,
+      y: 360000,
+      z: 360000,
+    },
     status: 'in-progress',
   },
   [PrinterKeys.PrusaMk4]: {
@@ -62,7 +75,11 @@ export const printerProperties: Record<string, PrinterProperties> = {
       x: 42000,
       y: -4000,
     },
-    bedShape: mk52BedShape,
+    buildVolume: {
+      x: 250000,
+      y: 210000,
+      z: 220000,
+    },
     status: 'planned',
   },
 };

@@ -1,9 +1,10 @@
-import { createEffect, createMemo, createSignal, Show } from 'solid-js';
+import { createMemo, createSignal, Show } from 'solid-js';
 import { Button } from '@/components';
 import { twc } from '@/styles/helpers';
 import { gridStep } from '@/WiperTool/configuration';
 import { getWipingStepPoints, makeWipingStepPoint } from '@/WiperTool/domain/wipingSequence';
 import { WipingSequenceCanvas } from '@/WiperTool/features/WipingSequenceCanvas';
+import { WipingSequenceSvg } from '@/WiperTool/features/WipingSequenceSvg';
 import {
   actionImportModalOpenedEvent,
   actionShareModalOpenedEvent,
@@ -27,6 +28,7 @@ import {
 } from '@/WiperTool/providers/AppModelProvider';
 import { ModalKeys } from '@/WiperTool/ui/modals';
 import { padImages } from '@/WiperTool/ui/pads';
+import { bedImages } from '@/WiperTool/ui/printers';
 import { StepKeys } from '@/WiperTool/ui/steps';
 import { useDrawingPadRect, usePadCoordinateTransform } from './helpers';
 import { PathControls } from './PathControls';
@@ -117,8 +119,9 @@ const CoordinatesLine = twc(
   flex
   justify-center
   w-full
-  mt-2
+  pt-1
   px-1
+  xbg-shark-700
   text-sm
   font-mono
   text-orange-400
@@ -135,6 +138,47 @@ const Legend = twc(
     text-xs
     text-shark-300
   `,
+);
+
+const LegendRow = twc(
+  'div',
+  `
+  flex
+  gap-2
+  items-start
+  text-sm
+  text-shark-300
+  `,
+);
+
+const LegendIcon = twc(
+  'div',
+  `
+    w-3
+    h-3
+    rounded-xs
+    shrink-0
+    mt-1
+  `,
+  {
+    variants: {
+      layout: {
+        solid: `
+        border
+        border-currrent
+        border-solid
+        `,
+        dashed: `
+        border
+        border-currrent
+        border-dashed
+        `,
+        fill: `
+        bg-current
+        `,
+      },
+    },
+  },
 );
 
 const DrawingHint = twc(
@@ -161,6 +205,7 @@ const DrawingHint = twc(
 );
 
 export function DrawingPad() {
+  const useSvgDrawing = true;
   const calibration = useCalibration();
   const settings = useSettings();
   const wipingSequence = useWipingSequence();
@@ -183,11 +228,6 @@ export function DrawingPad() {
     return new CartesianRect(padTopRight.x - pad.width, padTopRight.y - pad.height, pad.width, pad.height);
   });
   const [cursorMicrons, setCursorMicrons] = createSignal<Point | null>(null);
-
-  createEffect(() => {
-    const dpr = drawingPadRect();
-    console.log(dpr);
-  });
 
   const { relToAbs, absToRel } = usePadCoordinateTransform();
 
@@ -309,20 +349,39 @@ export function DrawingPad() {
             width: '100%',
           }}
         >
-          <WipingSequenceCanvas
-            padImageSrc={padImages[selectedPad().key]}
-            padWidth={selectedPad().width}
-            padHeight={selectedPad().height}
-            drawingArea={drawingPadRectAbs()}
-            padTopRight={selectedPadTopRight()}
-            parkingCoords={selectedPrinter().parkingCoords}
-            printerCenter={printerCenter()}
-            points={absolutePoints()}
-            calibrationPoint={calibration.calibrationPoint()}
-            showTravelLines
-            onAddPoint={handleAddPoint}
-            onCursorChange={handleCursorChange}
-          />
+          {useSvgDrawing ? (
+            <WipingSequenceSvg
+              padImageSrc={padImages[selectedPad().key]}
+              padWidth={selectedPad().width}
+              padHeight={selectedPad().height}
+              drawingArea={drawingPadRectAbs()}
+              printerBounds={selectedPrinter().bounds}
+              padTopRight={selectedPadTopRight()}
+              parkingCoords={selectedPrinter().parkingCoords}
+              printerCenter={printerCenter()}
+              points={absolutePoints()}
+              calibrationPoint={calibration.calibrationPoint()}
+              bedImage={bedImages[selectedPrinter().key]}
+              showTravelLines
+              onAddPoint={handleAddPoint}
+              onCursorChange={handleCursorChange}
+            />
+          ) : (
+            <WipingSequenceCanvas
+              padImageSrc={padImages[selectedPad().key]}
+              padWidth={selectedPad().width}
+              padHeight={selectedPad().height}
+              drawingArea={drawingPadRectAbs()}
+              padTopRight={selectedPadTopRight()}
+              parkingCoords={selectedPrinter().parkingCoords}
+              printerCenter={printerCenter()}
+              points={absolutePoints()}
+              calibrationPoint={calibration.calibrationPoint()}
+              showTravelLines
+              onAddPoint={handleAddPoint}
+              onCursorChange={handleCursorChange}
+            />
+          )}
           <SimulationCanvas
             nozzlePos={simulation.simulationPoint()}
             drawingArea={drawingPadRectAbs()}
@@ -361,9 +420,26 @@ export function DrawingPad() {
         </Show>
       </CanvasWrapper>
       <Legend>
-        <div class="text-shark-200">Grid: {formatMicronsToMmString(gridStep)}mm</div>
-        <div class="text-sky-400">Blue dashed line: Travel move from the parking position to the wiping start.</div>
-        <div class="text-green-400">Green dashed line: Travel move to the probing area after wiping.</div>
+        <LegendRow class="text-neutral-400">
+          <LegendIcon layout="solid" />
+          <div>Grid: {formatMicronsToMmString(gridStep)}mm</div>
+        </LegendRow>
+        <LegendRow class="text-shark-400">
+          <LegendIcon layout="fill" />
+          <div>Bed</div>
+        </LegendRow>
+        <LegendRow class="text-sky-400">
+          <LegendIcon layout="dashed" />
+          <div>Travel move from the parking position to the wiping start</div>
+        </LegendRow>
+        <LegendRow class="text-green-400">
+          <LegendIcon layout="dashed" />
+          <div>Travel move to the probing area after wiping</div>
+        </LegendRow>
+        <LegendRow class="text-orange-400">
+          <LegendIcon layout="dashed" />
+          <div>Printer limits</div>
+        </LegendRow>
       </Legend>
     </Container>
   );

@@ -6,7 +6,7 @@ import type { PrinterKey } from '@/WiperTool/domain/printers';
 import { printerProperties } from '@/WiperTool/domain/printers';
 import type { WipingSequence } from '@/WiperTool/domain/wipingSequence';
 import { getWipingStepPoints } from '@/WiperTool/domain/wipingSequence';
-import { WipingSequenceCanvas } from '@/WiperTool/features/WipingSequenceCanvas';
+import { WipingSequenceSvg } from '@/WiperTool/features/WipingSequenceSvg';
 import { CartesianRect } from '@/WiperTool/lib/rect';
 import { padImages } from '@/WiperTool/ui/pads';
 
@@ -94,7 +94,7 @@ export function PreviewWipingSequenceCanvas(props: Props) {
   return (
     <Container>
       <Frame>
-        <WipingSequenceCanvas
+        <WipingSequenceSvg
           padImageSrc={padImages[importedPad().key]}
           padWidth={importedPad().width}
           padHeight={importedPad().height}
