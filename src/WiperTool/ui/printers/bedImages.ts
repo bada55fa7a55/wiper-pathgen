@@ -1,7 +1,7 @@
 import type { Component, JSX } from 'solid-js';
 import type { PrinterKey } from '@/WiperTool/domain/printers';
 import { PrinterKeys } from '@/WiperTool/domain/printers';
-import {Mk52BedSvg} from './Mk52BedSvg';
+import { Mk52BedSvg } from './Mk52BedSvg';
 
 export type BedImage = {
   x: number;

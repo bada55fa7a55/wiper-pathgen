@@ -5,7 +5,7 @@ import { PrinterKeys } from './model';
 export const printerProperties: Record<string, PrinterProperties> = {
   [PrinterKeys.PrusaCoreOne]: {
     key: PrinterKeys.PrusaCoreOne,
-    name: 'Prusa Core One/+',
+    name: 'Prusa CORE One/+',
     printerId: 'COREONE',
     bounds: CartesianRect.fromMinMax(-2000, -19000, 252000, 221000),
     originalCleaningGCode: 'G29 P9 X208 Y-2.5 W32 H4',
@@ -23,7 +23,7 @@ export const printerProperties: Record<string, PrinterProperties> = {
   },
   [PrinterKeys.PrusaCoreOneL]: {
     key: PrinterKeys.PrusaCoreOneL,
-    name: 'Prusa Core One L',
+    name: 'Prusa CORE One L',
     printerId: 'COREONEL',
     // https://github.com/prusa3d/Prusa-Firmware-Buddy/blob/v6.5.1/include/marlin/Configuration_COREONEL.h#L904-L914
     bounds: CartesianRect.fromMinMax(-2000, -8000, 302000, 300000),

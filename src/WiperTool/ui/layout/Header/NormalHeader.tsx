@@ -104,14 +104,14 @@ type Props = {
 export function NormalHeader(props: Props) {
   return (
     <Container ref={props.ref}>
-      <Logo>Nozzle Wiper Path Generator For Prusa Core One</Logo>
+      <Logo>Nozzle Wiper Path Generator For Prusa CORE One</Logo>
       <TagLines>
         <TagLine>
-          Generate wiping paths for the Prusa CORE&nbsp;ONE using Bambu Lab A1 or equivalent silicone nozzle wiping
-          pads.
+          Generate nozzle wiping G-code for the Prusa CORE&nbsp;One using Bambu Lab A1 or equivalent silicone nozzle
+          wiping pads.
         </TagLine>
         <TagLine>
-          Companion tool for the{' '}
+          This is a companion tool for the{' '}
           <Link
             href={wiperArmv2Link.href}
             {...analyticsHeaderPrintablesWA2()}

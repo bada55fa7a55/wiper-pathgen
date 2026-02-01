@@ -70,9 +70,10 @@ export function InstallationSection() {
             <StepTitle>Save and Test</StepTitle>
             <StepBody>
               <p>
-                Save the printer profile. Run a small test print and confirm the new wiping path runs in place of the
-                old cleaning routine.
+                Save the printer profile. If you modified a stock profile, save the modified profile under a new name
+                and use the modified printer profile to print from now on.
               </p>
+              <p>Run a small test print and confirm the new wiping path runs in place of the old cleaning routine.</p>
             </StepBody>
           </Step>
         </SectionColumn>
