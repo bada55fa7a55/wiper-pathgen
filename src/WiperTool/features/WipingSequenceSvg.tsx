@@ -3,7 +3,7 @@ import { twc } from '@/styles/helpers';
 import { gridStep } from '@/WiperTool/configuration';
 import type { Point } from '@/WiperTool/lib/geometry';
 import { CartesianRect } from '@/WiperTool/lib/rect';
-import type { BedImage } from '../ui/printers';
+import type { BedImage } from '@/WiperTool/ui/printers';
 
 const defaultPadTopRight: Point = { x: 0, y: 0 };
 
@@ -252,16 +252,18 @@ export function WipingSequenceSvg(props: Props) {
     >
       <g transform={flipTransform()}>
         <Show when={props.bedImage}>
-          {(img) => (
-            <image
-              href={img().src}
-              x={img().x}
-              y={img().y}
-              width={img().width}
-              height={img().height}
-              preserveAspectRatio="none"
-            />
-          )}
+          {(img) => {
+            const Svg = img().Svg;
+            return (
+              <Svg
+                x={img().x}
+                y={img().y}
+                width={img().width}
+                height={img().height}
+                preserveAspectRatio="none"
+              />
+            );
+          }}
         </Show>
         {/* <Show when={props.bedShape}>
           {(shape) => (

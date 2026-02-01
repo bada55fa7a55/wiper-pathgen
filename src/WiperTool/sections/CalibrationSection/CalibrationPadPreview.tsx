@@ -181,16 +181,18 @@ function CalibrationPadPreviewImpl(props: Props) {
       >
         <g transform={flipTransform()}>
           <Show when={bedImage()}>
-            {(img) => (
-              <image
-                href={img().src}
-                x={img().x}
-                y={img().y}
-                width={img().width}
-                height={img().height}
-                preserveAspectRatio="none"
-              />
-            )}
+            {(img) => {
+              const Svg = img().Svg;
+              return (
+                <Svg
+                  x={img().x}
+                  y={img().y}
+                  width={img().width}
+                  height={img().height}
+                  preserveAspectRatio="none"
+                />
+              );
+            }}
           </Show>
           <rect
             x={viewSettings().x}
