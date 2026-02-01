@@ -1,7 +1,8 @@
-import { createMemo, createSignal, For, Show } from 'solid-js';
+import { createMemo, createSignal, Show } from 'solid-js';
 import { twc } from '@/styles/helpers';
 import { usePads, usePrinters } from '@/WiperTool/providers/AppModelProvider';
 import { ModalPortal } from '@/WiperTool/ui/modals';
+import { bedImages } from '@/WiperTool/ui/printers';
 
 const Container = twc(
   'div',
@@ -108,23 +109,49 @@ type SvgRect = {
 
 const padding = 15000;
 
-function CalibrationPadPreviewImpl() {
+type Props = {
+  withBuildVolume?: boolean;
+};
+
+function CalibrationPadPreviewImpl(props: Props) {
   const { selectedPrinter } = usePrinters();
   const { calibratedPadRect } = usePads();
+
+  const bedImage = createMemo(() => {
+    return bedImages[selectedPrinter().key];
+  });
 
   const viewSettings = createMemo(() => {
     const printerData = selectedPrinter();
 
     const viewRect = printerData.bounds.clone();
+
+    const img = bedImage();
+    if (img) {
+      viewRect.x = Math.min(viewRect.x, img.x);
+      viewRect.y = Math.min(viewRect.y, img.y);
+      viewRect.width = Math.max(viewRect.width, img.width);
+      viewRect.height = Math.max(viewRect.height, img.height);
+    }
+
     viewRect.x -= padding;
     viewRect.y -= padding;
     viewRect.width += 2 * padding;
     viewRect.height += 2 * padding;
+
     return viewRect;
   });
 
   const boundsRect = createMemo<SvgRect>(() => {
     return selectedPrinter().bounds.toJSON();
+  });
+
+  const buildVolume = createMemo(() => {
+    if (!props.withBuildVolume) {
+      return null;
+    }
+
+    return selectedPrinter().buildVolume;
   });
 
   const padRect = createMemo<SvgRect | null>(() => {
@@ -137,7 +164,7 @@ function CalibrationPadPreviewImpl() {
 
   const flipTransform = createMemo(() => {
     const { y, height } = viewSettings();
-    return `translate(0 ${y * 2 + height + 10000}) scale(1 -1)`;
+    return `translate(0 ${y * 2 + height}) scale(1 -1)`;
   });
 
   return (
@@ -153,6 +180,18 @@ function CalibrationPadPreviewImpl() {
         aria-label="Printer bounds with silicone pad position"
       >
         <g transform={flipTransform()}>
+          <Show when={bedImage()}>
+            {(img) => (
+              <image
+                href={img().src}
+                x={img().x}
+                y={img().y}
+                width={img().width}
+                height={img().height}
+                preserveAspectRatio="none"
+              />
+            )}
+          </Show>
           <rect
             x={viewSettings().x}
             y={viewSettings().y}
@@ -175,27 +214,18 @@ function CalibrationPadPreviewImpl() {
             stroke-dasharray="5, 3"
             vector-effect="non-scaling-stroke"
           />
-          <Show when={selectedPrinter().bedShape}>
-            {(bedShape) => (
-              <g transform={`translate(${bedShape().offset[0]}, ${bedShape().offset[1]})`}>
-                <path
-                  class="fill-neutral-500"
-                  opacity="0.4"
-                  d={`M ${bedShape()
-                    .path.map(([x, y]) => `${x} ${y}`)
-                    .join(' L ')}`}
-                />
-                <For each={bedShape().negativeVolumes}>
-                  {(negativeVolume) => (
-                    <circle
-                      cx={negativeVolume.x}
-                      cy={negativeVolume.y}
-                      r={negativeVolume.radius}
-                      class="fill-neutral-800"
-                    />
-                  )}
-                </For>
-              </g>
+          <Show when={buildVolume()}>
+            {(volume) => (
+              <rect
+                class="stroke-porange-500"
+                x={0}
+                y={0}
+                width={volume().x}
+                height={volume().y}
+                rx="500"
+                fill="none"
+                vector-effect="non-scaling-stroke"
+              />
             )}
           </Show>
           <Show when={padRect()}>
@@ -217,7 +247,7 @@ function CalibrationPadPreviewImpl() {
       <Legend>
         <LegendRow>
           <LegendIcon layout="bounds" />
-          <div>Printer bounds</div>
+          <div>Printer limits</div>
         </LegendRow>
         <LegendRow>
           <LegendIcon layout="pad" />

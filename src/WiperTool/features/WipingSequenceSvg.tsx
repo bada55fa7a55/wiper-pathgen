@@ -1,9 +1,9 @@
-import { createEffect, createMemo, createSignal, For, Show } from 'solid-js';
+import { createEffect, createMemo, createSignal, Show } from 'solid-js';
 import { twc } from '@/styles/helpers';
 import { gridStep } from '@/WiperTool/configuration';
-import type { PrinterBedShape } from '@/WiperTool/domain/printers/model';
 import type { Point } from '@/WiperTool/lib/geometry';
 import { CartesianRect } from '@/WiperTool/lib/rect';
+import type { BedImage } from '../ui/printers';
 
 const defaultPadTopRight: Point = { x: 0, y: 0 };
 
@@ -28,7 +28,7 @@ type Props = {
   showTravelLines?: boolean;
   calibrationPoint?: Point;
   showCalibrationPoint?: boolean;
-  bedShape?: PrinterBedShape;
+  bedImage?: BedImage;
   isInteractive?: boolean;
   onAddPoint?: (point: Point) => void;
   onCursorChange?: (point: Point | null) => void;
@@ -251,7 +251,19 @@ export function WipingSequenceSvg(props: Props) {
       onMouseLeave={props.isInteractive === false ? undefined : handleMouseLeave}
     >
       <g transform={flipTransform()}>
-        <Show when={props.bedShape}>
+        <Show when={props.bedImage}>
+          {(img) => (
+            <image
+              href={img().src}
+              x={img().x}
+              y={img().y}
+              width={img().width}
+              height={img().height}
+              preserveAspectRatio="none"
+            />
+          )}
+        </Show>
+        {/* <Show when={props.bedShape}>
           {(shape) => (
             <g transform={`translate(${shape().offset[0]}, ${shape().offset[1]})`}>
               <path
@@ -274,7 +286,7 @@ export function WipingSequenceSvg(props: Props) {
               </For>
             </g>
           )}
-        </Show>
+        </Show> */}
         <Show when={props.padImageSrc}>
           {(imageSrc) => (
             <image

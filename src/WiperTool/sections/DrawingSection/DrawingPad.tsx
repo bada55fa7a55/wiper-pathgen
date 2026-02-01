@@ -28,6 +28,7 @@ import {
 } from '@/WiperTool/providers/AppModelProvider';
 import { ModalKeys } from '@/WiperTool/ui/modals';
 import { padImages } from '@/WiperTool/ui/pads';
+import { bedImages } from '@/WiperTool/ui/printers';
 import { StepKeys } from '@/WiperTool/ui/steps';
 import { useDrawingPadRect, usePadCoordinateTransform } from './helpers';
 import { PathControls } from './PathControls';
@@ -360,7 +361,7 @@ export function DrawingPad() {
               printerCenter={printerCenter()}
               points={absolutePoints()}
               calibrationPoint={calibration.calibrationPoint()}
-              bedShape={selectedPrinter().bedShape}
+              bedImage={bedImages[selectedPrinter().key]}
               showTravelLines
               onAddPoint={handleAddPoint}
               onCursorChange={handleCursorChange}
@@ -437,7 +438,7 @@ export function DrawingPad() {
         </LegendRow>
         <LegendRow class="text-orange-400">
           <LegendIcon layout="dashed" />
-          <div>Nozzle travel limits</div>
+          <div>Printer limits</div>
         </LegendRow>
       </Legend>
     </Container>

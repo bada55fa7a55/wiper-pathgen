@@ -10,17 +10,6 @@ export const PrinterKeys = {
 
 export type PrinterKey = (typeof PrinterKeys)[keyof typeof PrinterKeys];
 
-export type PrinterBedShape = {
-  path: [number, number][];
-  offset: [number, number];
-  negativeVolumes: {
-    type: 'circle';
-    x: number;
-    y: number;
-    radius: number;
-  }[];
-};
-
 export type PrinterProperties = {
   key: PrinterKey;
   name: string;
@@ -29,6 +18,6 @@ export type PrinterProperties = {
   originalCleaningGCode: string;
   parkingZHeight: number;
   parkingCoords: Point;
-  bedShape?: PrinterBedShape;
+  buildVolume: { x: number; y: number; z: number };
   status: 'supported' | 'in-progress' | 'planned';
 };
