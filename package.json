@@ -10,6 +10,7 @@
     "build:ssr": "vite build --ssr src/entry-server.tsx --outDir dist/server --ssrManifest",
     "prerender": "node ./prerender.mjs",
     "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
     "lint": "biome lint src",
     "format": "biome check --write src",
     "test": "vitest",
