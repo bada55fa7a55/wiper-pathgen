@@ -113,9 +113,7 @@ export function useCalibration() {
   const { calibration } = useAppModel();
 
   return {
-    x: () => calibration.state.x,
-    y: () => calibration.state.y,
-    z: () => calibration.state.z,
+    ...makeAccessors(() => calibration.state, ['x', 'y', 'z'] as const),
     ...calibration.derived,
     actions: calibration.actions,
   } as const;
@@ -125,11 +123,7 @@ export function useSettings() {
   const { settings } = useAppModel();
 
   return {
-    plungeDepth: () => settings.state.plungeDepth,
-    feedRate: () => settings.state.feedRate,
-    zLift: () => settings.state.zLift,
-    printer: () => settings.state.printer,
-    padType: () => settings.state.padType,
+    ...makeAccessors(() => settings.state, ['plungeDepth', 'feedRate', 'zLift', 'printer', 'padType'] as const),
     ...settings.derived,
     actions: settings.actions,
   } as const;
@@ -140,7 +134,7 @@ export function useWipingSequence() {
 
   return {
     wipingSteps: () => wipingSequence.state.wipingSequence,
-    revision: () => wipingSequence.state.revision,
+    ...makeAccessors(() => wipingSequence.state, ['revision'] as const),
     ...wipingSequence.derived,
     actions: wipingSequence.actions,
   } as const;
@@ -159,7 +153,7 @@ export function useTracking() {
   const { tracking } = useAppModel();
 
   return {
-    lastWipingSequenceWrite: () => tracking.state.lastWipingSequenceWrite,
+    ...makeAccessors(() => tracking.state, ['lastWipingSequenceWrite'] as const),
     actions: tracking.actions,
   } as const;
 }
