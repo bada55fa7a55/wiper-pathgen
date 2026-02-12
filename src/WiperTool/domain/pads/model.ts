@@ -1,7 +1,7 @@
 import type { MaybePoint, Point } from '@/WiperTool/lib/geometry';
 
 export const PadKeys = {
-  BambuLabA1: 'bbl-a1',
+  BambuLabP1S: 'bbl-p1s',
 };
 
 export type PadKey = (typeof PadKeys)[keyof typeof PadKeys];
