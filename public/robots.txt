@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://wiper-pathgen.6d6178.com/sitemap.xml

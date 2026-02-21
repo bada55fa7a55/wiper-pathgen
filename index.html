@@ -6,21 +6,32 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
+    <link rel="canonical" href="%APP_SITE_URL%/" />
     <meta name="theme-color" content="#141414" />
     <meta name="title" content="%APP_TITLE%" />
     <meta name="description" content="%APP_DESCRIPTION%" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="%APP_TITLE%" />
     <meta property="og:description" content="%APP_DESCRIPTION%" />
-    <meta property="og:image" content="/opengraph.png" />
+    <meta property="og:image" content="%APP_SITE_URL%/opengraph.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="%APP_TITLE%" />
     <meta name="twitter:description" content="%APP_DESCRIPTION%" />
-    <meta name="twitter:image" content="/twitter.png" />
+    <meta name="twitter:image" content="%APP_SITE_URL%/twitter.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>%APP_HTML_TITLE%</title>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Nozzle Wiper Path Generator for Prusa CORE One",
+      "url": "%APP_SITE_URL%/",
+      "applicationCategory": "UtilitiesApplication",
+      "description": "Draw custom nozzle wiping paths and generate G-code for the Prusa CORE One using Bambu Lab A1 silicone pads."
+    }
+    </script>
     <script type="module">
       import materialSymbolsWoff2 from '@fontsource-variable/material-symbols-rounded/files/material-symbols-rounded-latin-wght-normal.woff2?url';
 
