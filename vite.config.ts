@@ -53,18 +53,20 @@ const simpleAnalyticsPlugin = (enabled: boolean, hostname?: string): Plugin => (
   },
 });
 
-const siteMetaPlugin: Plugin = {
+const siteMetaPlugin = (siteUrl: string): Plugin => ({
   name: 'site-meta-inject',
   transformIndexHtml(html) {
     return html
+      .replaceAll('%APP_SITE_URL%', siteUrl)
       .replaceAll('%APP_TITLE%', siteTitle)
       .replaceAll('%APP_DESCRIPTION%', siteDescription)
       .replaceAll('%APP_HTML_TITLE%', siteHtmlTitle);
   },
-};
+});
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, projectRoot, '');
+  const siteUrl = (env.VITE_SITE_URL || 'https://wiper-pathgen.6d6178.com').replace(/\/+$/, '');
   const simpleAnalyticsEnabled = env.VITE_SA_ENABLED === 'true';
   const simpleAnalyticsHostname = env.VITE_SA_HOSTNAME || undefined;
 
@@ -78,7 +80,7 @@ export default defineConfig(({ mode }) => {
       solid({ ssr: true }),
       tsconfigPaths(),
       simpleAnalyticsPlugin(simpleAnalyticsEnabled, simpleAnalyticsHostname),
-      siteMetaPlugin,
+      siteMetaPlugin(siteUrl),
     ],
     resolve: {
       //dedupe: ['solid-js', 'solid-js/web', 'solid-js/store'],
