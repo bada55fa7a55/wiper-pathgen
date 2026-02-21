@@ -34,6 +34,18 @@ Outputs the optimized static assets to `dist/`. You can sanity-check the build l
 npm run preview
 ```
 
+### Material Symbols icon font
+
+The icon font is a self-hosted subset containing only the icons used in the app (see `src/assets/fonts/`). To update the subset when adding new icons:
+
+1. Build the full icon list from `symbol=` props and `msIcon=` props across the codebase.
+2. Fetch a new subset from Google Fonts:
+   ```
+   https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=check,close,...
+   ```
+   Use a browser User-Agent header to get woff2 format.
+3. Download the woff2 file and replace `src/assets/fonts/material-symbols-rounded-subset.woff2`.
+
 ## Code quality
-- `npm run lint` — lint the codebase with Biome
-- `npm run format` — format files in-place
+- `npm run lint`: lint the codebase with Biome
+- `npm run format`: format files in-place

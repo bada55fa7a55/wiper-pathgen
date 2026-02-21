@@ -32,20 +32,6 @@
       "description": "Draw custom nozzle wiping paths and generate G-code for the Prusa CORE One using Bambu Lab A1 silicone pads."
     }
     </script>
-    <script type="module">
-      import materialSymbolsWoff2 from '@fontsource-variable/material-symbols-rounded/files/material-symbols-rounded-latin-wght-normal.woff2?url';
-
-      if (!document.head.querySelector('link[data-preload-material-symbols]')) {
-        const preload = document.createElement('link');
-        preload.rel = 'preload';
-        preload.as = 'font';
-        preload.type = 'font/woff2';
-        preload.crossOrigin = 'anonymous';
-        preload.href = materialSymbolsWoff2;
-        preload.dataset.preloadMaterialSymbols = 'true';
-        document.head.append(preload);
-      }
-    </script>
   </head>
   <body>
     <div id="root"><!--app-html--></div>

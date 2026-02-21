@@ -19,7 +19,6 @@
     "knip": "knip"
   },
   "dependencies": {
-    "@fontsource-variable/material-symbols-rounded": "^5.2.30",
     "@tailwindcss/vite": "^4.1.17",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
