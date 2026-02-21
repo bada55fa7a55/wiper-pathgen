@@ -174,11 +174,6 @@ export type AnalyticsEvent = {
   trigger: AnalyticsTrigger;
 } & AnalyticsMetadata;
 
-export type AnalyticsEvent2 = {
-  event: string;
-  trigger: AnalyticsTrigger;
-} & AnalyticsMetadata;
-
 export function track(event: AnalyticsEvent) {
   const traceid = isClientRuntime ? window.tid : '';
   const { event: eventName, ...metadata } = event;

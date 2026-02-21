@@ -15,10 +15,7 @@ type Accessors<T extends object, K extends readonly (keyof T)[]> = {
   [P in K[number]]: () => T[P];
 };
 
-export function makeAccessors<T extends object, K extends readonly (keyof T)[]>(
-  getState: () => T,
-  keys: K,
-): Accessors<T, K> {
+function makeAccessors<T extends object, K extends readonly (keyof T)[]>(getState: () => T, keys: K): Accessors<T, K> {
   const out = {} as Accessors<T, K>;
   for (const k of keys) {
     (out as any)[k] = () => getState()[k];

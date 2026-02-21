@@ -29,20 +29,6 @@ export function useDrawingPadRect() {
   });
 }
 
-export function relToAbs(relativePoint: Point, padTopRight: Point): Point {
-  return {
-    x: padTopRight.x + relativePoint.x,
-    y: padTopRight.y + relativePoint.y,
-  };
-}
-
-export function absToRel(absolutePoint: Point, padTopRight: Point): Point {
-  return {
-    x: absolutePoint.x - padTopRight.x,
-    y: absolutePoint.y - padTopRight.y,
-  };
-}
-
 export function usePadCoordinateTransform() {
   const { selectedPadTopRight } = usePads();
 
