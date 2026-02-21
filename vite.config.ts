@@ -53,20 +53,32 @@ const simpleAnalyticsPlugin = (enabled: boolean, hostname?: string): Plugin => (
   },
 });
 
-const siteMetaPlugin = (siteUrl: string): Plugin => ({
+const siteMetaPlugin = (siteUrl: string, googleSiteVerification?: string): Plugin => ({
   name: 'site-meta-inject',
   transformIndexHtml(html) {
-    return html
+    const replaced = html
       .replaceAll('%APP_SITE_URL%', siteUrl)
       .replaceAll('%APP_TITLE%', siteTitle)
       .replaceAll('%APP_DESCRIPTION%', siteDescription)
       .replaceAll('%APP_HTML_TITLE%', siteHtmlTitle);
+
+    const tags: HtmlTagDescriptor[] = [];
+    if (googleSiteVerification) {
+      tags.push({
+        tag: 'meta',
+        injectTo: 'head',
+        attrs: { name: 'google-site-verification', content: googleSiteVerification },
+      });
+    }
+
+    return { html: replaced, tags };
   },
 });
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, projectRoot, '');
   const siteUrl = (env.VITE_SITE_URL || 'https://wiper-pathgen.6d6178.com').replace(/\/+$/, '');
+  const googleSiteVerification = env.GOOGLE_SITE_VERIFICATION || undefined;
   const simpleAnalyticsEnabled = env.VITE_SA_ENABLED === 'true';
   const simpleAnalyticsHostname = env.VITE_SA_HOSTNAME || undefined;
 
@@ -80,7 +92,7 @@ export default defineConfig(({ mode }) => {
       solid({ ssr: true }),
       tsconfigPaths(),
       simpleAnalyticsPlugin(simpleAnalyticsEnabled, simpleAnalyticsHostname),
-      siteMetaPlugin(siteUrl),
+      siteMetaPlugin(siteUrl, googleSiteVerification),
     ],
     resolve: {
       //dedupe: ['solid-js', 'solid-js/web', 'solid-js/store'],
