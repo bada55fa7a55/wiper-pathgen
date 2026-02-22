@@ -1,5 +1,5 @@
 import type { JSX } from 'solid-js';
-import { Show } from 'solid-js';
+import { createUniqueId, Show } from 'solid-js';
 import { twc } from '@/styles/helpers';
 
 const FormField = twc(
@@ -94,10 +94,12 @@ type Props = {
 };
 
 export function FormInput(props: Props) {
+  const id = createUniqueId();
   return (
     <FormField>
-      {props.label && <FormLabel>{props.label}</FormLabel>}
+      {props.label && <FormLabel for={id}>{props.label}</FormLabel>}
       <Input
+        id={id}
         type="text"
         inputMode="decimal"
         value={props.value}

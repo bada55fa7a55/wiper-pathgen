@@ -274,8 +274,16 @@ export function CalibrationPadPreview() {
   return (
     <>
       <Container
+        role="button"
+        tabindex="0"
         aria-haspopup="dialog"
         aria-expanded={isOpen()}
+        onKeyDown={(e: KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleOpen();
+          }
+        }}
         onClick={handleOpen}
       >
         <CalibrationPadPreviewImpl />

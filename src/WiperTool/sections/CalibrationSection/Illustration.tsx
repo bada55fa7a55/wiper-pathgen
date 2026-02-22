@@ -92,9 +92,20 @@ export function Illustration(props: Props) {
 
   return (
     <>
-      <Container onClick={handleOpen}>
+      <Container
+        role="button"
+        tabindex="0"
+        onKeyDown={(e: KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleOpen();
+          }
+        }}
+        onClick={handleOpen}
+      >
         <IllustrationImage
           src={props.src}
+          alt={props.caption}
           loading="lazy"
           aria-haspopup="dialog"
           aria-expanded={isOpen()}
@@ -111,7 +122,10 @@ export function Illustration(props: Props) {
           aria-label={props.caption}
           onClick={handleClose}
         >
-          <ModalImage src={props.src} />
+          <ModalImage
+            src={props.src}
+            alt={props.caption}
+          />
           <ModalCaption>{props.caption}</ModalCaption>
         </IllustrationModal>
       </ModalPortal>

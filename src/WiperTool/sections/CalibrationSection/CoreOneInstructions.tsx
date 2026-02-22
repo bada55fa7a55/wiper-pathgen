@@ -1,6 +1,6 @@
 import { MenuBreadcrumb, SectionColumn, SectionColumns, Step, StepBody, StepTitle } from '@/components';
-import calibrationNozzlePosition1Asset from './assets/coreone/calibration-nozzle-position-1.png';
-import calibrationNozzlePosition2Asset from './assets/coreone/calibration-nozzle-position-2.png';
+import calibrationNozzlePosition1Asset from './assets/coreone/calibration-nozzle-position-1.webp';
+import calibrationNozzlePosition2Asset from './assets/coreone/calibration-nozzle-position-2.webp';
 import { CalibrationInputStepBody } from './CalibrationInputStepBody';
 import { Illustration } from './Illustration';
 
