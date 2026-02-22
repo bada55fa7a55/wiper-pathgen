@@ -92,7 +92,17 @@ export function Illustration(props: Props) {
 
   return (
     <>
-      <Container onClick={handleOpen}>
+      <Container
+        role="button"
+        tabindex="0"
+        onKeyDown={(e: KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleOpen();
+          }
+        }}
+        onClick={handleOpen}
+      >
         <IllustrationImage
           src={props.src}
           alt={props.caption}
