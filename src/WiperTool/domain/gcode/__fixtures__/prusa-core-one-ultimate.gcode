@@ -1,5 +1,5 @@
 ; G29 P9 X208 Y-2.5 W32 H4 ; <- stock nozzle cleaning
-; Start Prusa Core One/+ nozzle wiping sequence
+; Start Prusa CORE One/+ nozzle wiping sequence
 ; REF: X77.50 Y-11.00 Z2.00
 ; GEN: 2025-01-02 03:04:05 UTC
 G0 X65.670 Y-14.405 Z1.50 F5000
