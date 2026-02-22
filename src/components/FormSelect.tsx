@@ -1,5 +1,5 @@
 import type { JSX } from 'solid-js';
-import { For, Show } from 'solid-js';
+import { createUniqueId, For, Show } from 'solid-js';
 import { twc } from '@/styles/helpers';
 import { MaterialSymbol } from './MaterialSymbol';
 
@@ -123,11 +123,13 @@ type Props = {
 };
 
 export function FormSelect(props: Props) {
+  const id = createUniqueId();
   return (
     <FormField>
-      <FormLabel>{props.label}</FormLabel>
+      <FormLabel for={id}>{props.label}</FormLabel>
       <SelectWrapper>
         <Select
+          id={id}
           value={props.value}
           invalid={props.error?.type}
           disabled={props.isDisabled}
