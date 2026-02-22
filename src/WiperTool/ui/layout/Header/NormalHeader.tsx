@@ -1,4 +1,3 @@
-import { styled } from 'solid-styled-components';
 import { Link } from '@/components';
 import { twc } from '@/styles/helpers';
 import { wiperArmv2Link } from '@/WiperTool/configuration';
@@ -41,11 +40,7 @@ const ButtonRow = twc(
 const PageTitle = twc(
   'h1',
   `
-  text-4xl
   select-none
-  text-transparent
-  bg-size-[100%]
-  bg-no-repeat
   w-[310px]
   h-[120px]
   sm:w-[456px]
@@ -55,9 +50,14 @@ const PageTitle = twc(
   `,
 );
 
-const Logo = styled(PageTitle)`
-  background-image: url(${logo});
-`;
+const LogoImg = twc(
+  'img',
+  `
+  block
+  w-full
+  h-full
+  `,
+);
 
 const TagLines = twc(
   'div',
@@ -104,7 +104,15 @@ type Props = {
 export function NormalHeader(props: Props) {
   return (
     <Container ref={props.ref}>
-      <Logo>Nozzle Wiper Path Generator For Prusa CORE One</Logo>
+      <PageTitle>
+        <LogoImg
+          src={logo}
+          alt="Nozzle Wiper Path Generator For Prusa CORE One"
+          width={752}
+          height={291}
+          fetchpriority="high"
+        />
+      </PageTitle>
       <TagLines>
         <TagLine>
           Generate nozzle wiping G-code for the Prusa CORE&nbsp;One using Bambu Lab A1 or equivalent silicone nozzle
