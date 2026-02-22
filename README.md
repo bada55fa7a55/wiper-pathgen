@@ -34,6 +34,24 @@ Outputs the optimized static assets to `dist/`. You can sanity-check the build l
 npm run preview
 ```
 
+## Optimizing images
+
+Images are stored as WebP in the repo for optimal file size. When adding or updating images:
+
+1. **Convert PNGs/JPGs to WebP** using ImageMagick:
+   ```bash
+   magick input.png output.webp
+   ```
+
+2. **Optimize SVGs** with SVGO:
+   ```bash
+   npx svgo input.svg -o input.svg
+   ```
+
+3. **Update imports:** image files are imported via Vite with the `?url` suffix (e.g. `import img from './image.webp?url'`).
+
+4. **Add `alt`, `width`, and `height`** to all `<img>` elements to prevent layout shift and improve accessibility.
+
 ### Material Symbols icon font
 
 The icon font is a self-hosted subset containing only the icons used in the app (see `src/assets/fonts/`). To update the subset when adding new icons:
