@@ -4,6 +4,7 @@ import { twc } from '@/styles/helpers';
 import { gridStep } from '@/WiperTool/configuration';
 import { getWipingStepPoints, makeWipingStepPoint } from '@/WiperTool/domain/wipingSequence';
 import { WipingSequenceCanvas } from '@/WiperTool/features/WipingSequenceCanvas';
+import { WipingSequenceSvg } from '@/WiperTool/features/WipingSequenceSvg';
 import {
   actionImportModalOpenedEvent,
   actionShareModalOpenedEvent,
@@ -14,6 +15,7 @@ import {
 } from '@/WiperTool/lib/analytics';
 import { formatMicronsToMmString } from '@/WiperTool/lib/formatting';
 import type { Point } from '@/WiperTool/lib/geometry';
+import { CartesianRect } from '@/WiperTool/lib/rect';
 import {
   useCalibration,
   useModals,
@@ -26,8 +28,9 @@ import {
 } from '@/WiperTool/providers/AppModelProvider';
 import { ModalKeys } from '@/WiperTool/ui/modals';
 import { padImages } from '@/WiperTool/ui/pads';
+import { bedImages } from '@/WiperTool/ui/printers';
 import { StepKeys } from '@/WiperTool/ui/steps';
-import { absToRel, relToAbs, useDrawingPadPaddings } from './helpers';
+import { useDrawingPadRect, usePadCoordinateTransform } from './helpers';
 import { PathControls } from './PathControls';
 import { SimulationCanvas } from './SimulationCanvas';
 import { createNozzleSimulation } from './useSimulation';
@@ -116,8 +119,9 @@ const CoordinatesLine = twc(
   flex
   justify-center
   w-full
-  mt-2
+  pt-1
   px-1
+  xbg-shark-700
   text-sm
   font-mono
   text-orange-400
@@ -134,6 +138,47 @@ const Legend = twc(
     text-xs
     text-shark-300
   `,
+);
+
+const LegendRow = twc(
+  'div',
+  `
+  flex
+  gap-2
+  items-start
+  text-sm
+  text-shark-300
+  `,
+);
+
+const LegendIcon = twc(
+  'div',
+  `
+    w-3
+    h-3
+    rounded-xs
+    shrink-0
+    mt-1
+  `,
+  {
+    variants: {
+      layout: {
+        solid: `
+        border
+        border-currrent
+        border-solid
+        `,
+        dashed: `
+        border
+        border-currrent
+        border-dashed
+        `,
+        fill: `
+        bg-current
+        `,
+      },
+    },
+  },
 );
 
 const DrawingHint = twc(
@@ -160,6 +205,7 @@ const DrawingHint = twc(
 );
 
 export function DrawingPad() {
+  const useSvgDrawing = true;
   const calibration = useCalibration();
   const settings = useSettings();
   const wipingSequence = useWipingSequence();
@@ -169,12 +215,21 @@ export function DrawingPad() {
   const tracking = useTracking();
   const modals = useModals();
 
-  const paddings = useDrawingPadPaddings();
+  const drawingPadRect = useDrawingPadRect();
+  const drawingPadRectAbs = createMemo(() => {
+    const rect = drawingPadRect();
+    const padTopRight = selectedPadTopRight();
+    const pad = selectedPad();
 
+    if (rect) {
+      return new CartesianRect(rect.x + padTopRight.x, rect.y + padTopRight.y, rect.width, rect.height);
+    }
+
+    return new CartesianRect(padTopRight.x - pad.width, padTopRight.y - pad.height, pad.width, pad.height);
+  });
   const [cursorMicrons, setCursorMicrons] = createSignal<Point | null>(null);
 
-  const toAbsolute = (relPoint: Point) => relToAbs(relPoint, selectedPadTopRight());
-  const toRelative = (absPoint: Point) => absToRel(absPoint, selectedPadTopRight());
+  const { relToAbs, absToRel } = usePadCoordinateTransform();
 
   const sequencePoints = createMemo(() => getWipingStepPoints(wipingSequence.wipingSteps()));
   const isSimulationDisabled = createMemo(() => sequencePoints().length < 2 || (settings.feedRate() ?? 0) <= 0);
@@ -207,16 +262,14 @@ export function DrawingPad() {
   };
 
   const handleAddPoint = (absPoint: Point) => {
-    const relPoint = toRelative(absPoint);
+    const relPoint = absToRel(absPoint);
     wipingSequence.actions.addWipingStep(makeWipingStepPoint(relPoint));
     tracking.actions.setLastWipingSequenceWrite({ type: 'point' });
     track(drawingPointAddedEvent());
   };
 
   const handleCursorChange = (absPoint: Point | null) => {
-    if (absPoint !== null) {
-      setCursorMicrons(absPoint ? toRelative(absPoint) : null);
-    }
+    setCursorMicrons(absPoint !== null ? absToRel(absPoint) : null);
   };
 
   const getFormattedCoords = (coords: Point) => {
@@ -227,10 +280,10 @@ export function DrawingPad() {
   };
 
   const printerCenter = createMemo<Point>(() => ({
-    x: selectedPrinter().maxX / 2,
-    y: selectedPrinter().maxY / 2,
+    x: selectedPrinter().bounds.right / 2,
+    y: selectedPrinter().bounds.top / 2,
   }));
-  const absolutePoints = createMemo(() => sequencePoints().map(toAbsolute));
+  const absolutePoints = createMemo(() => sequencePoints().map(relToAbs));
 
   const simulation = createNozzleSimulation({
     getPoints: absolutePoints,
@@ -296,32 +349,42 @@ export function DrawingPad() {
             width: '100%',
           }}
         >
-          <WipingSequenceCanvas
-            padImageSrc={padImages[selectedPad().key]}
-            padWidth={selectedPad().width}
-            padHeight={selectedPad().height}
-            paddingLeft={paddings().left}
-            paddingRight={paddings().right}
-            paddingTop={paddings().top}
-            paddingBottom={paddings().bottom}
-            padTopRight={selectedPadTopRight()}
-            parkingCoords={selectedPrinter().parkingCoords}
-            printerCenter={printerCenter()}
-            points={absolutePoints()}
-            calibrationPoint={calibration.calibrationPoint()}
-            showTravelLines
-            onAddPoint={handleAddPoint}
-            onCursorChange={handleCursorChange}
-          />
+          {useSvgDrawing ? (
+            <WipingSequenceSvg
+              padImageSrc={padImages[selectedPad().key]}
+              padWidth={selectedPad().width}
+              padHeight={selectedPad().height}
+              drawingArea={drawingPadRectAbs()}
+              printerBounds={selectedPrinter().bounds}
+              padTopRight={selectedPadTopRight()}
+              parkingCoords={selectedPrinter().parkingCoords}
+              printerCenter={printerCenter()}
+              points={absolutePoints()}
+              calibrationPoint={calibration.calibrationPoint()}
+              bedImage={bedImages[selectedPrinter().key]}
+              showTravelLines
+              onAddPoint={handleAddPoint}
+              onCursorChange={handleCursorChange}
+            />
+          ) : (
+            <WipingSequenceCanvas
+              padImageSrc={padImages[selectedPad().key]}
+              padWidth={selectedPad().width}
+              padHeight={selectedPad().height}
+              drawingArea={drawingPadRectAbs()}
+              padTopRight={selectedPadTopRight()}
+              parkingCoords={selectedPrinter().parkingCoords}
+              printerCenter={printerCenter()}
+              points={absolutePoints()}
+              calibrationPoint={calibration.calibrationPoint()}
+              showTravelLines
+              onAddPoint={handleAddPoint}
+              onCursorChange={handleCursorChange}
+            />
+          )}
           <SimulationCanvas
             nozzlePos={simulation.simulationPoint()}
-            padWidth={selectedPad().width}
-            padHeight={selectedPad().height}
-            paddingLeft={paddings().left}
-            paddingRight={paddings().right}
-            paddingTop={paddings().top}
-            paddingBottom={paddings().bottom}
-            padTopRight={selectedPadTopRight()}
+            drawingArea={drawingPadRectAbs()}
           />
         </CanvasFrame>
         <Show when={sequencePoints().length === 0}>
@@ -336,7 +399,7 @@ export function DrawingPad() {
               return <CoordinatesLine>&nbsp;</CoordinatesLine>;
             }
 
-            const formattedPoint = getFormattedCoords(toAbsolute(point));
+            const formattedPoint = getFormattedCoords(relToAbs(point));
 
             return (
               <CoordinatesLine>
@@ -346,7 +409,7 @@ export function DrawingPad() {
           })()}
         >
           {(cursor) => {
-            const formattedCursor = getFormattedCoords(toAbsolute(cursor));
+            const formattedCursor = getFormattedCoords(relToAbs(cursor));
 
             return (
               <CoordinatesLine>
@@ -357,9 +420,26 @@ export function DrawingPad() {
         </Show>
       </CanvasWrapper>
       <Legend>
-        <div class="text-shark-200">Grid: {formatMicronsToMmString(gridStep)}mm</div>
-        <div class="text-sky-400">Blue dashed line: Travel move from the parking position to the wiping start.</div>
-        <div class="text-green-400">Green dashed line: Travel move to the probing area after wiping.</div>
+        <LegendRow class="text-neutral-400">
+          <LegendIcon layout="solid" />
+          <div>Grid: {formatMicronsToMmString(gridStep)}mm</div>
+        </LegendRow>
+        <LegendRow class="text-shark-400">
+          <LegendIcon layout="fill" />
+          <div>Bed</div>
+        </LegendRow>
+        <LegendRow class="text-sky-400">
+          <LegendIcon layout="dashed" />
+          <div>Travel move from the parking position to the wiping start</div>
+        </LegendRow>
+        <LegendRow class="text-green-400">
+          <LegendIcon layout="dashed" />
+          <div>Travel move to the probing area after wiping</div>
+        </LegendRow>
+        <LegendRow class="text-orange-400">
+          <LegendIcon layout="dashed" />
+          <div>Printer limits</div>
+        </LegendRow>
       </Legend>
     </Container>
   );

@@ -8,9 +8,10 @@ export function IntroSection() {
       <SectionTitle>Introduction</SectionTitle>
       <SectionColumns>
         <SectionColumn>
+          <p>Use this web tool to draw custom nozzle wiping paths and generate the G-code.</p>
           <p>
-            Use this web tool to draw a custom nozzle wiping path. It currently supports the Prusa Core One with Bambu
-            Lab A1 silicone pads and pad mounting arms that place the pad at the front of the printer.
+            The tool currently supports the Prusa CORE&nbsp;One with Bambu Lab A1 silicone pads and pad mounting arms
+            that place the pad at the front of the printer.
           </p>
           <p>
             The recommended option is the{' '}

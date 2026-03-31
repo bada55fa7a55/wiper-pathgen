@@ -1,5 +1,7 @@
 import { PrinterKeys } from '@/WiperTool/domain/printers';
 
+export const targetCanvasWidth = 1400;
+
 export const gridStep = 5000;
 
 export const defaultPrinterKey = PrinterKeys.PrusaCoreOne;

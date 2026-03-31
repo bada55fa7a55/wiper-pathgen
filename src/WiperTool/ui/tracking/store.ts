@@ -19,11 +19,13 @@ export type WsWriteAction = PointWsWriteAction | PresetWsWriteAction | ImportWsW
 
 type TrackingState = {
   lastWipingSequenceWrite: WsWriteAction | undefined;
+  lastTestedWipingSequenceRevision: number;
 };
 
 export function createTrackingStore() {
   const initialState: TrackingState = {
     lastWipingSequenceWrite: undefined,
+    lastTestedWipingSequenceRevision: 0,
   };
 
   const [state, set] = createStore<TrackingState>(initialState);
@@ -31,6 +33,9 @@ export function createTrackingStore() {
   const actions = {
     setLastWipingSequenceWrite(writeAction: WsWriteAction) {
       set('lastWipingSequenceWrite', writeAction);
+    },
+    setLastTestedWipingSequenceRevision(revision: number) {
+      set('lastTestedWipingSequenceRevision', revision);
     },
   };
 

@@ -1,9 +1,9 @@
-import { createEffect } from 'solid-js';
+import { createEffect, createMemo } from 'solid-js';
 import { twc } from '@/styles/helpers';
+import { targetCanvasWidth } from '@/WiperTool/configuration';
+import { createCartesianMicronCanvasSpace } from '@/WiperTool/lib/cartesianMicronCanvasSpace';
 import type { Point } from '@/WiperTool/lib/geometry';
-import { absToRel } from './helpers';
-
-const scale = 0.025; // pixels per micron (25 px/mm)
+import type { CartesianRect } from '@/WiperTool/lib/rect';
 
 const StyledSimulationCanvas = twc(
   'canvas',
@@ -17,35 +17,18 @@ const StyledSimulationCanvas = twc(
 
 type SimulationCanvasProps = {
   nozzlePos: Point | null;
-  padWidth: number;
-  padHeight: number;
-  paddingLeft: number;
-  paddingRight: number;
-  paddingTop: number;
-  paddingBottom: number;
-  padTopRight: Point;
+  drawingArea: CartesianRect;
 };
 
 export function SimulationCanvas(props: SimulationCanvasProps) {
   let canvasRef: HTMLCanvasElement | undefined;
 
-  const derived = () => {
-    const totalPaddingX = props.paddingLeft + props.paddingRight;
-    const totalPaddingY = props.paddingTop + props.paddingBottom;
-    const widthPx = (props.padWidth + totalPaddingX) * scale;
-    const heightPx = (props.padHeight + totalPaddingY) * scale;
-    const padStartXPx = props.paddingLeft * scale;
-    const padStartYPx = props.paddingTop * scale;
-    const refPixelX = padStartXPx + props.padWidth * scale;
-    const refPixelY = padStartYPx;
-
+  const derived = createMemo(() => {
+    const scale = targetCanvasWidth / props.drawingArea.width;
     return {
-      widthPx,
-      heightPx,
-      refPixelX,
-      refPixelY,
+      space: createCartesianMicronCanvasSpace(props.drawingArea, scale),
     };
-  };
+  });
 
   const draw = () => {
     if (!canvasRef) {
@@ -56,19 +39,16 @@ export function SimulationCanvas(props: SimulationCanvasProps) {
       return;
     }
 
-    const { widthPx, heightPx, refPixelX, refPixelY } = derived();
+    const { space } = derived();
     const { nozzlePos } = props;
-    ctx.clearRect(0, 0, widthPx, heightPx);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, space.canvasWidth, space.canvasHeight);
 
     if (!nozzlePos) {
       return;
     }
 
-    const relCoords = absToRel(nozzlePos, props.padTopRight);
-    const nozzlePx = {
-      x: relCoords.x * scale + refPixelX,
-      y: refPixelY - relCoords.y * scale,
-    };
+    const nozzlePx = space.micronsToCanvas(nozzlePos);
 
     const drawNozzle = () => {
       ctx.save();
@@ -130,8 +110,8 @@ export function SimulationCanvas(props: SimulationCanvasProps) {
       ref={(el) => {
         canvasRef = el;
       }}
-      width={derived().widthPx}
-      height={derived().heightPx}
+      width={derived().space.canvasWidth}
+      height={derived().space.canvasHeight}
       style={{
         width: '100%',
         height: 'auto',

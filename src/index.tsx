@@ -3,7 +3,6 @@
 import { hydrate } from 'solid-js/web';
 import { isClientRuntime } from '@/lib/runtime';
 import { WiperTool } from '@/WiperTool';
-import '@fontsource-variable/material-symbols-rounded';
 import './index.css';
 
 if (isClientRuntime) {

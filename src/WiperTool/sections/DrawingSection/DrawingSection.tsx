@@ -52,7 +52,6 @@ export function DrawingSection() {
 
   const { drawingPadBoundsWarning } = useDrawingPadBoundsWarning();
   const isReadyToDraw = () => areStepsCompleteUpTo(StepKeys.Drawing);
-  const isDisabled = () => !isReadyToDraw();
 
   const fullBoundsWarning = createMemo(() => {
     const currentWarning = drawingPadBoundsWarning();
@@ -62,6 +61,8 @@ export function DrawingSection() {
     const currentWarning = drawingPadBoundsWarning();
     return currentWarning.kind === 'partial' ? currentWarning : null;
   });
+
+  const isDisabled = () => !isReadyToDraw() || fullBoundsWarning() !== null;
 
   return (
     <Section id={steps()[StepKeys.Drawing].anchor}>
@@ -130,8 +131,8 @@ export function DrawingSection() {
                 Based on the pad position calibration and the printer's{' '}
                 {warning.side === 'top' || warning.side === 'bottom' ? 'Y-axis' : 'X-axis'} range (
                 {warning.side === 'top' || warning.side === 'bottom'
-                  ? `${formatMicronsToMmString(selectedPrinter().minY)}mm - ${formatMicronsToMmString(selectedPrinter().maxY)}mm`
-                  : `${formatMicronsToMmString(selectedPrinter().minX)}mm - ${formatMicronsToMmString(selectedPrinter().maxX)}mm`}
+                  ? `${formatMicronsToMmString(selectedPrinter().bounds.bottom)}mm - ${formatMicronsToMmString(selectedPrinter().bounds.top)}mm`
+                  : `${formatMicronsToMmString(selectedPrinter().bounds.left)}mm - ${formatMicronsToMmString(selectedPrinter().bounds.right)}mm`}
                 ), your printer's nozzle cannot reach the full silicone pad. You can still draw a wiping path, but it
                 must stay within the reachable area of the pad.
                 <br />

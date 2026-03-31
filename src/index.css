@@ -3,10 +3,9 @@
 @font-face {
   font-family: "Material Symbols Rounded Variable";
   font-style: normal;
-  font-weight: 100 700;
+  font-weight: 400;
   font-display: block;
-  src: url("@fontsource-variable/material-symbols-rounded/files/material-symbols-rounded-latin-wght-normal.woff2")
-    format("woff2-variations");
+  src: url("./assets/fonts/material-symbols-rounded-subset.woff2") format("woff2");
 }
 
 @theme {

@@ -35,11 +35,14 @@ const Title = twc(
 );
 
 const DismissButton = twc(
-  'div',
+  'button',
   `
   cursor-pointer
   text-rose-200
   hover:text-rose-100
+  bg-transparent
+  border-none
+  p-0
   `,
 );
 
@@ -58,7 +61,8 @@ export function ErrorMessage(props: Props) {
       </Content>
       {props.onDismiss && (
         <DismissButton
-          title="Dismiss"
+          type="button"
+          aria-label="Dismiss"
           onClick={props.onDismiss}
         >
           <MaterialSymbol

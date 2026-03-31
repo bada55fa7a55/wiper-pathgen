@@ -89,8 +89,10 @@ export function StickyHeader(props: Props) {
       <StickyBar visible={props.visible}>
         <LeftSection>
           <Logo
-            aria-label="Nozzle Wiper Path Generator compact logo"
+            alt="Nozzle Wiper Path Generator compact logo"
             src={logo}
+            width={182}
+            height={40}
           />
           <StepOMeter />
         </LeftSection>

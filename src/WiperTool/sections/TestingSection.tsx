@@ -17,7 +17,12 @@ import {
 import { isDevRuntime } from '@/lib/runtime';
 import { twc } from '@/styles/helpers';
 import { generateTestGCode, serializeGCode } from '@/WiperTool/domain/gcode';
-import { calibrationValuesUsedEvent, testGCodeDownloadedEvent, track } from '@/WiperTool/lib/analytics';
+import {
+  calibrationValuesUsedEvent,
+  settingsUsedEvent,
+  testGCodeDownloadedEvent,
+  track,
+} from '@/WiperTool/lib/analytics';
 import { formatPercent, formatPercentString } from '@/WiperTool/lib/formatting';
 import {
   useCalibration,
@@ -122,8 +127,8 @@ export function TestingSection() {
       printerOriginalCleaningGcode: selectedPrinter().originalCleaningGCode,
       printerId: selectedPrinter().printerId,
       printerMaxCoords: {
-        x: selectedPrinter().maxX,
-        y: selectedPrinter().maxY,
+        x: selectedPrinter().bounds.right,
+        y: selectedPrinter().bounds.top,
       },
       printerParkingCoords: {
         x: selectedPrinter().parkingCoords.x,
@@ -174,9 +179,19 @@ export function TestingSection() {
     link.click();
     URL.revokeObjectURL(url);
 
+    tracking.actions.setLastTestedWipingSequenceRevision(wipingSequence.revision());
     track(testGCodeDownloadedEvent(tracking.lastWipingSequenceWrite()));
     track(
       calibrationValuesUsedEvent('testing', selectedPrinter().key, calibration.x(), calibration.y(), calibration.z()),
+    );
+    track(
+      settingsUsedEvent(
+        'testing',
+        selectedPrinter().key,
+        settings.feedRate(),
+        settings.plungeDepth(),
+        settings.zLift(),
+      ),
     );
   };
 

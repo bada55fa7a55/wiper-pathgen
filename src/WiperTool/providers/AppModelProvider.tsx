@@ -6,6 +6,7 @@ import { computePadTopRight, padProperties } from '@/WiperTool/domain/pads';
 import { printerProperties } from '@/WiperTool/domain/printers';
 import { createSettingsStore } from '@/WiperTool/domain/settings/store';
 import { createWipingSequenceStore } from '@/WiperTool/domain/wipingSequence/store';
+import { CartesianRect } from '@/WiperTool/lib/rect';
 import { createModalsStore } from '@/WiperTool/ui/modals/store';
 import { createSteps } from '@/WiperTool/ui/steps/readModel';
 import { createTrackingStore } from '@/WiperTool/ui/tracking/store';
@@ -14,10 +15,7 @@ type Accessors<T extends object, K extends readonly (keyof T)[]> = {
   [P in K[number]]: () => T[P];
 };
 
-export function makeAccessors<T extends object, K extends readonly (keyof T)[]>(
-  getState: () => T,
-  keys: K,
-): Accessors<T, K> {
+function makeAccessors<T extends object, K extends readonly (keyof T)[]>(getState: () => T, keys: K): Accessors<T, K> {
   const out = {} as Accessors<T, K>;
   for (const k of keys) {
     (out as any)[k] = () => getState()[k];
@@ -39,11 +37,27 @@ function createAppModel() {
       isCalibrated: calibration.derived.isComplete,
       isSettingsComplete: settings.derived.isComplete,
       isWipingSequenceComplete: wipingSequence.derived.isComplete,
+      isWipingSequenceTested: createMemo(
+        () =>
+          wipingSequence.state.revision !== 0 &&
+          wipingSequence.state.revision === tracking.state.lastTestedWipingSequenceRevision,
+      ),
     }),
 
     selectedPrinter: createMemo(() => printerProperties[settings.state.printer]),
     selectedPad: createMemo(() => padProperties[settings.state.padType]),
     selectedPadTopRight: createMemo(() => computePadTopRight(padProperties[settings.state.padType], calibration.state)),
+    calibratedPadRect: createMemo(() => {
+      if (calibration.state.x === undefined || calibration.state.y === undefined) {
+        return null;
+      }
+      const padData = padProperties[settings.state.padType];
+      const padTopRight = computePadTopRight(padProperties[settings.state.padType], calibration.state);
+
+      const left = padTopRight.x - padData.width;
+      const top = padTopRight.y;
+      return new CartesianRect(left, top - padData.height, padData.width, padData.height);
+    }),
   };
 
   const actions = {
@@ -88,6 +102,7 @@ export function usePads() {
   return {
     selectedPad: derived.selectedPad,
     selectedPadTopRight: derived.selectedPadTopRight,
+    calibratedPadRect: derived.calibratedPadRect,
   };
 }
 
@@ -95,9 +110,7 @@ export function useCalibration() {
   const { calibration } = useAppModel();
 
   return {
-    x: () => calibration.state.x,
-    y: () => calibration.state.y,
-    z: () => calibration.state.z,
+    ...makeAccessors(() => calibration.state, ['x', 'y', 'z'] as const),
     ...calibration.derived,
     actions: calibration.actions,
   } as const;
@@ -107,11 +120,7 @@ export function useSettings() {
   const { settings } = useAppModel();
 
   return {
-    plungeDepth: () => settings.state.plungeDepth,
-    feedRate: () => settings.state.feedRate,
-    zLift: () => settings.state.zLift,
-    printer: () => settings.state.printer,
-    padType: () => settings.state.padType,
+    ...makeAccessors(() => settings.state, ['plungeDepth', 'feedRate', 'zLift', 'printer', 'padType'] as const),
     ...settings.derived,
     actions: settings.actions,
   } as const;
@@ -122,6 +131,7 @@ export function useWipingSequence() {
 
   return {
     wipingSteps: () => wipingSequence.state.wipingSequence,
+    ...makeAccessors(() => wipingSequence.state, ['revision'] as const),
     ...wipingSequence.derived,
     actions: wipingSequence.actions,
   } as const;
@@ -140,7 +150,7 @@ export function useTracking() {
   const { tracking } = useAppModel();
 
   return {
-    lastWipingSequenceWrite: () => tracking.state.lastWipingSequenceWrite,
+    ...makeAccessors(() => tracking.state, ['lastWipingSequenceWrite'] as const),
     actions: tracking.actions,
   } as const;
 }

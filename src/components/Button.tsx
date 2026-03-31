@@ -49,6 +49,11 @@ const containerStylesVariants = {
         active:bg-zinc-600
         text-shark-200
         `,
+      'ghost-success': `
+        hover:bg-zinc-700
+        active:bg-zinc-600
+        text-emerald-400
+        `,
       danger: `
         bg-red-600
         text-white
@@ -155,7 +160,7 @@ const Label = twc('span', '', {
 });
 
 type CommonProps = {
-  layout: 'primary' | 'secondary' | 'shark' | 'ghost' | 'danger' | 'list' | 'list-success';
+  layout: 'primary' | 'secondary' | 'shark' | 'ghost' | 'ghost-success' | 'danger' | 'list' | 'list-success';
   size?: 'lg' | 'sm' | 'lg-p0';
   msIcon?: string;
   title?: string;

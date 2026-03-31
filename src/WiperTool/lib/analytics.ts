@@ -174,11 +174,6 @@ export type AnalyticsEvent = {
   trigger: AnalyticsTrigger;
 } & AnalyticsMetadata;
 
-export type AnalyticsEvent2 = {
-  event: string;
-  trigger: AnalyticsTrigger;
-} & AnalyticsMetadata;
-
 export function track(event: AnalyticsEvent) {
   const traceid = isClientRuntime ? window.tid : '';
   const { event: eventName, ...metadata } = event;
@@ -276,6 +271,23 @@ export function calibrationValuesUsedEvent(
     x,
     y,
     z,
+  };
+}
+
+export function settingsUsedEvent(
+  trigger: AnalyticsTrigger,
+  printer: PrinterKey,
+  feedRate: number | undefined,
+  plungeDepth: number | undefined,
+  zLift: number | undefined,
+): AnalyticsEvent {
+  return {
+    event: 'settings_used',
+    trigger,
+    printer,
+    feedRate,
+    plungeDepth,
+    zLift,
   };
 }
 

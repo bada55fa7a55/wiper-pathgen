@@ -158,6 +158,7 @@ export function PrinterButton(props: Props) {
       <ButtonContent isDisabled={isDisabled}>
         <PrinterImage
           src={props.image}
+          alt={`${props.label} printer`}
           isEnlarged={props.isEnlargedImage}
         />
         <PrinterLabel>{props.label}</PrinterLabel>

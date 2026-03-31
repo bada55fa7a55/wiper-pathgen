@@ -21,7 +21,7 @@ type ParamsField<Keys extends string, Mode extends ParamMode, RequireAtLeastOne 
     ? { params: AtLeastOne<ParamsOf<Keys, Mode>> }
     : { params?: ParamsOf<Keys, Mode> };
 
-export type AbstractCommand<
+type AbstractCommand<
   Op extends string,
   Keys extends string = never,
   Mode extends ParamMode = 'kv',

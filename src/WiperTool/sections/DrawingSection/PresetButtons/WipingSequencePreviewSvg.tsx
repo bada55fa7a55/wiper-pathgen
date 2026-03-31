@@ -1,6 +1,7 @@
 import { createMemo } from 'solid-js';
 import type { WipingSequence } from '@/WiperTool/domain/wipingSequence';
 import { getWipingStepPoints } from '@/WiperTool/domain/wipingSequence';
+import { CartesianRect } from '@/WiperTool/lib/rect';
 
 type Props = {
   sequence: WipingSequence;
@@ -29,35 +30,18 @@ export function WipingSequencePreviewSvg(props: Props) {
     if (pts.length === 0) {
       return '';
     }
-    let minX = pts[0].x;
-    let maxX = pts[0].x;
-    let minY = pts[0].y;
-    let maxY = pts[0].y;
-    for (let i = 1; i < pts.length; i += 1) {
-      const { x, y } = pts[i];
-      if (x < minX) {
-        minX = x;
-      }
-      if (x > maxX) {
-        maxX = x;
-      }
-      if (y < minY) {
-        minY = y;
-      }
-      if (y > maxY) {
-        maxY = y;
-      }
-    }
-    const width = Math.max(1, maxX - minX);
-    const height = Math.max(1, maxY - minY);
+
+    const rect = CartesianRect.fromPoints(pts);
+    const width = Math.max(1, rect.width);
+    const height = Math.max(1, rect.height);
     const padding = inset();
     const drawableWidth = viewBox().viewWidth - padding * 2;
     const drawableHeight = viewBox().viewHeight - padding * 2;
 
     return pts
       .map((point) => {
-        const x = padding + ((point.x - minX) / width) * drawableWidth;
-        const y = padding + ((maxY - point.y) / height) * drawableHeight;
+        const x = padding + ((point.x - rect.left) / width) * drawableWidth;
+        const y = padding + ((rect.top - point.y) / height) * drawableHeight;
         return `${x.toFixed(1)},${y.toFixed(1)}`;
       })
       .join(' ');

@@ -1,7 +1,8 @@
-import { createMemo, createSignal, For, Show } from 'solid-js';
+import { createMemo, createSignal, Show } from 'solid-js';
 import { twc } from '@/styles/helpers';
-import { useCalibration, usePads, usePrinters } from '@/WiperTool/providers/AppModelProvider';
+import { usePads, usePrinters } from '@/WiperTool/providers/AppModelProvider';
 import { ModalPortal } from '@/WiperTool/ui/modals';
+import { bedImages } from '@/WiperTool/ui/printers';
 
 const Container = twc(
   'div',
@@ -108,66 +109,68 @@ type SvgRect = {
 
 const padding = 15000;
 
-function CalibrationPadPreviewImpl() {
-  const calibration = useCalibration();
-  const { selectedPrinter } = usePrinters();
-  const { selectedPad, selectedPadTopRight } = usePads();
+type Props = {
+  withBuildVolume?: boolean;
+};
 
-  const hasCalibration = createMemo(() => calibration.x() !== undefined && calibration.y() !== undefined);
+function CalibrationPadPreviewImpl(props: Props) {
+  const { selectedPrinter } = usePrinters();
+  const { calibratedPadRect } = usePads();
+
+  const bedImage = createMemo(() => {
+    return bedImages[selectedPrinter().key];
+  });
 
   const viewSettings = createMemo(() => {
     const printerData = selectedPrinter();
-    const width = Math.max(1, printerData.maxX - printerData.minX) + 2 * padding;
-    const height = Math.max(1, printerData.maxY - printerData.minY) + 2 * padding;
-    return {
-      width,
-      height,
-      minX: printerData.minX - padding,
-      minY: printerData.minY - padding,
-    };
+
+    const viewRect = printerData.bounds.clone();
+
+    const img = bedImage();
+    if (img) {
+      viewRect.x = Math.min(viewRect.x, img.x);
+      viewRect.y = Math.min(viewRect.y, img.y);
+      viewRect.width = Math.max(viewRect.width, img.width);
+      viewRect.height = Math.max(viewRect.height, img.height);
+    }
+
+    viewRect.x -= padding;
+    viewRect.y -= padding;
+    viewRect.width += 2 * padding;
+    viewRect.height += 2 * padding;
+
+    return viewRect;
   });
 
-  const printerRect = createMemo<SvgRect>(() => {
-    const printerData = selectedPrinter();
-    const width = Math.max(1, printerData.maxX - printerData.minX);
-    const height = Math.max(1, printerData.maxY - printerData.minY);
-
-    return {
-      x: printerData.minX,
-      y: printerData.minY,
-      width,
-      height,
-    };
+  const boundsRect = createMemo<SvgRect>(() => {
+    return selectedPrinter().bounds.toJSON();
   });
 
-  const padRect = createMemo<SvgRect | null>(() => {
-    if (!hasCalibration()) {
+  const buildVolume = createMemo(() => {
+    if (!props.withBuildVolume) {
       return null;
     }
 
-    const padData = selectedPad();
-    const padTopRightPoint = selectedPadTopRight();
+    return selectedPrinter().buildVolume;
+  });
 
-    const left = padTopRightPoint.x - padData.width;
-    const top = padTopRightPoint.y;
-
-    return {
-      x: left,
-      y: top - padData.height,
-      width: Math.max(1, padData.width),
-      height: Math.max(1, padData.height),
-    };
+  const padRect = createMemo<SvgRect | null>(() => {
+    const rect = calibratedPadRect();
+    if (!rect) {
+      return null;
+    }
+    return rect.toJSON();
   });
 
   const flipTransform = createMemo(() => {
-    const { minY, height } = viewSettings();
-    return `translate(0 ${minY * 2 + height + 10000}) scale(1 -1)`;
+    const { y, height } = viewSettings();
+    return `translate(0 ${y * 2 + height}) scale(1 -1)`;
   });
 
   return (
     <SvgFrame>
       <Svg
-        viewBox={`${viewSettings().minX} ${viewSettings().minY} ${viewSettings().width} ${viewSettings().height}`}
+        viewBox={`${viewSettings().x} ${viewSettings().y} ${viewSettings().width} ${viewSettings().height}`}
         preserveAspectRatio="xMidYMid meet"
         style={{
           'aspect-ratio': `${viewSettings().width} / ${viewSettings().height}`,
@@ -177,9 +180,23 @@ function CalibrationPadPreviewImpl() {
         aria-label="Printer bounds with silicone pad position"
       >
         <g transform={flipTransform()}>
+          <Show when={bedImage()}>
+            {(img) => {
+              const Svg = img().Svg;
+              return (
+                <Svg
+                  x={img().x}
+                  y={img().y}
+                  width={img().width}
+                  height={img().height}
+                  preserveAspectRatio="none"
+                />
+              );
+            }}
+          </Show>
           <rect
-            x={viewSettings().minX}
-            y={viewSettings().minY}
+            x={viewSettings().x}
+            y={viewSettings().y}
             width={viewSettings().width}
             height={viewSettings().height}
             rx="10"
@@ -189,37 +206,28 @@ function CalibrationPadPreviewImpl() {
           />
           <rect
             class="stroke-orange-400"
-            x={printerRect().x}
-            y={printerRect().y}
-            width={printerRect().width}
-            height={printerRect().height}
+            x={boundsRect().x}
+            y={boundsRect().y}
+            width={boundsRect().width}
+            height={boundsRect().height}
             rx="2000"
             fill="none"
             stroke-width="1"
             stroke-dasharray="5, 3"
             vector-effect="non-scaling-stroke"
           />
-          <Show when={selectedPrinter().bedShape}>
-            {(bedShape) => (
-              <g transform={`translate(${bedShape().offset[0]}, ${bedShape().offset[1]})`}>
-                <path
-                  class="fill-neutral-500"
-                  opacity="0.4"
-                  d={`M ${bedShape()
-                    .path.map(([x, y]) => `${x} ${y}`)
-                    .join(' L ')}`}
-                />
-                <For each={bedShape().negativeVolumes}>
-                  {(negativeVolume) => (
-                    <circle
-                      cx={negativeVolume.x}
-                      cy={negativeVolume.y}
-                      r={negativeVolume.radius}
-                      class="fill-neutral-800"
-                    />
-                  )}
-                </For>
-              </g>
+          <Show when={buildVolume()}>
+            {(volume) => (
+              <rect
+                class="stroke-porange-500"
+                x={0}
+                y={0}
+                width={volume().x}
+                height={volume().y}
+                rx="500"
+                fill="none"
+                vector-effect="non-scaling-stroke"
+              />
             )}
           </Show>
           <Show when={padRect()}>
@@ -241,7 +249,7 @@ function CalibrationPadPreviewImpl() {
       <Legend>
         <LegendRow>
           <LegendIcon layout="bounds" />
-          <div>Printer bounds</div>
+          <div>Printer limits</div>
         </LegendRow>
         <LegendRow>
           <LegendIcon layout="pad" />
@@ -266,8 +274,16 @@ export function CalibrationPadPreview() {
   return (
     <>
       <Container
+        role="button"
+        tabindex="0"
         aria-haspopup="dialog"
         aria-expanded={isOpen()}
+        onKeyDown={(e: KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleOpen();
+          }
+        }}
         onClick={handleOpen}
       >
         <CalibrationPadPreviewImpl />
